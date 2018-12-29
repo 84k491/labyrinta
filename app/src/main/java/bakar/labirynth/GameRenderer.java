@@ -59,7 +59,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     public GameRenderer(Context _context) {
         super(_context);
         context = _context;
-        camera.setLocation(1,1,1);
+        camera.setLocation(0,0,10);
+        camera.save();
         getHolder().addCallback(this);
     }
     void addPickUpAnimation(PointF pointF, String text){
@@ -224,13 +225,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     void changeOffset(PointF offset){
         registerBonusTouch = false;
         //globalOffset.offset(offset.x * globalScale, offset.y * globalScale);
-        camera.save();
+        //camera.save();
         camera.translate(-offset.x, offset.y, 0);
     }
     void changeScale(float value){
         // value is raw
-        globalScale += value / (cellSize * 4000 / 70);
+        //globalScale += value / (cellSize * 4000 / 70);
         //renderThread.clearLabyrinthBmp();
+        camera.translate(0,0, -value * (cellSize / 5));
     }
     ///////////////////////////////////////////
 
@@ -471,17 +473,20 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             ArrayList<String> outputs = new ArrayList<>();
 
+            Matrix matrix = new Matrix();
+            camera.getMatrix(matrix);
             outputs.add("Seed: " + gameLogic.seed);
             outputs.add("Scale: " + globalScale);
+            outputs.add("Camera Mtx: " + matrix);
             //outputs.add("Offset: " + globalOffset);
             outputs.add("FPS: " + calcFps());
-            outputs.add("Free mem: " + availMemory() + " MB");
-            outputs.add("Lab bmp size: " + labBitmap.getRowBytes() * labBitmap.getHeight() / 1024 + " kB");
-            outputs.add("Lab bmp height: " + labBitmap.getHeight());
-            if (fogBitmap != null){
-                outputs.add("Fog bmp size: " + fogBitmap.getRowBytes() * fogBitmap.getHeight() / 1024 + " kB");
-                outputs.add("Fog bmp height: " + fogBitmap.getHeight());
-            }
+            //outputs.add("Free mem: " + availMemory() + " MB");
+            //outputs.add("Lab bmp size: " + labBitmap.getRowBytes() * labBitmap.getHeight() / 1024 + " kB");
+            //outputs.add("Lab bmp height: " + labBitmap.getHeight());
+//            if (fogBitmap != null){
+//                outputs.add("Fog bmp size: " + fogBitmap.getRowBytes() * fogBitmap.getHeight() / 1024 + " kB");
+//                outputs.add("Fog bmp height: " + fogBitmap.getHeight());
+//            }
 
             for (int i = 0; i < outputs.size(); ++i){
                 canvas.drawText(outputs.get(i), getWidth(), (i + 1) * 70, text);
@@ -599,6 +604,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canClearBmp = false;
             camera.applyToCanvas(canvas);
 
+
             canvas.drawColor(Color.rgb(20, 20, 100));
 
             profiler.start("Lab draw time");
@@ -619,6 +625,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             profiler.start("Fog draw time");
             drawFog(canvas);
             profiler.stop("Fog draw time");
+
+            Matrix E = new Matrix();
+            canvas.setMatrix(E);
             drawButtons(canvas);
             drawJoystick(canvas);
 
@@ -843,7 +852,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         @Override
         void onClick() {
             //gameLogic.getPath(gameLogic.playerCoords(), field2game(gameLogic.field.exitPos));
-            startBonusActivity();
+            //startBonusActivity();
         }
     }
 }
