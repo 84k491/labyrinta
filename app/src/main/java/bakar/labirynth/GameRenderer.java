@@ -138,6 +138,20 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     void resetFog(){renderThread.createFogBmp();}
 
+    float getGlobalScale(){
+        Matrix matrix = new Matrix();
+        camera.getMatrix(matrix);
+        float[] values = new float[9];
+        matrix.getValues(values);
+        return values[0];
+    }
+    PointF getGlobalOffset(){
+        Matrix matrix = new Matrix();
+        camera.getMatrix(matrix);
+        float[] values = new float[9];
+        matrix.getValues(values);
+        return new PointF(values[2], values[5]);
+    }
     // Converters /////////////////////////////
     public PointF screen2game(PointF value){
         PointF result = new PointF();
@@ -287,6 +301,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private boolean running = false;
         private SurfaceHolder surfaceHolder;
         private Profiler profiler = new Profiler();
+        Matrix Ematrix = new Matrix();
 
         private long prevDrawTime = 0;
         private long redrawPeriod = 30; // milliS // microS
@@ -476,7 +491,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             Matrix matrix = new Matrix();
             camera.getMatrix(matrix);
             outputs.add("Seed: " + gameLogic.seed);
-            outputs.add("Scale: " + globalScale);
+            outputs.add("Scale: " + getGlobalScale());
+            outputs.add("Offset: " + getGlobalOffset());
             outputs.add("Camera Mtx: " + matrix);
             //outputs.add("Offset: " + globalOffset);
             outputs.add("FPS: " + calcFps());
@@ -604,7 +620,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canClearBmp = false;
             camera.applyToCanvas(canvas);
 
-
             canvas.drawColor(Color.rgb(20, 20, 100));
 
             profiler.start("Lab draw time");
@@ -626,8 +641,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawFog(canvas);
             profiler.stop("Fog draw time");
 
-            Matrix E = new Matrix();
-            canvas.setMatrix(E);
+            canvas.setMatrix(Ematrix);
             drawButtons(canvas);
             drawJoystick(canvas);
 
