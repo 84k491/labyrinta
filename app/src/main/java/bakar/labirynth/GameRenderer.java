@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -38,6 +39,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     boolean registerBonusTouch = false;
 
     float cellSize = 10; // gameCoords side
+    Camera camera = new Camera();
     float globalScale = cellSize * 3 / 70;
     private PointF globalOffset = new PointF(0, 0); // gameCoords
     public float playerHitbox = 0; // screenCoord // in surfaceCreated();
@@ -54,13 +56,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     ArrayList<Button> buttons = new ArrayList<>();
     ArrayList<PickUpAnimation> pickUpAnimations = new ArrayList<>();
 
-    void addPickUpAnimation(PointF pointF, String text){
-        pickUpAnimations.add(new PickUpAnimation(pointF, text));
-    }
     public GameRenderer(Context _context) {
         super(_context);
         context = _context;
+        camera.setLocation(1,1,1);
         getHolder().addCallback(this);
+    }
+    void addPickUpAnimation(PointF pointF, String text){
+        pickUpAnimations.add(new PickUpAnimation(pointF, text));
     }
     public void setGameLogic(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
@@ -220,7 +223,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     void changeOffset(PointF offset){
         registerBonusTouch = false;
-        globalOffset.offset(offset.x * globalScale, offset.y * globalScale);
+        //globalOffset.offset(offset.x * globalScale, offset.y * globalScale);
+        camera.save();
+        camera.translate(-offset.x, offset.y, 0);
     }
     void changeScale(float value){
         // value is raw
@@ -592,6 +597,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void onDraw(Canvas canvas){
             if (!gameLogic.isInited) return;
             canClearBmp = false;
+            camera.applyToCanvas(canvas);
 
             canvas.drawColor(Color.rgb(20, 20, 100));
 
