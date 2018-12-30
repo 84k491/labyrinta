@@ -101,7 +101,7 @@ public class GameActivity extends Activity{
     void saveData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putFloat("global_scale", gameRenderer.globalScale);
+        //ed.putFloat("global_scale", gameRenderer.globalScale);
         ed.putInt("pointerAmount", gameLogic.pointerAmount);
         ed.putInt("teleportAmount", gameLogic.teleportAmount);
         ed.putInt("pathfinderAmount", gameLogic.pathfinderAmount);
@@ -109,7 +109,7 @@ public class GameActivity extends Activity{
     }
     void loadData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
-        gameRenderer.globalScale = sPref.getFloat("global_scale", 3);
+        //gameRenderer.globalScale = sPref.getFloat("global_scale", 3);
         gameLogic.pointerAmount = sPref.getInt("pointerAmount", 0);
         gameLogic.pathfinderAmount = sPref.getInt("pathfinderAmount", 0);
         gameLogic.teleportAmount = sPref.getInt("teleportAmount", 0);

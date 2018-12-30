@@ -33,16 +33,16 @@ class GameLogic {
     private GameRenderer gameRenderer;
     Field field;
     Node currentNode;
-    private PointF playerPt; // gameCoord
+    private CPoint.Game playerPt;
     long seed = 0;
     Joystick joystick;
-    LinkedList<PointF> finded_path;
+    LinkedList<CPoint.Game> finded_path;
     EntityFactory eFactory = new EntityFactory();
     int earnedGold = 0;
 
-    PointF debugTouchGameCoord = new PointF(0, 0);
+    CPoint.Game debugTouchGameCoord = new CPoint.Game(0, 0);
 
-    Queue<Point> traces = new LinkedList<>();// fieldCoords
+    Queue<CPoint.Field> traces = new LinkedList<>();// fieldCoords
     int tracesSize = 10;
 
     GameLogic(GameRenderer gameRenderer_, long _seed, int _xsize, int _ysize){
@@ -76,10 +76,10 @@ class GameLogic {
         seed = _seed;
         init(xsize, ysize);
     }
-    void createJoystick(PointF mainPos, float mainRadius){
+    void createJoystick(CPoint.Screen mainPos, float mainRadius){
         joystick = new Joystick(mainPos, mainRadius);
     }
-    LinkedList<PointF> getPath(PointF from, PointF to){
+    LinkedList<CPoint.Game> getPath(CPoint.Game from, CPoint.Game to){
         AStarAlg alg = new AStarAlg(from, to);
         finded_path = alg.AStar();
         return finded_path;
@@ -95,11 +95,11 @@ class GameLogic {
         pointerActive = true;
         pointerAmount--;
     }
-    void activatePathfinder(PointF gameCoord){
+    void activatePathfinder(CPoint.Game gameCoord){
         getPath(playerCoords(), getClosestFloorCoord(gameCoord));
         pathfinderAmount--;
     }
-    void activateTeleport(PointF gameCoord){
+    void activateTeleport(CPoint.Game gameCoord){
         playerPt = getClosestFloorCoord(gameCoord);
         currentNode = new Node(gameRenderer.game2field(playerCoords()));
         currentNode.updateLinks();
@@ -113,8 +113,8 @@ class GameLogic {
     float getPathfinderRadius(){
         return gameRenderer.cellSize * 18; // game
     }
-    PointF getClosestFloorCoord(PointF gm){
-        Point fi = gameRenderer.game2field(gm);
+    CPoint.Game getClosestFloorCoord(CPoint.Game gm){
+        CPoint.Field fi = gameRenderer.game2field(gm);
         if (field.get(fi))
             return gameRenderer.field2game(gameRenderer.game2field(gm)); // получаем центр клетки
 
@@ -123,7 +123,7 @@ class GameLogic {
             if (field.get(field.ptAt(fi, dir)))
                 return gameRenderer.field2game(field.ptAt(fi, dir));
         }
-        return gameRenderer.field2game(new Point(1, 1));
+        return gameRenderer.field2game(new CPoint.Field(1, 1));
     }
 
     void onExitReached(){
@@ -155,10 +155,10 @@ class GameLogic {
         gameRenderer.lightFog(playerCoords());
     }
 
-    void updateTraces(PointF pointF){
+    void updateTraces(CPoint.Game pointF){
 
-        if ((((LinkedList<Point>)traces).getLast().x != gameRenderer.game2field(pointF).x) ||
-                (((LinkedList<Point>)traces).getLast().y != gameRenderer.game2field(pointF).y)){
+        if ((((LinkedList<CPoint.Field>)traces).getLast().x != gameRenderer.game2field(pointF).x) ||
+                (((LinkedList<CPoint.Field>)traces).getLast().y != gameRenderer.game2field(pointF).y)){
             if (traces.size() >= tracesSize)
                 traces.poll();
             traces.add(gameRenderer.game2field(pointF));
@@ -166,7 +166,7 @@ class GameLogic {
             onCellChanged();
         }
     }
-    boolean canMovePlayer(PointF pointF){ // screencoord
+    boolean canMovePlayer(CPoint.Screen pointF){ // screencoord
         if (usesJoystick)
             return joystick.isTouched(pointF);
         else
@@ -174,15 +174,15 @@ class GameLogic {
     }
     void remoteMove(){
         if (usesJoystick && gameRenderer.isMovingPlayer)
-            movePlayerTo(joystick.lastTouch);
+            movePlayerTo(joystick.lastTouch); //TODO тут был косяк с типом | done
     }
-    void movePlayerTo(PointF pointF){ // gameCoord rly
+    void movePlayerTo(CPoint.Game pointF){ // gameCoord rly
         if (!gameRenderer.isPlayerInSight())
             gameRenderer.buttons.get(0).onClick();
 
-        PointF input;
+        CPoint.Game input;
         if (usesJoystick){
-            PointF offsetp = joystick.getPlayerOffsetOnMove(pointF);
+            CPoint.Game offsetp = joystick.getPlayerOffsetOnMove(pointF);
             input = playerCoords();
             input.offset(offsetp.x, offsetp.y);
         }
@@ -209,7 +209,8 @@ class GameLogic {
         if (distanceToRail > gameRenderer.getCellSize() * 3)
             gameRenderer.isMovingPlayer = false;
         else{
-            playerPt = newPlayerPt;
+            playerPt.x = newPlayerPt.x;
+            playerPt.y = newPlayerPt.y;
             updateTraces(playerPt);
         }
 
@@ -223,11 +224,11 @@ class GameLogic {
         }
         eFactory.intersectsWith(gameRenderer.game2field(playerCoords()));
     }
-    PointF playerCoords(){ // gameCoord
-        return new PointF(playerPt.x, playerPt.y);
+    CPoint.Game playerCoords(){ // gameCoord
+        return new CPoint.Game(playerPt.x, playerPt.y);
     }
-    PointF exitCoords(){
-        return new PointF(gameRenderer.field2game(field.exitPos).x, gameRenderer.field2game(field.exitPos).y);
+    CPoint.Game exitCoords(){
+        return new CPoint.Game(gameRenderer.field2game(field.exitPos).x, gameRenderer.field2game(field.exitPos).y);
     }
     static float distance(PointF point1, PointF point2){
         PointF vec = new PointF(point2.x - point1.x, point2.y - point1.y);
@@ -239,15 +240,15 @@ class GameLogic {
     }
 
     class Node {
-        Point pos;
+        CPoint.Field pos;
         ArrayMap<Direction, Node> links = new ArrayMap<>();
         ArrayList<Direction> availableDirections = new ArrayList<>();
 
         Node(){
-            pos = new Point(0, 0);
+            pos = new CPoint.Field(0, 0);
         }
-        Node (Point point){
-            pos = new Point(point);
+        Node (CPoint.Field point){
+            pos = new CPoint.Field(point);
         }
         boolean equals(Node node1, Node node2){
             return node1.pos.x == node2.pos.x && node1.pos.y == node2.pos.y;
@@ -262,7 +263,7 @@ class GameLogic {
 
                 availableDirections.add(Direction.values()[i]);
 
-                Point node_pos = new Point(field.ptAt(pos, Direction.values()[i]));
+                CPoint.Field node_pos = new CPoint.Field(field.ptAt(pos, Direction.values()[i]));
                 while (!field.isNode(node_pos)){
                     node_pos = field.ptAt(node_pos, Direction.values()[i]);
                 }
@@ -342,24 +343,24 @@ class GameLogic {
         }
     }
     class Joystick {
-        PointF mainPos; // all screenCoords
-        PointF curPos;
-        PointF lastTouch = new PointF(0, 0);
+        CPoint.Screen mainPos;
+        CPoint.Screen curPos;
+        CPoint.Game lastTouch = new CPoint.Game(0, 0);
         float mainRadius;
         float stickRadius; // только для отрисовки
         float speed = (gameRenderer.cellSize * 20 / 70);
 
         boolean isInUse = false;
 
-        Joystick(PointF _mainPos, float _mainRadius){
+        Joystick(CPoint.Screen _mainPos, float _mainRadius){
             mainPos = _mainPos;
-            curPos = new PointF(_mainPos.x, _mainPos.y);
+            curPos = new CPoint.Screen(_mainPos.x, _mainPos.y);
             mainRadius = _mainRadius;
             stickRadius = mainRadius / 2;
             touchReleased();
         }
 
-        boolean isTouched(PointF pointF){ // screencoord
+        boolean isTouched(CPoint.Screen pointF){ // screencoord
             if (distance(pointF, mainPos) < mainRadius){
                 isInUse = true;
                 curPos = pointF;
@@ -369,7 +370,7 @@ class GameLogic {
                 return false;
         }
 
-        PointF getPlayerOffsetOnMove(PointF pointF){ // gameCoord на инпуте // аккуратно с конвертацией
+        CPoint.Game getPlayerOffsetOnMove(CPoint.Game pointF){ // gameCoord на инпуте // аккуратно с конвертацией
             if (distance(gameRenderer.game2screen(pointF), mainPos) < mainRadius){
                 curPos = gameRenderer.game2screen(pointF);
             }
@@ -383,9 +384,12 @@ class GameLogic {
             float speedScale = distance(curPos, mainPos) / mainRadius;
             Line line = new Line(mainPos, curPos);
 
-            PointF result = line.normalizedVector(); // (-1 - 1; -1 - 1);
+            PointF result = line.normalizedVector(); // ((-1) - 1; (-1) - 1);
             result.set(result.x * speed * speedScale, result.y * speed * speedScale);
-            return result;
+            CPoint.Game result2 = new CPoint.Game();
+            result2.x = result.x;
+            result2.y = result.y;
+            return result2;
         }
 
         void touchReleased(){
@@ -399,12 +403,12 @@ class GameLogic {
         //Todo: сделать отдельным потоком
         Node starNode;
         Node crossNode;
-        Point star;
-        Point cross;
+        CPoint.Field star;
+        CPoint.Field cross;
         LinkedList<AStarNode> open = new LinkedList<>();
         LinkedList<AStarNode> closed = new LinkedList<>();
 
-        AStarAlg(PointF star_, PointF cross_){
+        AStarAlg(CPoint.Game star_, CPoint.Game cross_){
             starNode = new Node(gameRenderer.game2field(star_));
             if (field.isNode(gameRenderer.game2field(cross_))){
                 crossNode = new Node(gameRenderer.game2field(cross_));
@@ -416,8 +420,8 @@ class GameLogic {
             star = gameRenderer.game2field(star_);
         }
 
-        Node getClosestToPoint(LinkedList<Node> nodes, Point pt){
-            Node result = new Node(new Point(0, 0));
+        Node getClosestToPoint(LinkedList<Node> nodes, CPoint.Field pt){
+            Node result = new Node(new CPoint.Field(0, 0));
             double min_dist = 10e3;
             for (Node node: nodes
                  ) {
@@ -460,7 +464,7 @@ class GameLogic {
             return result;
         }
 
-        private LinkedList<PointF> AStar(){
+        private LinkedList<CPoint.Game> AStar(){
 
             open.push(new AStarNode(starNode, null));
 
@@ -478,7 +482,7 @@ class GameLogic {
                 path.push(path.getFirst().cameFrom);
             }
 
-            LinkedList<PointF> result = new LinkedList<>();
+            LinkedList<CPoint.Game> result = new LinkedList<>();
             for (AStarNode aStarNode : path
                  ) {
                 result.add(result.size(), gameRenderer.field2game(aStarNode.pos));
@@ -634,10 +638,10 @@ class GameLogic {
             pathfinderTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pathfinder));
         }
 
-        Point getFreeCell(){
+        CPoint.Field getFreeCell(){
             Random random = new Random(seed);
             do{
-                Point point = new Point();
+                CPoint.Field point = new CPoint.Field();
                 point.set(random.nextInt(field.getxSize()), random.nextInt(field.getySize()));
 
                 if (field.get(point)){
@@ -658,19 +662,19 @@ class GameLogic {
         void reset(){
             entities.clear();
         }
-        void makeExit(Point point){
+        void makeExit(CPoint.Field point){
             entities.push(new Exit(point, exitTextures));
         }
-        void makeCoin(Point point){
+        void makeCoin(CPoint.Field point){
             entities.push(new Coin(point, coinTextures));
         }
-        void makeTeleport(Point point){
+        void makeTeleport(CPoint.Field point){
             entities.push(new Teleport(point, teleportTextures));
         }
-        void makePointer(Point point){
+        void makePointer(CPoint.Field point){
             entities.push(new Pointer(point, pointerTextures));
         }
-        void makePathfinder(Point point){
+        void makePathfinder(CPoint.Field point){
             entities.push(new Pathfinder(point, pathfinderTextures));
         }
 
@@ -737,15 +741,15 @@ class GameLogic {
 }
 
 abstract class Entity{
-    Point pos;
+    CPoint.Field pos;
     String whoami;
     //int anim_interval = 1;
     int anim_frame = 0;
     ArrayList<Bitmap> textures;
 
     boolean isLarge = false;
-    Entity(Point _pos, ArrayList<Bitmap> _textures){
-        pos = new Point(_pos);
+    Entity(CPoint.Field _pos, ArrayList<Bitmap> _textures){
+        pos = new CPoint.Field(_pos);
         textures = _textures;
     }
 
@@ -756,38 +760,38 @@ abstract class Entity{
 }
 
 class Coin extends Entity{
-    Coin(Point point, ArrayList<Bitmap> textures){
+    Coin(CPoint.Field point, ArrayList<Bitmap> textures){
         super(point, textures);
         whoami = "Coin";
     }
 }
 class Exit extends Entity{
-    Exit(Point point, ArrayList<Bitmap> textures){
+    Exit(CPoint.Field point, ArrayList<Bitmap> textures){
         super(point, textures);
         whoami = "Exit";
         isLarge = true;
     }
 }
 class Teleport extends Entity{
-    Teleport(Point point, ArrayList<Bitmap> textures){
+    Teleport(CPoint.Field point, ArrayList<Bitmap> textures){
         super(point, textures);
         whoami = "Teleport";
     }
 }
 class Pointer extends Entity{
-    Pointer(Point point, ArrayList<Bitmap> textures){
+    Pointer(CPoint.Field point, ArrayList<Bitmap> textures){
         super(point, textures);
         whoami = "Pointer";
     }
 }
 class Pathfinder extends Entity{
-    Pathfinder(Point point, ArrayList<Bitmap> textures){
+    Pathfinder(CPoint.Field point, ArrayList<Bitmap> textures){
         super(point, textures);
         whoami = "Pathfinder";
     }
 }
 class Trace extends Entity{
-    Trace(Point point, ArrayList<Bitmap> textures){
+    Trace(CPoint.Field point, ArrayList<Bitmap> textures){
         super(point, textures);
         whoami = "Trace";
     }

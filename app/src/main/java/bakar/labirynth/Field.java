@@ -24,8 +24,8 @@ class Field {
     private int xSize = 3;
     private int ySize = 3;
     private int persOfDeadEnds = 70;
-    public Point startPos;
-    public Point exitPos;
+    public CPoint.Field startPos;
+    public CPoint.Field exitPos;
 
      Field(int xSize_, int ySize_){
          xSize = xSize_;
@@ -50,8 +50,8 @@ class Field {
          architect.createLabyrinth(seed);
      }
 
-     public Point ptAt(Point point, Direction direction){
-         Point result = new Point(point);
+     public CPoint.Field ptAt(CPoint.Field point, Direction direction){
+         CPoint.Field result = new CPoint.Field(point);
          switch (direction){
              case Left:
                  result.offset(-1, 0);
@@ -68,8 +68,8 @@ class Field {
          }
          return result;
      }
-     boolean isNode(Point point){
-         Point pt = new Point(point);
+     boolean isNode(CPoint.Field point){
+         CPoint.Field pt = new CPoint.Field(point);
          if ((point.x < 0) || (point.x > xSize - 1) || (point.y < 0) || (point.y > ySize - 1))
              return false;
 
@@ -84,13 +84,13 @@ class Field {
          else return true;
      }
 
-     boolean get(Point point){
+     boolean get(CPoint.Field point){
          return cells[point.x][point.y];
      }
      boolean get(int x, int y){
          return cells[x][y];
      }
-     void set(Point point, boolean value){
+     void set(CPoint.Field point, boolean value){
          cells[point.x][point.y] = value;
      }
      void set(int x, int y, boolean value){cells[x][y] = value;}
@@ -98,11 +98,11 @@ class Field {
      int getySize(){return ySize;}
 
      class Architect{
-         Point cursor;
-         Stack<Point> path = new Stack<>();
+         CPoint.Field cursor;
+         Stack<CPoint.Field> path = new Stack<>();
 
          Architect(){
-             cursor = new Point(1, 1);
+             cursor = new CPoint.Field(1, 1);
              path.push(cursor);
              set(cursor, true);
          }
@@ -134,7 +134,7 @@ class Field {
              }
          }
          private boolean canGo(Direction direction){
-             Point point = new Point(ptAt(ptAt(cursor, direction), direction));
+             CPoint.Field point = new CPoint.Field(ptAt(ptAt(cursor, direction), direction));
              if ((point.x < 0) || (point.x > xSize - 1) || (point.y < 0) || (point.y > ySize - 1))
                  return false;
              return !get(point); // negative
@@ -196,14 +196,14 @@ class Field {
                  }
              }
 
-             startPos = new Point(x, y);
+             startPos = new CPoint.Field(x, y);
 
          }
          private void placeExit(long seed){
              Random random = new Random(seed);
              double rad = Math.sqrt(getxSize()*getxSize() + getySize()*getySize()) / 2;
 
-             Point exit = new Point(getxSize() / 2, getySize() / 2);
+             CPoint.Field exit = new CPoint.Field(getxSize() / 2, getySize() / 2);
              while (GameLogic.distance(exit, new Point(getxSize() / 2, getySize() / 2)) < rad / 2){
                  exit.set(random.nextInt(getxSize() - 1), random.nextInt(getySize() - 1));
 

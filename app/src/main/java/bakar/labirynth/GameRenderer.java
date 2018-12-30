@@ -34,14 +34,17 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     boolean isDebug = false;
     ///////////////////////////////////////
 
+    CPoint.Game lastToushGc = new CPoint.Game();
+    CPoint.Screen lastToushSc = new CPoint.Screen();
+
     boolean fogEnabled = false;
 
     boolean registerBonusTouch = false;
 
     float cellSize = 10; // gameCoords side
     Camera camera = new Camera();
-    float globalScale = cellSize * 3 / 70;
-    private PointF globalOffset = new PointF(0, 0); // gameCoords
+    //float globalScale = cellSize * 3 / 70;
+    //private PointF globalOffset = new PointF(0, 0); // gameCoords
     public float playerHitbox = 0; // screenCoord // in surfaceCreated();
 
     public boolean isMovingOffset = false;
@@ -63,7 +66,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         camera.save();
         getHolder().addCallback(this);
     }
-    void addPickUpAnimation(PointF pointF, String text){
+    void addPickUpAnimation(CPoint.Game pointF, String text){
         pickUpAnimations.add(new PickUpAnimation(pointF, text));
     }
     public void setGameLogic(GameLogic gameLogic) {
@@ -79,8 +82,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         intent.putExtra("pointerAmount", gameLogic.pointerAmount);
         ((Activity)getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
     }
-    boolean bonusTouch(PointF screenCoord){
-        PointF gc = screen2game(screenCoord);
+    boolean bonusTouch(CPoint.Screen screenCoord){
+        CPoint.Game gc = screen2game(screenCoord);
         if (gameLogic.pathfinderActive){
             if (GameLogic.distance(gameLogic.playerCoords(), gc) < gameLogic.getPathfinderRadius()){
                 gameLogic.activatePathfinder(gc);
@@ -101,31 +104,31 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         return false;
     }
 
-    private RectF pt2rectGm(PointF gameCoord){ // gameCoord 2 gameCoord
+    private RectF pt2rectGm(CPoint.Game gameCoord){ // gameCoord 2 gameCoord
         RectF rect = new RectF();
-        rect.set(gameCoord.x - cellSize / 2, gameCoord.y - cellSize / 2,
-                gameCoord.x + cellSize / 2, gameCoord.y + cellSize / 2);
+//        rect.set(gameCoord.x - cellSize / 2, gameCoord.y - cellSize / 2,
+//                gameCoord.x + cellSize / 2, gameCoord.y + cellSize / 2);
         return rect;
     }
-    private RectF pt2rectSc(PointF screenCoord){ // screen2screen
+    private RectF pt2rectSc(CPoint.Screen screenCoord){ // screen2screen
         RectF rect = new RectF();
-        PointF gameCoord = screen2game(screenCoord);
-
-        PointF topLeft = new PointF(gameCoord.x - cellSize / 2, gameCoord.y - cellSize / 2);
-        PointF botRight = new PointF(gameCoord.x + cellSize / 2, gameCoord.y + cellSize / 2);
-        topLeft = game2screen(topLeft);
-        botRight = game2screen(botRight);
-        rect.set(topLeft.x, topLeft.y, botRight.x, botRight.y);
+//        CPoint.Game gameCoord = screen2game(screenCoord);
+//
+//        PointF topLeft = new PointF(gameCoord.x - cellSize / 2, gameCoord.y - cellSize / 2);
+//        PointF botRight = new PointF(gameCoord.x + cellSize / 2, gameCoord.y + cellSize / 2);
+//        topLeft = game2screen(topLeft);
+//        botRight = game2screen(botRight);
+//        rect.set(topLeft.x, topLeft.y, botRight.x, botRight.y);
         return rect;
     }
     private RectF pt2rectSc(PointF screenCoord1, PointF screenCoord2){ // screen2screen
         RectF rect = new RectF();
 
-        RectF rect1 = pt2rectSc(screenCoord1);
-        RectF rect2 = pt2rectSc(screenCoord2);
-
-        rect.set(Math.min(rect1.left, rect2.left), Math.min(rect1.top, rect2.top),
-                Math.max(rect1.right, rect2.right), Math.max(rect1.bottom, rect2.bottom));
+//        RectF rect1 = pt2rectSc(screenCoord1);
+//        RectF rect2 = pt2rectSc(screenCoord2);
+//
+//        rect.set(Math.min(rect1.left, rect2.left), Math.min(rect1.top, rect2.top),
+//                Math.max(rect1.right, rect2.right), Math.max(rect1.bottom, rect2.bottom));
         return rect;
     }
 
@@ -146,52 +149,55 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         return values[0];
     }
     PointF getGlobalOffset(){
-        Matrix matrix = new Matrix();
+        Matrix matrix = new Matrix(); //TODO убрать генерацию. очень часто вызывается
         camera.getMatrix(matrix);
         float[] values = new float[9];
         matrix.getValues(values);
         return new PointF(values[2], values[5]);
     }
-    // Converters /////////////////////////////
-    public PointF screen2game(PointF value){
-        PointF result = new PointF();
-        result.set(value.x * globalScale + globalOffset.x,
-                value.y * globalScale + globalOffset.y);
+
+    // Converters /////////////////////////////////////////////////////////////////////////////////
+    public CPoint.Game screen2game(CPoint.Screen value){
+        CPoint.Game result = new CPoint.Game();
+        result.set(value.x - getGlobalOffset().x / getGlobalScale(),
+                value.y - getGlobalOffset().y / getGlobalScale());
         return result;
     }
-    public Point game2field(PointF value){
-        Point result = new Point();
+    public CPoint.Field game2field(CPoint.Game value){
+        CPoint.Field result = new CPoint.Field();
         double x, y;
         x = Math.floor(value.x / cellSize);
         y = Math.floor(value.y / cellSize);
         result.set((int)x, (int)y);
         return result;
     }
-    public Point screen2field(PointF value){
+    public CPoint.Field screen2field(CPoint.Screen value){
         return game2field(screen2game(value));
     }
     //
-    public PointF field2game(Point value){
-        PointF result = new PointF();
+    public CPoint.Game field2game(CPoint.Field value){
+        CPoint.Game result = new CPoint.Game();
         result.set(value.x * cellSize + cellSize / 2, value.y * cellSize + cellSize / 2);
         return result;
     }
-    public PointF game2screen(PointF value){
-        PointF result = new PointF();
-        float x = (value.x - globalOffset.x) / globalScale;
-        float y = (value.y - globalOffset.y) / globalScale;
-        result.set(x, y);
+    public CPoint.Screen game2screen(CPoint.Game value){
+        CPoint.Screen result = new CPoint.Screen();
+//        float x = (value.x + getGlobalOffset().x) / getGlobalScale();
+//        float y = (value.y + getGlobalOffset().y) / getGlobalScale();
+//        result.set(x, y);
         return result;
     }
-    public PointF field2screen(Point value){
+    public CPoint.Screen field2screen(CPoint.Field value){
         return game2screen(field2game(value));
     }
-    ///////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Touch //////////////////////////////////
+    // Touch //////////////////////////////////////////////////////////////////////////////////////
     void onTouchDown(MotionEvent.PointerCoords pointerCoords){
-        PointF pointF = new PointF(pointerCoords.x, pointerCoords.y); // screenCoords
-
+        CPoint.Screen pointF = new CPoint.Screen(pointerCoords.x, pointerCoords.y); // screenCoords
+        lastToushSc.x = pointF.x;
+        lastToushSc.y = pointF.y;
+        lastToushGc = screen2game(lastToushSc);
         if (gameLogic.pathfinderActive || gameLogic.teleportActive){
             registerBonusTouch = true;
             isMovingOffset = true;
@@ -214,9 +220,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
     void onTouchUp(PointF screenCoord){
+        CPoint.Screen pt = new CPoint.Screen();
+        pt.x = screenCoord.x;
+        pt.y = screenCoord.y;
         if (gameLogic.pathfinderActive || gameLogic.teleportActive){
             if (screenCoord != null && registerBonusTouch) {
-                bonusTouch(screenCoord);
+                bonusTouch(pt);
                 gameLogic.pathfinderActive = false;
                 gameLogic.teleportActive = false;
             }
@@ -231,10 +240,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     //
     void movePlayer(PointF pointSc){
+        CPoint.Screen pt = new CPoint.Screen();
+        pt.x = pointSc.x;
+        pt.y = pointSc.x;
         if (gameLogic.usesJoystick)
-            gameLogic.joystick.lastTouch = screen2game(pointSc);
+            gameLogic.joystick.lastTouch = screen2game(pt);
         else
-            gameLogic.movePlayerTo(screen2game(pointSc));
+            gameLogic.movePlayerTo(screen2game(pt));
     }
     void changeOffset(PointF offset){
         registerBonusTouch = false;
@@ -248,7 +260,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         //renderThread.clearLabyrinthBmp();
         camera.translate(0,0, -value * (cellSize / 5));
     }
-    ///////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
@@ -271,7 +283,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         if (gameLogic.usesJoystick){
             float rad = getWidth() / 10;
-            PointF pos = new PointF(getWidth() - rad * 2, getHeight() - rad * 2);
+            CPoint.Screen pos = new CPoint.Screen(getWidth() - rad * 2, getHeight() - rad * 2);
             gameLogic.createJoystick(pos, rad);
         }
 
@@ -381,8 +393,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         private void createFogBmp(){
             if (!fogEnabled) return;
-            int xsize = Math.round(gameLogic.field.getxSize() * cellSize/* / globalScale*/);
-            int ysize = Math.round(gameLogic.field.getySize() * cellSize/* / globalScale*/);
+            int xsize = Math.round(gameLogic.field.getxSize() * cellSize);
+            int ysize = Math.round(gameLogic.field.getySize() * cellSize);
+            //TODO тут не нужен альфа канал
             fogBitmap = Bitmap.createBitmap(xsize, ysize, Bitmap.Config.ALPHA_8);
             Canvas canvas = new Canvas(fogBitmap);
 
@@ -425,7 +438,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 for (int y = 0; y < gameRenderer.gameLogic.field.getySize(); ++y){
                     Paint paint;
 
-                    PointF rectScreenPt = field2game(new Point(x, y));
+                    CPoint.Game rectScreenPt = field2game(new CPoint.Field(x, y));
                     if (gameLogic.field.get(x, y))
                         paint = floor;
                     else
@@ -443,8 +456,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     i--;
                 }
                 else{
-                    PointF pos = pickUpAnimations.get(i).getPos();
-                    pos = game2screen(pos);
+                    CPoint.Screen pos = game2screen(pickUpAnimations.get(i).getPos());
                     canvas.drawText(pickUpAnimations.get(i).text,
                             pos.x, pos.y, puanim);
                 }
@@ -457,14 +469,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             Matrix matrix = new Matrix();
             float size = cellSize * 2.f;
-            matrix.postScale((size / pointerBitmap.getHeight()) / globalScale,
-                    (size / pointerBitmap.getHeight()) / globalScale);
-            PointF offset = gameLogic.playerCoords();
-            offset.offset(size, 0); // смещаем текстуру так, чтобы она была сбоку
-            offset.offset(-size / 2, -size / 2);
+            matrix.postScale((size / pointerBitmap.getHeight()) / getGlobalScale(),
+                    (size / pointerBitmap.getHeight()) / getGlobalScale());
+            CPoint.Game offset_g = gameLogic.playerCoords();
+            offset_g.offset(size, 0); // смещаем текстуру так, чтобы она была сбоку
+            offset_g.offset(-size / 2, -size / 2);
 
-            offset = game2screen(offset);
-            matrix.postTranslate(offset.x, offset.y);
+            CPoint.Screen offset_s = game2screen(offset_g);
+            matrix.postTranslate(offset_s.x, offset_s.y);
 
             // 0 градусов это напрвление направо
             PointF vec1 = new PointF(gameLogic.exitCoords().x - gameLogic.playerCoords().x,
@@ -493,7 +505,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             outputs.add("Seed: " + gameLogic.seed);
             outputs.add("Scale: " + getGlobalScale());
             outputs.add("Offset: " + getGlobalOffset());
-            outputs.add("Camera Mtx: " + matrix);
+            outputs.add("Last GC:" + lastToushGc);
+            outputs.add("Last SC:" + lastToushSc);
+            //outputs.add("Camera Mtx: " + matrix);
             //outputs.add("Offset: " + globalOffset);
             outputs.add("FPS: " + calcFps());
             //outputs.add("Free mem: " + availMemory() + " MB");
@@ -513,9 +527,15 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                         getWidth(), (i + outputs.size() + 1) * 70, text);
             }
         }
+        void drawDebug(Canvas canvas){
+            if (!isDebug)
+                return;
+            canvas.drawRect(pt2rectGm(lastToushGc), player);
+            canvas.drawRect(pt2rectSc(lastToushSc), trace);
+        }
         void drawTraces(Canvas canvas){
             for (int i = 0; i < gameLogic.traces.size(); ++i){
-                canvas.drawRect(pt2rectSc(field2screen(((LinkedList<Point>)gameLogic.traces).get(i))), trace);
+                canvas.drawRect(pt2rectSc(field2screen(((LinkedList<CPoint.Field>)gameLogic.traces).get(i))), trace);
             }
         }
         void drawJoystick(Canvas canvas){
@@ -528,7 +548,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     gameLogic.joystick.stickRadius, joystickCurrent);
         }
         void drawPlayer(Canvas canvas){
-            canvas.drawRect(pt2rectSc(game2screen(gameLogic.playerCoords())), player);
+            canvas.drawRect(pt2rectGm(gameLogic.playerCoords()), player);
         }
         void drawButtons(Canvas canvas){
             for (Button bt : buttons){
@@ -553,8 +573,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 canvas.drawLine(first.x, first.y, second.x, second.y, node);
             }
 
-            PointF pl = game2screen(gameLogic.playerCoords());
-            PointF touch = game2screen(gameLogic.debugTouchGameCoord);
+            CPoint.Screen pl = game2screen(gameLogic.playerCoords());
+            CPoint.Screen touch = game2screen(gameLogic.debugTouchGameCoord);
             canvas.drawLine(pl.x, pl.y, touch.x, touch.y, node);
 
         }
@@ -570,11 +590,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawLabyrinth(Canvas canvas){
             if (labBitmap == null)
                 updateLabyrinthBmp();
-            PointF game00 = game2screen(new PointF(0, 0));
-            Matrix matrix = new Matrix();
-            matrix.postScale(1/globalScale, 1/globalScale);
-            matrix.postTranslate(game00.x, game00.y);
-            canvas.drawBitmap(labBitmap, matrix, wall);
+//            PointF game00 = game2screen(new PointF(0, 0));
+//            Matrix matrix = new Matrix();
+//            matrix.postScale(1/globalScale, 1/globalScale);
+//            matrix.postTranslate(game00.x, game00.y);
+            canvas.drawBitmap(labBitmap, Ematrix, wall);
         }
         void drawEntities(Canvas canvas){
             for (Entity entity : gameLogic.eFactory.entities
@@ -587,11 +607,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawBonusRadius(Canvas canvas){
             if (gameLogic.teleportActive){
                 PointF pointF = game2screen(gameLogic.playerCoords());
-                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getTeleportRadius() / globalScale, bonusRadius);
+                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getTeleportRadius() / getGlobalScale(), bonusRadius);
             }
             if (gameLogic.pathfinderActive){
                 PointF pointF = game2screen(gameLogic.playerCoords());
-                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getPathfinderRadius() / globalScale, bonusRadius);
+                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getPathfinderRadius() / getGlobalScale(), bonusRadius);
             }
         }
         void drawPath(Canvas canvas){
@@ -608,11 +628,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawFog(Canvas canvas){
             if (fogBitmap == null || !fogEnabled) return;
 
-            PointF game00 = game2screen(new PointF(0, 0));
-            Matrix matrix = new Matrix();
-            matrix.postScale(1/globalScale, 1/globalScale);
-            matrix.postTranslate(game00.x, game00.y);
-            canvas.drawBitmap(fogBitmap, matrix, fog);
+//            PointF game00 = game2screen(new PointF(0, 0));
+//            Matrix matrix = new Matrix();
+//            matrix.postScale(1/globalScale, 1/globalScale);
+//            matrix.postTranslate(game00.x, game00.y);
+            canvas.drawBitmap(fogBitmap, Ematrix, fog);
         }
 
         void onDraw(Canvas canvas){
@@ -622,29 +642,26 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             canvas.drawColor(Color.rgb(20, 20, 100));
 
-            profiler.start("Lab draw time");
-            drawLabyrinth(canvas);
-            profiler.stop("Lab draw time");
-            drawPath(canvas);
-            drawTraces(canvas);
-            drawEntities(canvas);
+//            drawLabyrinth(canvas);
+//            drawPath(canvas);
+//            drawTraces(canvas);
+//            drawEntities(canvas);
+//
+//            drawNodes(canvas);
+//            drawRails(canvas);
+//            drawPlayerHitbox(canvas);
+//            drawBonusRadius(canvas);
+//
+//            drawPlayer(canvas);
+//            drawPointer(canvas);
+//            drawPickedUpAnimation(canvas);
+//            drawFog(canvas);
+//
+//            canvas.setMatrix(Ematrix);
+//            drawButtons(canvas);
+//            drawJoystick(canvas);
 
-            drawNodes(canvas);
-            drawRails(canvas);
-            drawPlayerHitbox(canvas);
-            drawBonusRadius(canvas);
-
-            drawPlayer(canvas);
-            drawPointer(canvas);
-            drawPickedUpAnimation(canvas);
-            profiler.start("Fog draw time");
-            drawFog(canvas);
-            profiler.stop("Fog draw time");
-
-            canvas.setMatrix(Ematrix);
-            drawButtons(canvas);
-            drawJoystick(canvas);
-
+            drawDebug(canvas);
             drawDebugText(canvas);
 
             canClearBmp = true;
@@ -698,26 +715,26 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             bitmap = entity.getDrawTexture();
             matrix = new Matrix();
-            matrix.postScale((localCellSize / bitmap.getHeight()) / globalScale,
-                    (localCellSize / bitmap.getHeight()) / globalScale);
-            PointF offset = field2game(entity.pos);
-            offset.offset(-localCellSize / 2, -localCellSize / 2);
-            offset = game2screen(offset);
-            matrix.postTranslate(offset.x, offset.y);
+            matrix.postScale((localCellSize / bitmap.getHeight()) / getGlobalScale(),
+                    (localCellSize / bitmap.getHeight()) / getGlobalScale());
+            CPoint.Game offset_g = field2game(entity.pos);
+            offset_g.offset(-localCellSize / 2, -localCellSize / 2);
+            CPoint.Screen offset_s = game2screen(offset_g);
+            matrix.postTranslate(offset_s.x, offset_s.y);
         }
     }
     class PickUpAnimation{
-        private PointF pos;
+        private CPoint.Game pos;
         String text;
         int animStep = 0;
         float step = -1.f;
         int animDuration = 10;
 
-        PickUpAnimation(PointF startPos, String _text){
+        PickUpAnimation(CPoint.Game startPos, String _text){
             pos = startPos;
             text = _text;
         }
-        PointF getPos(){
+        CPoint.Game getPos(){
             pos.offset(0, step);
             animStep++;
             return pos;
@@ -738,7 +755,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         Element find(String name){
             for (int i = 0; i < elements.size(); ++i){
-                if (elements.get(i).name == name)
+                if (elements.get(i).name.equals(name))
                     return elements.get(i);
             }
                 return null;
@@ -814,8 +831,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         @Override
         void onClick(){
             PointF newGlobalOffset = new PointF(gameLogic.playerCoords().x, gameLogic.playerCoords().y);
-            PointF center = screen2game(new PointF(getWidth() / 2, getHeight() / 2));
-            PointF corner00 = screen2game(new PointF(0, 0));
+            CPoint.Game center = screen2game(new CPoint.Screen(getWidth() / 2, getHeight() / 2));
+            CPoint.Game corner00 = screen2game(new CPoint.Screen(0, 0));
             newGlobalOffset.offset(corner00.x - center.x, corner00.y - center.y);
 
             newOffset = newGlobalOffset;
@@ -823,21 +840,23 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         void remoteAnimation(){
             if (animationEnabled){
-                if (gameLogic.distance(newOffset, globalOffset) < animationSpeed){ //gameCoords
+
+                if (gameLogic.distance(newOffset, getGlobalOffset()) < animationSpeed){ //gameCoords
                     instantAnimation();
                 }
                 else {
-                    PointF vector = new PointF(newOffset.x - globalOffset.x, newOffset.y - globalOffset.y);
+                    PointF vector = new PointF(newOffset.x - getGlobalOffset().x, newOffset.y - getGlobalOffset().y);
                     float module = (float)Math.sqrt(vector.x * vector.x + vector.y * vector.y);
                     vector = new PointF(vector.x / module, vector.y / module);
                     vector = new PointF(vector.x * animationSpeed, vector.y * animationSpeed);
 
-                    globalOffset.offset(vector.x, vector.y);
+                    getGlobalOffset().offset(vector.x, vector.y);
                 }
             }
         }
         void instantAnimation(){
-            globalOffset = newOffset;
+            //TODO восстановить
+            //getGlobalOffset() = newOffset;
             animationEnabled = false;
         }
     }
@@ -866,7 +885,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         @Override
         void onClick() {
             //gameLogic.getPath(gameLogic.playerCoords(), field2game(gameLogic.field.exitPos));
-            //startBonusActivity();
+            startBonusActivity();
         }
     }
 }
