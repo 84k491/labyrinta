@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.ArrayMap;
@@ -548,12 +549,34 @@ class GameLogic {
     }
 
     class EntityFactory{
+        // TODO check Glide
         LinkedList<Entity> entities = new LinkedList<>();
         ArrayList<Bitmap> exitTextures = new ArrayList<>();
         ArrayList<Bitmap> coinTextures = new ArrayList<>();
         ArrayList<Bitmap> teleportTextures = new ArrayList<>();
         ArrayList<Bitmap> pointerTextures = new ArrayList<>();
         ArrayList<Bitmap> pathfinderTextures = new ArrayList<>();
+        void adjustBitmaps(ArrayList<Bitmap> list, boolean isLarge){
+
+            for (Bitmap bitmap : list
+                 ) {
+                int localCellSize;
+                if (isLarge)
+                    localCellSize = Math.round(gameRenderer.cellSize) * 2;
+                else
+                    localCellSize = Math.round(gameRenderer.cellSize);
+
+                Matrix matrix = new Matrix();
+                matrix.postScale((localCellSize / bitmap.getHeight()),
+                        (localCellSize / bitmap.getHeight()));
+                bitmap = Bitmap.createScaledBitmap(bitmap, localCellSize, localCellSize, true);
+
+//                CPoint.Game offset_g = gameRenderer.field2game(entity.pos);
+//                offset_g.offset(-localCellSize / 2, -localCellSize / 2);
+//                matrix.postTranslate(offset_g.x, offset_g.y);
+            }
+
+        }
 
         float pointerProbability = 80.f;
         float pathfinderProbability = 80.f;
@@ -570,6 +593,12 @@ class GameLogic {
                 setPointerTextures(gameRenderer.getContext());
             if (pathfinderTextures.size() == 0)
                 setPathfinderTextures(gameRenderer.getContext());
+
+            adjustBitmaps(exitTextures, true);
+            adjustBitmaps(coinTextures, false);
+            adjustBitmaps(teleportTextures,false);
+            adjustBitmaps(pointerTextures,false);
+            adjustBitmaps(pathfinderTextures,false);
         }
         void setCoinTextures(Context context){
             coinTextures.clear();
