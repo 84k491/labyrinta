@@ -185,7 +185,8 @@ class GameLogic {
         if (usesJoystick){
             CPoint.Game offsetp = joystick.getPlayerOffsetOnMove(pointF);
             input = playerCoords();
-            input.offset(offsetp.x, offsetp.y);
+            if (0 != offsetp.x && 0 != offsetp.y)
+                input.offset(offsetp.x, offsetp.y);
         }
         else
             input = pointF;
@@ -372,6 +373,14 @@ class GameLogic {
         }
 
         CPoint.Game getPlayerOffsetOnMove(CPoint.Game pointF){ // gameCoord на инпуте // аккуратно с конвертацией
+//            if (distance(gameRenderer.game2screen(pointF), mainPos) < mainRadius){
+//                curPos = gameRenderer.game2screen(pointF);
+//            }
+//            else{
+//                Line line = new Line(gameRenderer.game2screen(pointF), mainPos);
+//                curPos.set(mainPos.x - line.normalizedVector().x * mainRadius,
+//                        mainPos.y - line.normalizedVector().y * mainRadius);
+//            }
             if (distance(gameRenderer.game2screen(pointF), mainPos) < mainRadius){
                 curPos = gameRenderer.game2screen(pointF);
             }
@@ -380,7 +389,6 @@ class GameLogic {
                 curPos.set(mainPos.x - line.normalizedVector().x * mainRadius,
                         mainPos.y - line.normalizedVector().y * mainRadius);
             }
-
 
             float speedScale = distance(curPos, mainPos) / mainRadius;
             Line line = new Line(mainPos, curPos);
