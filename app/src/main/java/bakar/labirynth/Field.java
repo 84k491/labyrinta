@@ -85,7 +85,11 @@ class Field {
      }
 
      boolean get(CPoint.Field point){
-         return cells[point.x][point.y];
+         if (point.x < getxSize() && point.x >= 0 &&
+                 point.y < getySize() && point.y >= 0)
+            return cells[point.x][point.y];
+         else
+             return false;
      }
      boolean get(int x, int y){
          return cells[x][y];

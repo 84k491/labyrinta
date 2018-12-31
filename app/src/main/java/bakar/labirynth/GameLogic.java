@@ -27,6 +27,7 @@ class GameLogic {
     boolean pointerActive = false;
     boolean pathfinderActive = false;
     boolean teleportActive = false;
+
     int pointerAmount = 0;
     int teleportAmount = 0;
     int pathfinderAmount = 0;

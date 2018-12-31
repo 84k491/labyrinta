@@ -1,7 +1,6 @@
 package bakar.labirynth;
 
-import android.app.Activity;
-import android.app.ActivityManager;
+import android.app.Activity;import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -23,6 +22,8 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
+
+import static android.graphics.Path.Direction.CW;
 
 /**
  * Created by Bakar on 10.03.2018.
@@ -485,6 +486,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 //            canvas.drawRect(pt2rect(game2screen(gameLogic.joystick.lastTouch)), player);
         }
         void drawPickedUpAnimation(Canvas canvas){
+            // FIXME: 12/31/18 !!
             for (int i = 0; i < pickUpAnimations.size(); i++) {
                 if (pickUpAnimations.get(i).isOld()){
                     pickUpAnimations.remove(i);
@@ -498,6 +500,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
         void drawPointer(Canvas canvas){
+            // FIXME: 12/31/18 !!
             if (!gameLogic.pointerActive) return;
             if (pointerBitmap == null)
                 pointerBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.pointer);
@@ -602,24 +605,28 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         void drawBonusRadius(Canvas canvas){
             if (gameLogic.teleportActive){
-                PointF pointF = game2screen(gameLogic.playerCoords());
-                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getTeleportRadius() / getGlobalScale(), bonusRadius);
+                PointF pointF = gameLogic.playerCoords();
+                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getTeleportRadius(), bonusRadius);
             }
             if (gameLogic.pathfinderActive){
-                PointF pointF = game2screen(gameLogic.playerCoords());
-                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getPathfinderRadius() / getGlobalScale(), bonusRadius);
+                PointF pointF = gameLogic.playerCoords();
+                canvas.drawCircle(pointF.x, pointF.y, gameLogic.getPathfinderRadius(), bonusRadius);
             }
         }
         void drawPath(Canvas canvas){
             if (gameLogic.finded_path == null) {
                 return;
             }
-            //Todo: перенести это в отрисовку битмапа
-//            for (int i = 0; i < gameLogic.finded_path.size() - 1; i++) {
-//                canvas.drawRect(pt2rect(game2screen(gameLogic.finded_path.get(i)),
-//                        game2screen(gameLogic.finded_path.get(i + 1))), path);
-//                canvas.drawRect(pt2rect(game2screen(gameLogic.finded_path.get(i + 1))), floor);
-//            }
+            Path poly = new Path();
+            for (int i = 0; i < gameLogic.finded_path.size() - 1; i++) {
+                float left = Math.min(gameLogic.finded_path.get(i).x, gameLogic.finded_path.get(i + 1).x) - cellSize / 2;
+                float right = Math.max(gameLogic.finded_path.get(i).x, gameLogic.finded_path.get(i + 1).x) + cellSize / 2;
+                float top = Math.min(gameLogic.finded_path.get(i).y, gameLogic.finded_path.get(i + 1).y) - cellSize / 2;
+                float bot = Math.max(gameLogic.finded_path.get(i).y, gameLogic.finded_path.get(i + 1).y) + cellSize / 2;
+
+                poly.addRect(left, top, right, bot, CW);
+            }
+            canvas.drawPath(poly, path);
         }
         void drawFog(Canvas canvas){
             if (fogBitmap == null || !fogEnabled) return;
@@ -644,22 +651,22 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawPath(canvas);
             drawTraces(canvas);
             drawEntities(canvas);
-//
+
             drawNodes(canvas);
             drawRails(canvas);
             drawPlayerHitbox(canvas);
             drawBonusRadius(canvas);
-//
+
             drawPlayer(canvas);
-            //drawPointer(canvas);
+            drawPointer(canvas);
             drawPickedUpAnimation(canvas);
             drawFog(canvas);
-//
+
             drawDebug(canvas);
 
             // дальше отрисовка HUD. В экранных координатах
-
             canvas.setMatrix(Ematrix);
+
             drawButtons(canvas);
             drawJoystick(canvas);
 
