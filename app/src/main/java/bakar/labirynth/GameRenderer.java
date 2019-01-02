@@ -342,24 +342,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private Paint puanim = new Paint();
         private Paint bonusRadius = new Paint();
 
-        private long getTime(){
-            return System.nanoTime() / 1_000_000;
-        }
-        float calcFps(){
-            float result = 1000 / (getTime() - fpsTimer);
-            fpsTimer = getTime();
-            return result;
-        }
-        float availMemory(){
-            final float BYTES_IN_MB = 1024.0f * 1024.0f;
-
-            final Runtime rt = Runtime.getRuntime();
-            float bytesUsed = rt.totalMemory();
-            float bytesTotal = rt.maxMemory();
-
-            float freeMemoryInMB = (bytesTotal - bytesUsed) / BYTES_IN_MB;
-            return freeMemoryInMB;
-        }
         RenderThread(GameRenderer game_renderer){
             gameRenderer = game_renderer;
             floor.setColor(Color.rgb(184, 203, 191));
@@ -384,10 +366,29 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             enlighten.setColor(Color.argb(0, 60, 50, 60));
             puanim.setColor(Color.CYAN);
             puanim.setTextAlign(Paint.Align.CENTER);
-            puanim.setTextSize(50);
+            puanim.setTextSize(20);
             bonusRadius.setColor(Color.argb(120, 255, 10, 10));
             createFogBmp();
             enlightenFogBmp(gameLogic.playerCoords());
+        }
+
+        private long getTime(){
+            return System.nanoTime() / 1_000_000;
+        }
+        float calcFps(){
+            float result = 1000 / (getTime() - fpsTimer);
+            fpsTimer = getTime();
+            return result;
+        }
+        float availMemory(){
+            final float BYTES_IN_MB = 1024.0f * 1024.0f;
+
+            final Runtime rt = Runtime.getRuntime();
+            float bytesUsed = rt.totalMemory();
+            float bytesTotal = rt.maxMemory();
+
+            float freeMemoryInMB = (bytesTotal - bytesUsed) / BYTES_IN_MB;
+            return freeMemoryInMB;
         }
         private void createFogBmp(){
             if (!fogEnabled) return;
@@ -476,10 +477,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
         void drawDebug(Canvas canvas){
-            if (!isDebug)
-                return;
-            canvas.drawRect(pt2rect(lastToushGc), player);
-            canvas.drawRect(pt2rect(lastToushSc), trace);
+//            if (!isDebug)
+//                return;
+//            canvas.drawRect(pt2rect(lastToushGc), player);
+//            canvas.drawRect(pt2rect(lastToushSc), trace);
         }
         void drawPickedUpAnimation(Canvas canvas){
             // FIXME: 12/31/18 размер шрифта
@@ -496,27 +497,33 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
         void drawPointer(Canvas canvas){
-            // FIXME: 12/31/18 не рисуется
             if (!gameLogic.pointerActive) return;
             if (pointerBitmap == null)
                 pointerBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.pointer);
 
+            if (GameLogic.distance(gameLogic.playerCoords(), gameLogic.exitCoords()) < cellSize * 3){
+                return;
+            }
+
             Matrix matrix = new Matrix();
             float size = cellSize * 2.f;
-            matrix.postScale((size / pointerBitmap.getHeight()) / getGlobalScale(),
-                    (size / pointerBitmap.getHeight()) / getGlobalScale());
+            matrix.postScale((size / pointerBitmap.getHeight()),
+                    (size / pointerBitmap.getHeight()));
             CPoint.Game offset_g = gameLogic.playerCoords();
-            offset_g.offset(size, 0); // смещаем текстуру так, чтобы она была сбоку
+            // смещаем текстуру так, чтобы она была сбоку
+            offset_g.offset(size, 0);
             offset_g.offset(-size / 2, -size / 2);
 
             CPoint.Screen offset_s = game2screen(offset_g);
-            matrix.postTranslate(offset_s.x, offset_s.y);
+            matrix.postTranslate(offset_g.x, offset_g.y);
 
             // 0 градусов это напрвление направо
             PointF vec1 = new PointF(gameLogic.exitCoords().x - gameLogic.playerCoords().x,
                     gameLogic.exitCoords().y - gameLogic.playerCoords().y);
             PointF vec2 = new PointF(1.f, 0.f);
 
+            // ищем на какой угол надо повернуть битмап
+            // угол между векторами, которые направлены направо и на выход
             float scalar = vec1.x * vec2.x + vec1.y * vec2.y;
             float mod1 = (float)Math.sqrt((vec1.x * vec1.x + vec1.y * vec1.y));
             float mod2 = (float)Math.sqrt((vec2.x * vec2.x + vec2.y * vec2.y));
@@ -524,7 +531,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             float deg = 180 * (float)Math.acos(cos) / 3.1415f;
             if (gameLogic.playerCoords().y > gameLogic.exitCoords().y)
                 deg = -deg;
-            matrix.postRotate(deg, game2screen(gameLogic.playerCoords()).x, game2screen(gameLogic.playerCoords()).y);
+
+            matrix.postRotate(deg, gameLogic.playerCoords().x, gameLogic.playerCoords().y);
 
             canvas.drawBitmap(pointerBitmap, matrix, fog);
 
@@ -597,7 +605,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 textureAdapter.reInit(entity);
                 canvas.drawBitmap(textureAdapter.bitmap, textureAdapter.matrix, fog);
             }
-
         }
         void drawBonusRadius(Canvas canvas){
             if (gameLogic.teleportActive){
