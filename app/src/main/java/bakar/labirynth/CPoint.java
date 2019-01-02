@@ -12,6 +12,9 @@ public final class CPoint {
         Screen(float x, float y){
             super(x,y);
         }
+        Screen(PointF pt){
+            super(pt.x, pt.y);
+        }
     }
     static final class Game extends PointF {
         Game(){

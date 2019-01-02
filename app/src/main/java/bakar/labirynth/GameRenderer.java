@@ -421,10 +421,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawCircle(gCoord.x, gCoord.y, enlightenRadius, enlighten);
         }
         void clearLabyrinthBmp(){
-            if (labBitmap == null) { // TODO может не надо
-                return;
-            }
-            long start_time = getTime(); //TODO че это?
+            long start_time = getTime(); //сразу может не удалится, поэтому пробуем некоторое время
             while (null != labBitmap && (getTime() - start_time) < (redrawPeriod * 2))
                 if (canClearBmp)
                     labBitmap = null;
@@ -457,6 +454,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             outputs.add("Scale: " + getGlobalScale());
             outputs.add("Offset: " + getGlobalOffset());
+            outputs.add("Sc: " + lastToushSc);
+            outputs.add("Gc: " + lastToushGc);
+
             outputs.add("FPS: " + calcFps());
             //outputs.add("Free mem: " + availMemory() + " MB");
             //outputs.add("Lab bmp size: " + labBitmap.getRowBytes() * labBitmap.getHeight() / 1024 + " kB");
@@ -478,15 +478,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawDebug(Canvas canvas){
             if (!isDebug)
                 return;
-//            canvas.drawRect(pt2rect(new CPoint.Game(0,0)), player);
-//            canvas.drawRect(pt2rect(new CPoint.Screen(0,0)), trace);
-//            canvas.drawRect(pt2rect(new CPoint.Game(50,50)), player);
-//            canvas.drawRect(pt2rect(new CPoint.Screen(50,50)), trace);
-//            canvas.drawRect(pt2rect(game2screen(new CPoint.Game(0,0))), player);
-//            canvas.drawRect(pt2rect(game2screen(gameLogic.joystick.lastTouch)), player);
+            canvas.drawRect(pt2rect(lastToushGc), player);
+            canvas.drawRect(pt2rect(lastToushSc), trace);
         }
         void drawPickedUpAnimation(Canvas canvas){
-            // FIXME: 12/31/18 !!
+            // FIXME: 12/31/18 размер шрифта
             for (int i = 0; i < pickUpAnimations.size(); i++) {
                 if (pickUpAnimations.get(i).isOld()){
                     pickUpAnimations.remove(i);
@@ -500,7 +496,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
         void drawPointer(Canvas canvas){
-            // FIXME: 12/31/18 !!
+            // FIXME: 12/31/18 не рисуется
             if (!gameLogic.pointerActive) return;
             if (pointerBitmap == null)
                 pointerBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.pointer);
@@ -828,7 +824,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     class PlayerFinder extends Button{
         private boolean animationEnabled = false;
-        private PointF newOffset = new PointF(0, 0);
+        private CPoint.Screen newOffset = new CPoint.Screen(0, 0);
         private int animationSpeed = 150;
 
         PlayerFinder(CPoint.Screen position, float radius){
@@ -839,14 +835,31 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         void onClick(){
-            PointF newGlobalOffset = new PointF(gameLogic.playerCoords().x, gameLogic.playerCoords().y);
-            CPoint.Game center = screen2game(new CPoint.Screen(getWidth() / 2, getHeight() / 2));
-            CPoint.Game corner00 = screen2game(new CPoint.Screen(0, 0));
-            newGlobalOffset.offset(corner00.x - center.x, corner00.y - center.y);
+            CPoint.Screen player_coord = game2screen(gameLogic.playerCoords());
 
-            newOffset = newGlobalOffset;
+            CPoint.Screen center = new CPoint.Screen(getWidth() / 2, getHeight() / 2);
+            CPoint.Screen corner00 = game2screen(new CPoint.Game(0, 0));
+            center.offset(corner00.x - player_coord.x, corner00.y - player_coord.y);
+
+            newOffset = center;
             animationEnabled = true;
         }
+
+        void set00CornerTo(CPoint.Screen pt){
+            // метод переносит 0,0 угол лабиринта в указанное место
+            PointF current_offset = getGlobalOffset();
+            PointF step = new PointF(pt.x - current_offset.x, pt.y - current_offset.y);
+            // translate() зависит от скейла
+            // хз почему "У" координата развернута, но так работает
+            camera.translate(step.x / getGlobalScale(), -step.y / getGlobalScale(), 0);
+        }
+
+        void moveCameraBy(CPoint.Screen offset){
+            CPoint.Screen current_offset = new CPoint.Screen(getGlobalOffset()) ;
+            set00CornerTo(new CPoint.Screen(current_offset.x + offset.x,
+                    current_offset.y + offset.y));
+        }
+
         void remoteAnimation(){
             if (animationEnabled){
 
@@ -854,18 +867,17 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     instantAnimation();
                 }
                 else {
-                    PointF vector = new PointF(newOffset.x - getGlobalOffset().x, newOffset.y - getGlobalOffset().y);
+                    CPoint.Screen vector = new CPoint.Screen(newOffset.x - getGlobalOffset().x,
+                            newOffset.y - getGlobalOffset().y);
                     float module = (float)Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-                    vector = new PointF(vector.x / module, vector.y / module);
-                    vector = new PointF(vector.x * animationSpeed, vector.y * animationSpeed);
-
-                    getGlobalOffset().offset(vector.x, vector.y);
+                    vector = new CPoint.Screen(vector.x / module, vector.y / module);
+                    vector = new CPoint.Screen(vector.x * animationSpeed, vector.y * animationSpeed);
+                    moveCameraBy(vector);
                 }
             }
         }
         void instantAnimation(){
-            //TODO восстановить
-            //getGlobalOffset() = newOffset;
+            set00CornerTo(newOffset);
             animationEnabled = false;
         }
     }
