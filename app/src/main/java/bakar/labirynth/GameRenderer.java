@@ -15,6 +15,8 @@ import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.util.Pair;
+import android.util.Range;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -42,11 +44,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     boolean registerBonusTouch = false;
 
-    float cellSize = 10; // gameCoords side
+    final float cellSize = 10; // gameCoords side
     Camera camera = new Camera();
-    //float globalScale = cellSize * 3 / 70;
-    //private PointF globalOffset = new PointF(0, 0); // gameCoords
     public float playerHitbox = 0; // screenCoord // in surfaceCreated();
+
+    float max_scale;
+    float min_scale;
 
     public boolean isMovingOffset = false;
     public boolean isMovingPlayer = false;
@@ -82,6 +85,30 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         intent.putExtra("teleportAmount", gameLogic.teleportAmount);
         intent.putExtra("pointerAmount", gameLogic.pointerAmount);
         ((Activity)getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
+    }
+
+    boolean isFieldAtScreen(){
+        float margin = playerHitbox / 2;
+        CPoint.Screen left_top_of_scr = new CPoint.Screen(margin, margin);
+        CPoint.Game left_top_of_scr_g = screen2game(left_top_of_scr);
+        CPoint.Screen right_bot_of_scr = new CPoint.Screen(getWidth() - margin, getHeight() - margin);
+        CPoint.Game right_bot_of_scr_g = screen2game(right_bot_of_scr);
+
+        RectF screen = new RectF(left_top_of_scr_g.x,
+                left_top_of_scr_g.y,
+                right_bot_of_scr_g.x,
+                right_bot_of_scr_g.y
+        );
+
+        CPoint.Field right_bot_of_lab = new CPoint.Field(gameLogic.field.getxSize(), gameLogic.field.getySize());
+        CPoint.Game right_bot_of_lab_g = field2game(right_bot_of_lab);
+
+        RectF field = new RectF(0,
+                0,
+                right_bot_of_lab_g.x,
+                right_bot_of_lab_g.y);
+
+        return screen.intersect(field);
     }
     boolean bonusTouch(CPoint.Screen screenCoord){
         CPoint.Game gc = screen2game(screenCoord);
@@ -247,16 +274,17 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             gameLogic.movePlayerTo(screen2game(pt));
     }
     void changeOffset(PointF offset){
+        camera.save();
         registerBonusTouch = false;
-        //globalOffset.offset(offset.x * globalScale, offset.y * globalScale);
-        //camera.save();
-        camera.translate(-offset.x, offset.y, 0);
+        camera.translate(-offset.x / getGlobalScale(), offset.y / getGlobalScale(), 0);
+        if (!isFieldAtScreen())
+            camera.restore();
     }
     void changeScale(float value){
-        // value is raw
-        //globalScale += value / (cellSize * 4000 / 70);
-        //renderThread.clearLabyrinthBmp();
+        camera.save();
         camera.translate(0,0, -value * (cellSize / 5));
+        if (getGlobalScale() > max_scale || getGlobalScale() < min_scale)
+            camera.restore();
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -264,6 +292,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        min_scale = .9f * getWidth() / (gameLogic.field.getxSize() * cellSize);
+        max_scale = 6;
+        while (getGlobalScale() < min_scale)
+            camera.translate(0,0,10);
 
         float rad1 = getWidth() / 20;
         CPoint.Screen pos1 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 2);
