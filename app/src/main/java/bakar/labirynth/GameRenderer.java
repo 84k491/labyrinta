@@ -259,7 +259,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         registerBonusTouch = false;
         isMovingPlayer = false;
         isMovingOffset = false;
-        renderThread.clearLabyrinthBmp();
+        //renderThread.clearLabyrinthBmp();
         if (gameLogic.usesJoystick)
             gameLogic.joystick.touchReleased();
     }
