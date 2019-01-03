@@ -557,123 +557,16 @@ class GameLogic {
         }
     }
 
+
     class EntityFactory{
         // TODO check Glide
         LinkedList<Entity> entities = new LinkedList<>();
-        ArrayList<Bitmap> exitTextures = new ArrayList<>();
-        ArrayList<Bitmap> coinTextures = new ArrayList<>();
-        ArrayList<Bitmap> teleportTextures = new ArrayList<>();
-        ArrayList<Bitmap> pointerTextures = new ArrayList<>();
-        ArrayList<Bitmap> pathfinderTextures = new ArrayList<>();
-        void adjustBitmaps(ArrayList<Bitmap> list, boolean isLarge){
-
-            for (Bitmap bitmap : list
-                 ) {
-                int localCellSize;
-                if (isLarge)
-                    localCellSize = Math.round(gameRenderer.cellSize) * 2;
-                else
-                    localCellSize = Math.round(gameRenderer.cellSize);
-
-                Matrix matrix = new Matrix();
-                matrix.postScale((localCellSize / bitmap.getHeight()),
-                        (localCellSize / bitmap.getHeight()));
-                bitmap = Bitmap.createScaledBitmap(bitmap, localCellSize, localCellSize, true);
-
-//                CPoint.Game offset_g = gameRenderer.field2game(entity.pos);
-//                offset_g.offset(-localCellSize / 2, -localCellSize / 2);
-//                matrix.postTranslate(offset_g.x, offset_g.y);
-            }
-
-        }
 
         float pointerProbability = 80.f;
         float pathfinderProbability = 80.f;
         float teleportProbability = 80.f;
 
         void init(){
-            if (exitTextures.size() == 0)
-                setExitTextures(gameRenderer.getContext());
-            if (coinTextures.size() == 0)
-                setCoinTextures(gameRenderer.getContext());
-            if (teleportTextures.size() == 0)
-                setTeleportTextures(gameRenderer.getContext());
-            if (pointerTextures.size() == 0)
-                setPointerTextures(gameRenderer.getContext());
-            if (pathfinderTextures.size() == 0)
-                setPathfinderTextures(gameRenderer.getContext());
-
-            adjustBitmaps(exitTextures, true);
-            adjustBitmaps(coinTextures, false);
-            adjustBitmaps(teleportTextures,false);
-            adjustBitmaps(pointerTextures,false);
-            adjustBitmaps(pathfinderTextures,false);
-        }
-        void setCoinTextures(Context context){
-            coinTextures.clear();
-            coinTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim1));
-            coinTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim2));
-            coinTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim3));
-            coinTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim4));
-            coinTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim5));
-            coinTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim6));
-        }
-        void setExitTextures(Context context){
-            exitTextures.clear();
-            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_00));
-            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_01));
-            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_02));
-            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_03));
-            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_04));
-            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_05));
-            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_06));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_07));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_08));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_09));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_10));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_11));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_12));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_13));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_14));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_15));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_16));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_17));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_18));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_19));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_20));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_21));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_22));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_23));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_24));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_25));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_26));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_27));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_28));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_29));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_30));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_31));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_32));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_33));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_34));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_35));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_36));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_37));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_38));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_39));
-
-
-        }
-        void setTeleportTextures(Context context){
-            teleportTextures.clear();
-            teleportTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.teleport));
-        }
-        void setPointerTextures(Context context){
-            pointerTextures.clear();
-            pointerTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pointer));
-        }
-        void setPathfinderTextures(Context context){
-            pathfinderTextures.clear();
-            pathfinderTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pathfinder));
         }
 
         CPoint.Field getFreeCell(){
@@ -701,19 +594,19 @@ class GameLogic {
             entities.clear();
         }
         void makeExit(CPoint.Field point){
-            entities.push(new Exit(point, exitTextures));
+            entities.push(new Exit(point));
         }
         void makeCoin(CPoint.Field point){
-            entities.push(new Coin(point, coinTextures));
+            entities.push(new Coin(point));
         }
         void makeTeleport(CPoint.Field point){
-            entities.push(new Teleport(point, teleportTextures));
+            entities.push(new Teleport(point));
         }
         void makePointer(CPoint.Field point){
-            entities.push(new Pointer(point, pointerTextures));
+            entities.push(new Pointer(point));
         }
         void makePathfinder(CPoint.Field point){
-            entities.push(new Pathfinder(point, pathfinderTextures));
+            entities.push(new Pathfinder(point));
         }
 
         void dropCoins(){
@@ -781,56 +674,53 @@ class GameLogic {
 abstract class Entity{
     CPoint.Field pos;
     String whoami;
-    //int anim_interval = 1;
     int anim_frame = 0;
-    ArrayList<Bitmap> textures;
-
     boolean isLarge = false;
-    Entity(CPoint.Field _pos, ArrayList<Bitmap> _textures){
-        pos = new CPoint.Field(_pos);
-        textures = _textures;
+
+    int incrAnimFrame(int max){
+        anim_frame = (anim_frame + 1) % max;
+        return anim_frame;
     }
 
-    Bitmap getDrawTexture(){
-        anim_frame = (anim_frame + 1) % textures.size();
-        return textures.get(anim_frame);
+    Entity(CPoint.Field _pos){
+        pos = new CPoint.Field(_pos);
     }
 }
 
 class Coin extends Entity{
-    Coin(CPoint.Field point, ArrayList<Bitmap> textures){
-        super(point, textures);
+    Coin(CPoint.Field point){
+        super(point);
         whoami = "Coin";
     }
 }
 class Exit extends Entity{
-    Exit(CPoint.Field point, ArrayList<Bitmap> textures){
-        super(point, textures);
+    Exit(CPoint.Field point){
+        super(point);
         whoami = "Exit";
         isLarge = true;
     }
 }
 class Teleport extends Entity{
-    Teleport(CPoint.Field point, ArrayList<Bitmap> textures){
-        super(point, textures);
+    Teleport(CPoint.Field point){
+        super(point);
         whoami = "Teleport";
     }
 }
 class Pointer extends Entity{
-    Pointer(CPoint.Field point, ArrayList<Bitmap> textures){
-        super(point, textures);
+    Pointer(CPoint.Field point){
+        super(point);
         whoami = "Pointer";
     }
 }
 class Pathfinder extends Entity{
-    Pathfinder(CPoint.Field point, ArrayList<Bitmap> textures){
-        super(point, textures);
+    Pathfinder(CPoint.Field point){
+        super(point);
         whoami = "Pathfinder";
     }
 }
 class Trace extends Entity{
-    Trace(CPoint.Field point, ArrayList<Bitmap> textures){
-        super(point, textures);
+    Trace(CPoint.Field point){
+        super(point);
         whoami = "Trace";
     }
 }

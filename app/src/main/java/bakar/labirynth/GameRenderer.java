@@ -322,6 +322,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread.setHolder(getHolder());
         renderThread.setRunning(true);
         renderThread.start();
+        renderThread.bitmaps.rescaleAll();
 
         playerHitbox = getWidth() / 10;
     }
@@ -343,7 +344,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private boolean running = false;
         private SurfaceHolder surfaceHolder;
         private Profiler profiler = new Profiler();
-        Matrix Ematrix = new Matrix();
+        final Matrix Ematrix = new Matrix();
+        final Matrix translate_matrix = new Matrix();
 
         private long prevDrawTime = 0;
         private long redrawPeriod = 30; // milliS // microS
@@ -354,7 +356,28 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private Bitmap pointerBitmap;
         private boolean canClearBmp = true;
 
-        TextureAdapter textureAdapter = new TextureAdapter();
+        AnimationBitmaps bitmaps = new AnimationBitmaps();
+        void adjustBitmaps(ArrayList<Bitmap> list, boolean isLarge){
+
+            for (Bitmap bitmap : list
+                    ) {
+                int localCellSize;
+                if (isLarge)
+                    localCellSize = Math.round(gameRenderer.cellSize) * 2;
+                else
+                    localCellSize = Math.round(gameRenderer.cellSize);
+
+                Matrix matrix = new Matrix();
+                matrix.postScale((localCellSize / bitmap.getHeight()),
+                        (localCellSize / bitmap.getHeight()));
+                bitmap = Bitmap.createScaledBitmap(bitmap, localCellSize, localCellSize, true);
+
+//                CPoint.Game offset_g = gameRenderer.field2game(entity.pos);
+//                offset_g.offset(-localCellSize / 2, -localCellSize / 2);
+//                matrix.postTranslate(offset_g.x, offset_g.y);
+            }
+
+        }
 
         //Todo: перенести Paint в ресурсы цвета
         private Paint floor = new Paint();
@@ -634,8 +657,23 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawEntities(Canvas canvas){
             for (Entity entity : gameLogic.eFactory.entities
                  ) {
-                textureAdapter.reInit(entity);
-                canvas.drawBitmap(textureAdapter.bitmap, textureAdapter.matrix, fog);
+                translate_matrix.reset();
+                CPoint.Game gamePos = field2game(entity.pos);
+                if (entity.isLarge)
+                {
+                    translate_matrix.preTranslate(gamePos.x - cellSize, gamePos.y  - cellSize);
+                    // из преобразования в AnimationBitmaps
+                    translate_matrix.preScale(2 / max_scale, 2 / max_scale);
+                }
+                else
+                {
+                    translate_matrix.preTranslate(gamePos.x - cellSize / 2, gamePos.y  - cellSize / 2);
+                    translate_matrix.preScale(1 / max_scale, 1 / max_scale);
+                }
+
+                canvas.drawBitmap(bitmaps.getByEntity(entity),
+                            translate_matrix, fog);
+
             }
         }
         void drawBonusRadius(Canvas canvas){
@@ -740,33 +778,145 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    class TextureAdapter{
-        Matrix matrix = new Matrix();
-        Bitmap bitmap;
-        //Todo: убрать пересоздание объектов
+    class BitmapList extends ArrayList<Bitmap>{
+        String whoami;
 
-        TextureAdapter(){}
-        TextureAdapter(Entity entity){
-            reInit(entity);
+        BitmapList(String name){
+            whoami = name;
         }
-        void reInit(Entity entity){
-            float localCellSize;
-            if (entity.isLarge)
-                localCellSize = cellSize * 2.0f;
-            else
-                localCellSize = cellSize;
 
-            bitmap = entity.getDrawTexture();
-            matrix.reset();
-            matrix.postScale((localCellSize / bitmap.getHeight()),
-                    (localCellSize / bitmap.getHeight()));
-
-            CPoint.Game offset_g = field2game(entity.pos);
-            offset_g.offset(-localCellSize / 2, -localCellSize / 2);
-            //CPoint.Screen offset_s = game2screen(offset_g);
-            matrix.postTranslate(offset_g.x, offset_g.y);
+        void rescale(){
+            // TODO: 1/3/19 Сделать адаптивные размеры
+            for (int i = 0; i < size(); ++i){
+                this.set(i, Bitmap.createScaledBitmap(get(i),
+                        Math.round(cellSize * max_scale),
+                        Math.round(cellSize * max_scale),
+                        true));
+            }
         }
     }
+
+    class AnimationBitmaps extends ArrayList<BitmapList>{
+        AnimationBitmaps(){
+            setCoinBitmaps();
+            setExitBitmaps();
+            setPathfinderBitmaps();
+            setTeleportBitmaps();
+            setPointerBitmaps();
+        }
+        void setCoinBitmaps(){
+            if (null != getByName("Coin"))
+                return;
+
+            BitmapList list = new BitmapList("Coin");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim1));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim2));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim3));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim4));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim5));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim6));
+
+            add(list);
+        }
+        void setExitBitmaps(){
+            if (null != getByName("Exit"))
+                return;
+
+            BitmapList list = new BitmapList("Exit");
+
+            //exitTextures.clear();
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_00));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_01));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_02));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_03));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_04));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_05));
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_06));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_07));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_08));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_09));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_10));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_11));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_12));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_13));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_14));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_15));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_16));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_17));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_18));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_19));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_20));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_21));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_22));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_23));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_24));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_25));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_26));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_27));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_28));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_29));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_30));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_31));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_32));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_33));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_34));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_35));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_36));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_37));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_38));
+//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_39));
+            add(list);
+        }
+        void setTeleportBitmaps(){
+            if (null != getByName("Teleport"))
+                return;
+            BitmapList list = new BitmapList("Teleport");
+
+            //teleportTextures.clear();
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.teleport));
+
+            add(list);
+        }
+        void setPointerBitmaps(){
+            if (null != getByName("Pointer"))
+                return;
+            BitmapList list = new BitmapList("Pointer");
+
+            //pointerTextures.clear();
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pointer));
+            add(list);
+        }
+        void setPathfinderBitmaps(){
+            if (null != getByName("Pathfinder"))
+                return;
+            BitmapList list = new BitmapList("Pathfinder");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pathfinder));
+
+            add(list);
+        }
+
+        BitmapList getByName(String name){
+            for (BitmapList list : this
+                    ) {
+                if (list.whoami.equals(name))
+                        return list;
+            }
+            return null;
+        }
+        Bitmap getByEntity(Entity entity){
+            BitmapList list = getByName(entity.whoami);
+            return list.get(entity.incrAnimFrame(list.size()));
+        }
+        void rescaleAll(){
+            for (BitmapList list : this
+                 ) {
+                list.rescale();
+            }
+        }
+    }
+
     class PickUpAnimation{
         private CPoint.Game pos;
         String text;
