@@ -53,7 +53,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     public boolean isMovingOffset = false;
     public boolean isMovingPlayer = false;
-    int enlightenRadius = Math.round(cellSize * 200 / 70); // gamecoord
+    float enlightenRadius = cellSize * 200 / 70; // gamecoord
 
     private GameLogic gameLogic;
     private RenderThread renderThread;
@@ -158,10 +158,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         PointF pl = game2screen(gameLogic.playerCoords());
         return  (pl.x > 0 && pl.y > 0 && pl.x < getWidth() && pl.y < getHeight());
     }
-    void lightFog(PointF gc){
+    void lightFog(CPoint.Game gc){
         renderThread.enlightenFogBmp(gc);
     }
-    void resetFog(){renderThread.createFogBmp();}
+    void resetFog(){
+        renderThread.createFogBmp();
+        renderThread.resizeFogBmp();
+    }
+    void resetLab(){renderThread.clearLabyrinthBmp();}
 
     float getGlobalScale(){
         Matrix matrix = new Matrix();
@@ -285,6 +289,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         camera.translate(0,0, -value * (cellSize / 5));
         if (getGlobalScale() > max_scale || getGlobalScale() < min_scale)
             camera.restore();
+        if (renderThread.fogBmpScale != getGlobalScale())
+            renderThread.resizeFogBmp();
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -325,6 +331,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread.bitmaps.rescaleAll();
 
         playerHitbox = getWidth() / 10;
+
+        renderThread.resizeFogBmp();
+        renderThread.enlightenFogBmp(gameLogic.playerCoords());
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -345,6 +354,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private SurfaceHolder surfaceHolder;
         private Profiler profiler = new Profiler();
         final Matrix Ematrix = new Matrix();
+        final Matrix fogMatrix = new Matrix();
         final Matrix translate_matrix = new Matrix();
 
         private long prevDrawTime = 0;
@@ -353,31 +363,25 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         private Bitmap labBitmap;
         private Bitmap fogBitmap;
+        private float fogBmpScale = -1;
         private Bitmap pointerBitmap;
         private boolean canClearBmp = true;
+        void resizeFogBmp(){
+            if (fogBitmap == null) {
+                return;
+            }
+            CPoint.Screen bmp_size =
+                    new CPoint.Screen((cellSize * gameLogic.field.getxSize()) * getGlobalScale(),
+                            (cellSize * gameLogic.field.getySize() - 1) * getGlobalScale());
+
+            fogBitmap = Bitmap.createScaledBitmap(fogBitmap,
+                    Math.round(bmp_size.x),
+                    Math.round(bmp_size.y),
+                    true);
+            fogBmpScale = getGlobalScale();
+        }
 
         AnimationBitmaps bitmaps = new AnimationBitmaps();
-        void adjustBitmaps(ArrayList<Bitmap> list, boolean isLarge){
-
-            for (Bitmap bitmap : list
-                    ) {
-                int localCellSize;
-                if (isLarge)
-                    localCellSize = Math.round(gameRenderer.cellSize) * 2;
-                else
-                    localCellSize = Math.round(gameRenderer.cellSize);
-
-                Matrix matrix = new Matrix();
-                matrix.postScale((localCellSize / bitmap.getHeight()),
-                        (localCellSize / bitmap.getHeight()));
-                bitmap = Bitmap.createScaledBitmap(bitmap, localCellSize, localCellSize, true);
-
-//                CPoint.Game offset_g = gameRenderer.field2game(entity.pos);
-//                offset_g.offset(-localCellSize / 2, -localCellSize / 2);
-//                matrix.postTranslate(offset_g.x, offset_g.y);
-            }
-
-        }
 
         //Todo: перенести Paint в ресурсы цвета
         private Paint floor = new Paint();
@@ -424,7 +428,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             puanim.setTextSize(20);
             bonusRadius.setColor(Color.argb(120, 255, 10, 10));
             createFogBmp();
-            enlightenFogBmp(gameLogic.playerCoords());
         }
 
         private long getTime(){
@@ -449,32 +452,29 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             if (!fogEnabled) return;
             int xsize = Math.round(gameLogic.field.getxSize() * cellSize);
             int ysize = Math.round(gameLogic.field.getySize() * cellSize);
-            //TODO тут не нужен альфа канал
             fogBitmap = Bitmap.createBitmap(xsize, ysize, Bitmap.Config.ALPHA_8);
             Canvas canvas = new Canvas(fogBitmap);
 
             canvas.drawRect(0, 0, xsize, ysize, fog);
         }
-        private void enlightenFogBmp(PointF gCoord){
+        private void enlightenFogBmp(CPoint.Game old_pt){
             if (fogBitmap == null || !fogEnabled) return;
-            //Todo: рисовать круги в отдельном битмапе
+
+            PointF pt = new PointF(old_pt.x * getGlobalScale(), old_pt.y * getGlobalScale());
+
             Canvas canvas = new Canvas(fogBitmap);
-//            for (int i = 5; i > 0; i--){
-//                enlighten.setColor(Color.argb( (i - 1) * 5, 60, 50, 60));
-//                canvas.drawCircle(gCoord.x, gCoord.y, enlightenRadius + i * 50, enlighten);
-//            }
-            int scale = 2;
-            int rad = enlightenRadius * scale;
+            float scale = 2 * getGlobalScale();
+            float rad = enlightenRadius * scale;
             int steps = 5;
             int alpha = 2;
             while (rad > enlightenRadius){
                 enlighten.setColor(Color.argb(alpha, 60, 50, 60));
-                canvas.drawCircle(gCoord.x, gCoord.y, rad, enlighten);
+                canvas.drawCircle(pt.x, pt.y, rad, enlighten);
                 alpha += 5;
                 rad -= (enlightenRadius * scale - enlightenRadius) / steps;
             }
             enlighten.setColor(Color.argb(230, 60, 50, 60));
-            canvas.drawCircle(gCoord.x, gCoord.y, enlightenRadius, enlighten);
+            canvas.drawCircle(pt.x, pt.y, enlightenRadius, enlighten);
         }
         void clearLabyrinthBmp(){
             long start_time = getTime(); //сразу может не удалится, поэтому пробуем некоторое время
@@ -733,12 +733,17 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawPlayer(canvas);
             drawPointer(canvas);
             drawPickedUpAnimation(canvas);
-            drawFog(canvas);
 
             drawDebug(canvas);
 
+            fogMatrix.reset();
+            fogMatrix.preTranslate(getGlobalOffset().x, getGlobalOffset().y);
+            canvas.setMatrix(fogMatrix);
+            drawFog(canvas);
+
             // дальше отрисовка HUD. В экранных координатах
             canvas.setMatrix(Ematrix);
+
 
             drawButtons(canvas);
             drawJoystick(canvas);

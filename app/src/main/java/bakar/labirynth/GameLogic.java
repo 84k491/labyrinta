@@ -176,7 +176,7 @@ class GameLogic {
     }
     void remoteMove(){
         if (usesJoystick && gameRenderer.isMovingPlayer)
-            movePlayerTo(joystick.lastTouch); //TODO тут был косяк с типом | done
+            movePlayerTo(joystick.lastTouch);
     }
     void movePlayerTo(CPoint.Game pointF){ // gameCoord rly
         if (!gameRenderer.isPlayerInSight())
@@ -321,7 +321,7 @@ class GameLogic {
         }
         PointF normalizedVector(){
             PointF result = vector();
-            if (result.x == 0 && result.y == 0) //Todo: сделать нормально
+            if (result.x == 0 && result.y == 0)
                 return new PointF(0, 0);
             result.set(result.x / module(), result.y / module());
             return result;

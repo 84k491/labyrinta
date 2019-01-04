@@ -125,6 +125,7 @@ public class GameActivity extends Activity{
         gameRenderer.buttons.get(0).onClick(); // center to player
         ((GameRenderer.PlayerFinder)gameRenderer.buttons.get(0)).instantAnimation();
         gameRenderer.onTouchUp(null);
+        gameRenderer.resetLab();
         gameRenderer.resetFog();
         gameRenderer.lightFog(gameLogic.playerCoords());
 
