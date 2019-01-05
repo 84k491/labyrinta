@@ -44,8 +44,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     boolean registerBonusTouch = false;
 
+
     final float cellSize = 10; // gameCoords side
-    Camera camera = new Camera();
+    final Camera camera = new Camera();
     public float playerHitbox = 0; // screenCoord // in surfaceCreated();
 
     float max_scale;
@@ -490,19 +491,40 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             for (int x = 0; x < gameRenderer.gameLogic.field.getxSize(); ++x){
                 for (int y = 0; y < gameRenderer.gameLogic.field.getySize(); ++y){
-                    Paint paint;
+                    Bitmap bmp;
 
                     CPoint.Game rectScreenPt = field2game(new CPoint.Field(x, y));
                     if (gameLogic.field.get(x, y))
-                        paint = floor;
+                        bmp = bitmaps.getByName("Floor");
                     else
-                        paint = wall;
+                        bmp = bitmaps.getByName("Wall");
 
-                    canvas.drawRect(pt2rect(rectScreenPt), paint);
+                    drawTile(canvas,
+                            bmp,
+                            rectScreenPt,
+                            false);
+                    //canvas.drawRect(pt2rect(rectScreenPt), paint);
                 }
             }
         }
 
+        void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge){
+            translate_matrix.reset();
+            if (isLarge)
+            {
+                translate_matrix.preTranslate(pos.x - cellSize, pos.y  - cellSize);
+                // из преобразования в AnimationBitmaps
+                translate_matrix.preScale(2 / max_scale, 2 / max_scale);
+            }
+            else
+            {
+                translate_matrix.preTranslate(pos.x - cellSize / 2, pos.y  - cellSize / 2);
+                translate_matrix.preScale(1 / max_scale, 1 / max_scale);
+            }
+
+            canvas.drawBitmap(bmp,
+                    translate_matrix, fog);
+        }
         void drawDebugText(Canvas canvas){
             if (!isDebug)
                 return;
@@ -607,7 +629,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     gameLogic.joystick.stickRadius, joystickCurrent);
         }
         void drawPlayer(Canvas canvas){
-            canvas.drawRect(pt2rect(gameLogic.playerCoords()), player);
+            drawTile(canvas,
+                    bitmaps.getByName("Player"),
+                    gameLogic.playerCoords(),
+                    false);
+            //canvas.drawRect(pt2rect(gameLogic.playerCoords()), player);
         }
         void drawButtons(Canvas canvas){
             for (Button bt : buttons){
@@ -655,25 +681,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(labBitmap, Ematrix, wall);
         }
         void drawEntities(Canvas canvas){
-            for (Entity entity : gameLogic.eFactory.entities
-                 ) {
-                translate_matrix.reset();
-                CPoint.Game gamePos = field2game(entity.pos);
-                if (entity.isLarge)
-                {
-                    translate_matrix.preTranslate(gamePos.x - cellSize, gamePos.y  - cellSize);
-                    // из преобразования в AnimationBitmaps
-                    translate_matrix.preScale(2 / max_scale, 2 / max_scale);
-                }
-                else
-                {
-                    translate_matrix.preTranslate(gamePos.x - cellSize / 2, gamePos.y  - cellSize / 2);
-                    translate_matrix.preScale(1 / max_scale, 1 / max_scale);
-                }
-
-                canvas.drawBitmap(bitmaps.getByEntity(entity),
-                            translate_matrix, fog);
-
+            for (Entity entity : gameLogic.eFactory.entities){
+                drawTile(canvas,
+                        bitmaps.getByEntity(entity),
+                        field2game(entity.pos),
+                        entity.isLarge);
             }
         }
         void drawBonusRadius(Canvas canvas){
@@ -722,7 +734,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             drawLabyrinth(canvas);
             drawPath(canvas);
-            drawTraces(canvas);
+            //drawTraces(canvas);
             drawEntities(canvas);
 
             drawNodes(canvas);
@@ -803,14 +815,17 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     class AnimationBitmaps extends ArrayList<BitmapList>{
         AnimationBitmaps(){
-            setCoinBitmaps();
-            setExitBitmaps();
-            setPathfinderBitmaps();
-            setTeleportBitmaps();
-            setPointerBitmaps();
+            setCoin();
+            setExit();
+            setPathfinder();
+            setTeleport();
+            setPointer();
+            setFloor();
+            setWall();
+            setPlayer();
         }
-        void setCoinBitmaps(){
-            if (null != getByName("Coin"))
+        void setCoin(){
+            if (null != getListByName("Coin"))
                 return;
 
             BitmapList list = new BitmapList("Coin");
@@ -824,8 +839,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             add(list);
         }
-        void setExitBitmaps(){
-            if (null != getByName("Exit"))
+        void setExit(){
+            if (null != getListByName("Exit"))
                 return;
 
             BitmapList list = new BitmapList("Exit");
@@ -873,8 +888,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 //            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_39));
             add(list);
         }
-        void setTeleportBitmaps(){
-            if (null != getByName("Teleport"))
+        void setTeleport(){
+            if (null != getListByName("Teleport"))
                 return;
             BitmapList list = new BitmapList("Teleport");
 
@@ -883,8 +898,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             add(list);
         }
-        void setPointerBitmaps(){
-            if (null != getByName("Pointer"))
+        void setPointer(){
+            if (null != getListByName("Pointer"))
                 return;
             BitmapList list = new BitmapList("Pointer");
 
@@ -892,8 +907,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pointer));
             add(list);
         }
-        void setPathfinderBitmaps(){
-            if (null != getByName("Pathfinder"))
+        void setPathfinder(){
+            if (null != getListByName("Pathfinder"))
                 return;
             BitmapList list = new BitmapList("Pathfinder");
 
@@ -901,8 +916,35 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             add(list);
         }
+        void setFloor(){
+            if (null != getListByName("Floor"))
+                return;
+            BitmapList list = new BitmapList("Floor");
 
-        BitmapList getByName(String name){
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.floor));
+
+            add(list);
+        }
+        void setWall(){
+            if (null != getListByName("Wall"))
+                return;
+            BitmapList list = new BitmapList("Wall");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.wall));
+
+            add(list);
+        }
+        void setPlayer(){
+            if (null != getListByName("Player"))
+                return;
+            BitmapList list = new BitmapList("Player");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.player));
+
+            add(list);
+        }
+
+        BitmapList getListByName(String name){
             for (BitmapList list : this
                     ) {
                 if (list.whoami.equals(name))
@@ -911,8 +953,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             return null;
         }
         Bitmap getByEntity(Entity entity){
-            BitmapList list = getByName(entity.whoami);
+            BitmapList list = getListByName(entity.whoami);
             return list.get(entity.incrAnimFrame(list.size()));
+        }
+        Bitmap getByName(String name){
+            return getListByName(name).get(0);
         }
         void rescaleAll(){
             for (BitmapList list : this
