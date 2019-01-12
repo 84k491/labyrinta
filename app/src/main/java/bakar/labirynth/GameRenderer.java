@@ -14,6 +14,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Pair;
 import android.util.Range;
@@ -355,6 +356,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private SurfaceHolder surfaceHolder;
         private Profiler profiler = new Profiler();
         final Matrix Ematrix = new Matrix();
+        final Matrix bgScaleMatrix = new Matrix();
         final Matrix fogMatrix = new Matrix();
         final Matrix translate_matrix = new Matrix();
 
@@ -364,6 +366,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         private Bitmap labBitmap;
         private Bitmap fogBitmap;
+        private Bitmap backgroundBitmap;
         private float fogBmpScale = -1;
         private Bitmap pointerBitmap;
         private boolean canClearBmp = true;
@@ -404,15 +407,15 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         RenderThread(GameRenderer game_renderer){
             gameRenderer = game_renderer;
-            floor.setColor(Color.rgb(184, 203, 191));
-            wall.setColor(Color.rgb(150, 50, 50));
+            floor.setColor(Color.argb(120,30, 30, 30));
+            wall.setColor(Color.argb(240,230, 230, 230));
             node.setStrokeWidth(1);
             node.setColor(Color.rgb(0, 255, 0));
             node.setStyle(Paint.Style.STROKE);
             player.setColor(Color.rgb(255, 0, 255));
             hitbox.setColor(Color.argb(120, 255, 0, 0));
             trace.setColor(Color.YELLOW);
-            text.setColor(Color.CYAN);
+            text.setColor(Color.GRAY);
             text.setStrokeWidth(8);
             text.setTextAlign(Paint.Align.RIGHT);
             text.setTextSize(70);
@@ -428,6 +431,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             puanim.setTextAlign(Paint.Align.CENTER);
             puanim.setTextSize(20);
             bonusRadius.setColor(Color.argb(120, 255, 10, 10));
+
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 4;
+
+            backgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background, options);
+            bgScaleMatrix.postScale((float)getWidth() / (float)backgroundBitmap.getWidth(),
+                    (float)getHeight() / (float)backgroundBitmap.getHeight());
             createFogBmp();
         }
 
@@ -485,25 +495,29 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         void updateLabyrinthBmp(){
             // рисуется в игровых координатах, при отрисовке умножается на матрицу
-            labBitmap = Bitmap.createBitmap(Math.round(gameLogic.field.getxSize() * cellSize/* / globalScale*/),
-                    Math.round(gameLogic.field.getySize() * cellSize/* / globalScale*/), Bitmap.Config.RGB_565);
+            labBitmap = Bitmap.createBitmap(Math.round(gameLogic.field.getxSize() * cellSize),
+                    Math.round(gameLogic.field.getySize() * cellSize), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(labBitmap);
 
             for (int x = 0; x < gameRenderer.gameLogic.field.getxSize(); ++x){
                 for (int y = 0; y < gameRenderer.gameLogic.field.getySize(); ++y){
-                    Bitmap bmp;
+//                    Bitmap bmp;
+//                    bmp = bitmaps.getByName("Floor");
 
                     CPoint.Game rectScreenPt = field2game(new CPoint.Field(x, y));
-                    if (gameLogic.field.get(x, y))
-                        bmp = bitmaps.getByName("Floor");
-                    else
-                        bmp = bitmaps.getByName("Wall");
+                    if (gameLogic.field.get(x, y)){
+                        //bmp = bitmaps.getByName("Floor");
+                        canvas.drawRect(pt2rect(rectScreenPt), floor);
+                    }
+                    else{
+//                        drawTile(canvas,
+//                                bitmaps.getByName("Wall"),
+//                                rectScreenPt,
+//                                false);
+                        canvas.drawRect(pt2rect(rectScreenPt), wall);
+                    }
 
-                    drawTile(canvas,
-                            bmp,
-                            rectScreenPt,
-                            false);
-                    //canvas.drawRect(pt2rect(rectScreenPt), paint);
+
                 }
             }
         }
@@ -530,10 +544,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             ArrayList<String> outputs = new ArrayList<>();
 
-            outputs.add("Scale: " + getGlobalScale());
-            outputs.add("Offset: " + getGlobalOffset());
-            outputs.add("Sc: " + lastToushSc);
-            outputs.add("Gc: " + lastToushGc);
+            //outputs.add("Scale: " + getGlobalScale());
+            //outputs.add("Offset: " + getGlobalOffset());
 
             outputs.add("FPS: " + calcFps());
             //outputs.add("Free mem: " + availMemory() + " MB");
@@ -548,8 +560,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 canvas.drawText(outputs.get(i), getWidth(), (i + 1) * 70, text);
             }
 
-            for (int i = 0; i < profiler.size(); ++i){
-                canvas.drawText(profiler.getName(i) + ": " + profiler.getTime(i) + " us",
+            if (profiler.size() != 0)
+            canvas.drawText(profiler.getName(0) + ": " + profiler.getTime(0) + " us",
+                    getWidth(), (outputs.size() + 1) * 70, text);
+
+            for (int i = 1; i < profiler.size(); ++i){
+                canvas.drawText(profiler.getName(i) + ": " + profiler.getPercents(i) + "%",
                         getWidth(), (i + outputs.size() + 1) * 70, text);
             }
         }
@@ -722,20 +738,40 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 //            matrix.postTranslate(game00.x, game00.y);
             canvas.drawBitmap(fogBitmap, Ematrix, fog);
         }
+        void drawBackground(Canvas canvas){
+
+            /////////////////////////////////////////////////////////
+            // если указать пеинт с прозрачным цветом, то будет блюр эффект
+            //////////////////////////////////////////////////////////////////////
+
+            int h = backgroundBitmap.getHeight();
+            int w = backgroundBitmap.getWidth();
+
+            canvas.drawBitmap(backgroundBitmap, bgScaleMatrix, player);
+        }
 
         void onDraw(Canvas canvas){
             if (!gameLogic.isInited) return;
             canClearBmp = false;
-            camera.applyToCanvas(canvas);
+            //canvas.setMatrix(Ematrix);
 
-            canvas.drawColor(Color.rgb(20, 20, 100));
+            profiler.start("Frame");
+
+            profiler.start("BG");
+            drawBackground(canvas);
+            profiler.stop("BG");
 
             // отрисовка игровых объектов в игровых координатах
+            camera.applyToCanvas(canvas);
 
+            profiler.start("Lab");
             drawLabyrinth(canvas);
+            profiler.stop("Lab");
             drawPath(canvas);
             //drawTraces(canvas);
+            profiler.start("Entities");
             drawEntities(canvas);
+            profiler.stop("Entities");
 
             drawNodes(canvas);
             drawRails(canvas);
@@ -748,17 +784,20 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             drawDebug(canvas);
 
+            profiler.start("Fog");
             fogMatrix.reset();
             fogMatrix.preTranslate(getGlobalOffset().x, getGlobalOffset().y);
             canvas.setMatrix(fogMatrix);
             drawFog(canvas);
+            profiler.stop("Fog");
 
             // дальше отрисовка HUD. В экранных координатах
             canvas.setMatrix(Ematrix);
 
-
             drawButtons(canvas);
             drawJoystick(canvas);
+
+            profiler.stop("Frame");
 
             drawDebugText(canvas);
 
@@ -993,6 +1032,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             String name;
             long time_us;
             boolean isStarted;
+            float percent;
         }
 
         ArrayList<Element> elements = new ArrayList<>();
@@ -1003,6 +1043,26 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     return elements.get(i);
             }
                 return null;
+        }
+        boolean isAllStopped(){
+            for (Element el:elements)
+                if (el.isStarted)
+                    return false;
+            return true;
+        }
+        void calcPrecents(){
+            if (!isAllStopped())
+                return;
+
+            elements.get(0).percent = 100;
+            for (int i = 1; i < elements.size(); ++i){
+                elements.get(i).percent = 100 *
+                        elements.get(i).time_us /
+                        elements.get(0).time_us;
+
+                //elements.get(i).percent = (float)Math.round(elements.get(i).percent * 100) / 100.f;
+            }
+
         }
         int size(){
             return elements.size();
@@ -1028,6 +1088,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             el.isStarted = false;
             el.time_us = System.nanoTime() / 1000 - el.time_us;
+
+            if (isAllStopped())
+                calcPrecents();
         }
 
         String getName(int i){
@@ -1035,6 +1098,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         long getTime(int i){
             return elements.get(i).time_us;
+        }
+        float getPercents(int i){
+            return elements.get(i).percent;
         }
     }
 
