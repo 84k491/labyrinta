@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Window;
+import android.view.WindowManager;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -31,16 +32,19 @@ public class GameActivity extends Activity{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 
+        Intent intent = getIntent();
         gameRenderer = new GameRenderer(this);
         gameRenderer.isDebug = intent.getBooleanExtra("is_debug", false);
+
         gameRenderer.fogEnabled = intent.getBooleanExtra("fog_enabled", false);
 
         touchListener = new CustomTouchListener();
-
         gameLogic = new GameLogic(gameRenderer, intent.getLongExtra("seed", 123456789),
                 intent.getIntExtra("xsize", 10), intent.getIntExtra("ysize", 10));
+
         gameLogic.usesJoystick = intent.getBooleanExtra("uses_joystick", true);
         gameRenderer.setOnTouchListener(touchListener);
         gameRenderer.setGameLogic(gameLogic);

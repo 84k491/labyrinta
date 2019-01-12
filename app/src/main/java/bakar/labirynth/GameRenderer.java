@@ -388,6 +388,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         AnimationBitmaps bitmaps = new AnimationBitmaps();
 
         //Todo: перенести Paint в ресурсы цвета
+        private Paint common = new Paint();
         private Paint floor = new Paint();
         private Paint wall = new Paint();
         private Paint node = new Paint();
@@ -424,7 +425,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             exit.setColor(Color.RED);
             button.setColor(Color.argb(120, 255, 255, 255));
             path.setColor(Color.argb(120, 10, 255, 10));
-            fog.setColor(Color.argb(255, 20, 20, 30));
+            fog.setColor(Color.rgb(20, 20, 30));
             enlighten.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
             enlighten.setColor(Color.argb(0, 60, 50, 60));
             puanim.setColor(Color.CYAN);
@@ -537,7 +538,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
 
             canvas.drawBitmap(bmp,
-                    translate_matrix, fog);
+                    translate_matrix, common);
         }
         void drawDebugText(Canvas canvas){
             if (!isDebug)
@@ -627,7 +628,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             matrix.postRotate(deg, gameLogic.playerCoords().x, gameLogic.playerCoords().y);
 
-            canvas.drawBitmap(pointerBitmap, matrix, fog);
+            canvas.drawBitmap(pointerBitmap, matrix, common);
 
         }
         void drawTraces(Canvas canvas){
@@ -694,7 +695,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 //            Matrix matrix = new Matrix();
 //            matrix.postScale(1/globalScale, 1/globalScale);
 //            matrix.postTranslate(game00.x, game00.y);
-            canvas.drawBitmap(labBitmap, Ematrix, wall);
+            canvas.drawBitmap(labBitmap, Ematrix, common);
         }
         void drawEntities(Canvas canvas){
             for (Entity entity : gameLogic.eFactory.entities){
@@ -747,7 +748,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             int h = backgroundBitmap.getHeight();
             int w = backgroundBitmap.getWidth();
 
-            canvas.drawBitmap(backgroundBitmap, bgScaleMatrix, player);
+            canvas.drawBitmap(backgroundBitmap, bgScaleMatrix, common);
         }
 
         void onDraw(Canvas canvas){
