@@ -45,6 +45,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     boolean registerBonusTouch = false;
 
+    float smallSquareScale = 0.5f;
+    float bigSquareScale = 2.f - smallSquareScale;
 
     final float cellSize = 10; // gameCoords side
     final Camera camera = new Camera();
@@ -135,12 +137,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private RectF pt2rect(CPoint.Game pt){
-        RectF rect = new RectF();
-
-        rect.set(-cellSize / 2,-cellSize / 2, cellSize / 2, cellSize / 2);
-        rect.offset(pt.x, pt.y);
-
-        return rect;
+        return pt2RectScaled(pt, 1.0f);
     }
     private RectF pt2rect(CPoint.Screen pt){
         RectF rect = new RectF();
@@ -154,6 +151,26 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         rect.offset(n_pt.x, n_pt.y);
 
         return rect;
+    }
+    private RectF pt2RectScaled(CPoint.Game pt, float scale){
+        RectF rect = new RectF();
+
+        rect.set(-scale * cellSize / 2,
+                -scale * cellSize / 2,
+                scale * cellSize / 2,
+                scale * cellSize / 2);
+        rect.offset(pt.x, pt.y);
+
+        return rect;
+    }
+    private RectF pt2rect(CPoint.Game pt1, CPoint.Game pt2, float scale){
+        float left = Math.min(pt1.x, pt2.x) - (scale * cellSize) / 2;
+        float right = Math.max(pt1.x, pt2.x) + (scale * cellSize) / 2;
+        float top = Math.min(pt1.y, pt2.y) - (scale * cellSize) / 2;
+        float bot = Math.max(pt1.y, pt2.y) + (scale * cellSize) / 2;
+
+        RectF res = new RectF(left, top, right, bot);
+        return res;
     }
 
     boolean isPlayerInSight(){
@@ -500,41 +517,62 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     Math.round(gameLogic.field.getySize() * cellSize), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(labBitmap);
 
+            //CPoint.Game rightBot = new CPoint.Game(labBitmap.getWidth(), labBitmap.getHeight());
+            canvas.drawRect(0,
+                    0,
+                    labBitmap.getWidth(),
+                    labBitmap.getHeight(),
+                    floor);
+
+            Path poly = new Path();
             for (int x = 0; x < gameRenderer.gameLogic.field.getxSize(); ++x){
                 for (int y = 0; y < gameRenderer.gameLogic.field.getySize(); ++y){
-//                    Bitmap bmp;
-//                    bmp = bitmaps.getByName("Floor");
-
                     CPoint.Game rectScreenPt = field2game(new CPoint.Field(x, y));
-                    if (gameLogic.field.get(x, y)){
-                        //bmp = bitmaps.getByName("Floor");
-                        canvas.drawRect(pt2rect(rectScreenPt), floor);
-                    }
-                    else{
-//                        drawTile(canvas,
-//                                bitmaps.getByName("Wall"),
-//                                rectScreenPt,
-//                                false);
-                        canvas.drawRect(pt2rect(rectScreenPt), wall);
-                    }
+                    if (!gameLogic.field.get(x, y)){
+                        poly.addRect(pt2RectScaled(rectScreenPt, smallSquareScale), CW);
 
+                        for (Direction dir:Direction.values()){
+                            CPoint.Field another = gameLogic.field.ptAt(new CPoint.Field(x,y), dir);
+                            if (!gameLogic.field.get(another)){
+                                poly.addRect(pt2rect(
+                                        rectScreenPt,
+                                        field2game(another),
+                                        smallSquareScale),
+                                        CW);
+                            }
+                        }
 
+                    }
                 }
             }
+            CPoint.Game topLeft = new CPoint.Game(0,0);
+            CPoint.Game topRight = new CPoint.Game(labBitmap.getWidth(),0);
+            CPoint.Game botRight = new CPoint.Game(labBitmap.getWidth(),labBitmap.getHeight());
+            CPoint.Game botLeft = new CPoint.Game(0,labBitmap.getHeight());
+
+            poly.addRect(pt2rect(topLeft, topRight, smallSquareScale), CW);
+            poly.addRect(pt2rect(topLeft, botLeft, smallSquareScale), CW);
+            poly.addRect(pt2rect(botRight, botLeft, smallSquareScale), CW);
+            poly.addRect(pt2rect(botRight, topRight, smallSquareScale), CW);
+            canvas.drawPath(poly, wall);
         }
 
         void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge){
             translate_matrix.reset();
             if (isLarge)
             {
-                translate_matrix.preTranslate(pos.x - cellSize, pos.y  - cellSize);
+                translate_matrix.preTranslate(pos.x - cellSize * bigSquareScale,
+                        pos.y  - cellSize * bigSquareScale);
                 // из преобразования в AnimationBitmaps
-                translate_matrix.preScale(2 / max_scale, 2 / max_scale);
+                translate_matrix.preScale(2 * bigSquareScale / max_scale,
+                        2 * bigSquareScale / max_scale);
             }
             else
             {
-                translate_matrix.preTranslate(pos.x - cellSize / 2, pos.y  - cellSize / 2);
-                translate_matrix.preScale(1 / max_scale, 1 / max_scale);
+                translate_matrix.preTranslate(pos.x - cellSize * bigSquareScale / 2,
+                        pos.y  - cellSize * bigSquareScale / 2);
+                translate_matrix.preScale(1 * bigSquareScale / max_scale,
+                        1 * bigSquareScale / max_scale);
             }
 
             canvas.drawBitmap(bmp,
@@ -716,18 +754,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
         void drawPath(Canvas canvas){
-            if (gameLogic.finded_path == null) {
+            if (gameLogic.finded_path == null)
                 return;
-            }
-            Path poly = new Path();
-            for (int i = 0; i < gameLogic.finded_path.size() - 1; i++) {
-                float left = Math.min(gameLogic.finded_path.get(i).x, gameLogic.finded_path.get(i + 1).x) - cellSize / 2;
-                float right = Math.max(gameLogic.finded_path.get(i).x, gameLogic.finded_path.get(i + 1).x) + cellSize / 2;
-                float top = Math.min(gameLogic.finded_path.get(i).y, gameLogic.finded_path.get(i + 1).y) - cellSize / 2;
-                float bot = Math.max(gameLogic.finded_path.get(i).y, gameLogic.finded_path.get(i + 1).y) + cellSize / 2;
 
-                poly.addRect(left, top, right, bot, CW);
-            }
+            Path poly = new Path();
+            for (int i = 0; i < gameLogic.finded_path.size() - 1; i++)
+                poly.addRect(pt2rect(gameLogic.finded_path.get(i), gameLogic.finded_path.get(i + 1), 1.f), CW);
+
             canvas.drawPath(poly, path);
         }
         void drawFog(Canvas canvas){
