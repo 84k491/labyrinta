@@ -437,8 +437,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             text.setStrokeWidth(8);
             text.setTextAlign(Paint.Align.RIGHT);
             text.setTextSize(70);
-            joystickMain.setColor(Color.argb(120, 255, 0, 0));
-            joystickCurrent.setColor(Color.BLUE);
+            joystickMain.setColor(Color.argb(120, 240, 240, 240));
+            joystickCurrent.setColor(Color.rgb(230, 255, 255));
             exit.setColor(Color.RED);
             button.setColor(Color.argb(120, 255, 255, 255));
             path.setColor(Color.argb(120, 10, 255, 10));
