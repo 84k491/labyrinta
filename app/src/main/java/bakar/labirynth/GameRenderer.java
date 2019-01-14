@@ -691,8 +691,16 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             //canvas.drawRect(pt2rect(gameLogic.playerCoords()), player);
         }
         void drawButtons(Canvas canvas){
+            Matrix matrix = new Matrix();
             for (Button bt : buttons){
+                matrix.reset();
+                float bmpSize = bitmaps.getByName(bt.whoami).getWidth();
+
+                matrix.preTranslate(bt.pos.x - bmpSize / 2,
+                        bt.pos.y - bmpSize / 2);
+
                 canvas.drawCircle(bt.pos.x, bt.pos.y, bt.rad, button);
+                canvas.drawBitmap(bitmaps.getByName(bt.whoami), matrix, common);
             }
         }
         void drawPlayerHitbox(Canvas canvas){
@@ -896,6 +904,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             setFloor();
             setWall();
             setPlayer();
+            setMenuButton();
+            setBonusesButton();
+            setCenterButton();
         }
         void setCoin(){
             if (null != getListByName("Coin"))
@@ -1013,6 +1024,33 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             BitmapList list = new BitmapList("Player");
 
             list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.player));
+
+            add(list);
+        }
+        void setMenuButton(){
+            if (null != getListByName("MenuButton"))
+                return;
+            BitmapList list = new BitmapList("MenuButton");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.menu_button));
+
+            add(list);
+        }
+        void setCenterButton(){
+            if (null != getListByName("CenterButton"))
+                return;
+            BitmapList list = new BitmapList("CenterButton");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.center_button));
+
+            add(list);
+        }
+        void setBonusesButton(){
+            if (null != getListByName("BonusesButton"))
+                return;
+            BitmapList list = new BitmapList("BonusesButton");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.bonuses_button));
 
             add(list);
         }
@@ -1141,6 +1179,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     abstract class Button { // all screenCoords
         CPoint.Screen pos = new CPoint.Screen();
         float rad = 0;
+        String whoami;
 
         Button(){}
         Button(CPoint.Screen position, float radius){
@@ -1167,6 +1206,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private int animationSpeed = 150;
 
         PlayerFinder(CPoint.Screen position, float radius){
+            whoami = "CenterButton";
             pos = position;
             rad = radius;
             init();
@@ -1223,6 +1263,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     class MenuButton extends Button{
 
         MenuButton(CPoint.Screen position, float radius){
+            whoami = "MenuButton";
             pos = position;
             rad = radius;
             init();
@@ -1237,6 +1278,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     class Bonuses extends Button{
         Bonuses(CPoint.Screen position, float radius){
+            whoami = "BonusesButton";
             pos = position;
             rad = radius;
             init();
