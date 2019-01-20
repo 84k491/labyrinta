@@ -26,11 +26,8 @@ public class MenuActivity extends Activity implements OnClickListener {
     SharedPreferences sPref;
     ConstraintLayout layout;
     Button start;
-    Switch joystick;
-    Switch debug;
-    Switch fog;
-    EditText xsize;
-    EditText ysize;
+    Button settings;
+    Button shop;
     TextView gold;
     TextView title;
 
@@ -56,11 +53,11 @@ public class MenuActivity extends Activity implements OnClickListener {
         long seed = System.currentTimeMillis();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("seed", seed);
-        intent.putExtra("xsize", Integer.parseInt(xsize.getText().toString()));
-        intent.putExtra("ysize", Integer.parseInt(ysize.getText().toString()));
-        intent.putExtra("uses_joystick", joystick.isChecked());
-        intent.putExtra("is_debug", debug.isChecked());
-        intent.putExtra("fog_enabled", fog.isChecked());
+        intent.putExtra("xsize", /*Integer.parseInt(xsize.getText().toString())*/40);
+        intent.putExtra("ysize", /*Integer.parseInt(ysize.getText().toString())*/40);
+        intent.putExtra("uses_joystick", /*joystick.isChecked()*/true);
+        intent.putExtra("is_debug", /*debug.isChecked()*/false);
+        intent.putExtra("fog_enabled", /*fog.isChecked()*/false);
         startActivity(intent);
     }
 
@@ -70,22 +67,18 @@ public class MenuActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_menu);
 
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf");
         title = findViewById(R.id.main_title);
-        ysize = findViewById(R.id.ysize);
-        xsize = findViewById(R.id.xsize);
         start = findViewById(R.id.start);
         start.setOnClickListener(this);
-        joystick = findViewById(R.id.joystick);
-        joystick.setOnClickListener(this);
-        debug = findViewById(R.id.debug);
-        debug.setOnClickListener(this);
-        fog = findViewById(R.id.fog);
-        fog.setOnClickListener(this);
         gold = findViewById(R.id.gold);
         layout = findViewById(R.id.menu_layout);
         layout.setOnClickListener(this);
+        settings = findViewById(R.id.settings_bt);
+        settings.setOnClickListener(this);
+        shop = findViewById(R.id.shop_bt);
+        shop.setOnClickListener(this);
 
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf");
         title.setTypeface(custom_font);
     }
     protected void onRestart(){
@@ -119,21 +112,21 @@ public class MenuActivity extends Activity implements OnClickListener {
     void saveData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putInt("xsize", Integer.parseInt(xsize.getText().toString()));
-        ed.putInt("ysize", Integer.parseInt(xsize.getText().toString()));
-        ed.putBoolean("uses_joystick", joystick.isChecked());
-        ed.putBoolean("is_debug", debug.isChecked());
-        ed.putBoolean("fog_enabled", fog.isChecked());
+        //ed.putInt("xsize", Integer.parseInt(xsize.getText().toString()));
+        //ed.putInt("ysize", Integer.parseInt(xsize.getText().toString()));
+        //ed.putBoolean("uses_joystick", joystick.isChecked());
+        //ed.putBoolean("is_debug", debug.isChecked());
+        //ed.putBoolean("fog_enabled", fog.isChecked());
         ed.commit(); //ed.apply();
     }
     void loadData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
-        joystick.setChecked(sPref.getBoolean("uses_joystick", true));
-        debug.setChecked(sPref.getBoolean("is_debug", false));
-        fog.setChecked(sPref.getBoolean("fog_enabled", false));
+        //joystick.setChecked(sPref.getBoolean("uses_joystick", true));
+        //debug.setChecked(sPref.getBoolean("is_debug", false));
+        //fog.setChecked(sPref.getBoolean("fog_enabled", false));
 
-        xsize.setText(String.valueOf(sPref.getInt("xsize", 42)));
-        ysize.setText(String.valueOf(sPref.getInt("ysize", 42)));
+        //xsize.setText(String.valueOf(sPref.getInt("xsize", 42)));
+        //ysize.setText(String.valueOf(sPref.getInt("ysize", 42)));
         gold.setText(String.valueOf(sPref.getInt("gold", 0)));
     }
     void startWelcomingAnimations(){
@@ -142,27 +135,20 @@ public class MenuActivity extends Activity implements OnClickListener {
         title.startAnimation(move_anim);
 
         start.startAnimation(inv_anim);
-        joystick.startAnimation(inv_anim);
-        debug.startAnimation(inv_anim);
-        fog.startAnimation(inv_anim);
-        xsize.startAnimation(inv_anim);
-        ysize.startAnimation(inv_anim);
+        shop.startAnimation(inv_anim);
+        settings.startAnimation(inv_anim);
         gold.startAnimation(inv_anim);
     }
     void startOnTouchAnimations(){
         Animation move_anim = AnimationUtils.loadAnimation(this, R.anim.title_move);
-        //Animation inv_anim = AnimationUtils.loadAnimation(this, R.anim.unfade);
         Animation inv_anim = new AlphaAnimation(0.0f, 1.0f);
         inv_anim.setDuration(3000);
         inv_anim.setStartOffset(700);
         title.startAnimation(move_anim);
 
         start.startAnimation(inv_anim);
-        joystick.startAnimation(inv_anim);
-        debug.startAnimation(inv_anim);
-        fog.startAnimation(inv_anim);
-        xsize.startAnimation(inv_anim);
-        ysize.startAnimation(inv_anim);
+        shop.startAnimation(inv_anim);
+        settings.startAnimation(inv_anim);
         gold.startAnimation(inv_anim);
     }
 }
