@@ -34,16 +34,18 @@ public class GameActivity extends Activity{
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 
         Intent intent = getIntent();
-        gameRenderer = new GameRenderer(this);
-        gameRenderer.isDebug = intent.getBooleanExtra("is_debug", false);
+        sPref = getSharedPreferences("global", MODE_PRIVATE);
 
-        gameRenderer.fogEnabled = intent.getBooleanExtra("fog_enabled", false);
+        gameRenderer = new GameRenderer(this);
+        gameRenderer.isDebug = sPref.getBoolean("is_debug",false);
+
+        gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
 
         touchListener = new CustomTouchListener();
         gameLogic = new GameLogic(gameRenderer, intent.getLongExtra("seed", 123456789),
-                intent.getIntExtra("xsize", 10), intent.getIntExtra("ysize", 10));
+                sPref.getInt("xsize", 42), sPref.getInt("ysize", 42));
 
-        gameLogic.usesJoystick = intent.getBooleanExtra("uses_joystick", true);
+        gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
         gameRenderer.setOnTouchListener(touchListener);
         gameRenderer.setGameLogic(gameLogic);
         loadData();

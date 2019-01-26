@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="bakar.labirynth">
-
     <!-- Include required permissions for Google Mobile Ads to run. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".SettingsActivity"></activity>
         <activity android:name=".MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,17 +23,16 @@
         <activity android:name=".GameActivity" />
         <activity
             android:name=".EndActivity"
-            android:theme="@style/Theme.IAPTheme" />
-        <!--<activity-->
-            <!--android:name=".Ad"-->
-            <!--android:label="@string/title_activity_ad" /> &lt;!&ndash; Include the AdActivity configChanges and theme. &ndash;&gt;-->
-        <!--<activity-->
-            <!--android:name="com.google.android.gms.ads.AdActivity"-->
-            <!--android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"-->
-            <!--android:theme="@android:style/Theme.Translucent" />-->
+            android:theme="@style/Theme.IAPTheme" /> <!-- <activity -->
+        <!-- android:name=".Ad" -->
+        <!-- android:label="@string/title_activity_ad" /> &lt;!&ndash; Include the AdActivity configChanges and theme. &ndash;&gt; -->
+        <!-- <activity -->
+        <!-- android:name="com.google.android.gms.ads.AdActivity" -->
+        <!-- android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" -->
+        <!-- android:theme="@android:style/Theme.Translucent" /> -->
         <activity
             android:name=".BonusActivity"
-            android:theme="@style/Theme.IAPTheme"/>
+            android:theme="@style/Theme.IAPTheme" />
     </application>
 
 </manifest>

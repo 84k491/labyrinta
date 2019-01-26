@@ -349,7 +349,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread.start();
         renderThread.bitmaps.rescaleAll();
 
-        playerHitbox = getWidth() / 10;
+        playerHitbox = (float)getWidth() / 10.f;
 
         renderThread.resizeFogBmp();
         renderThread.enlightenFogBmp(gameLogic.playerCoords());
@@ -453,7 +453,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
 
-            backgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background, options);
+            backgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background1, options);
             bgScaleMatrix.postScale((float)getWidth() / (float)backgroundBitmap.getWidth(),
                     (float)getHeight() / (float)backgroundBitmap.getHeight());
             createFogBmp();
@@ -904,6 +904,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             setFloor();
             setWall();
             setPlayer();
+
+            rescaleAll();
+
             setMenuButton();
             setBonusesButton();
             setCenterButton();

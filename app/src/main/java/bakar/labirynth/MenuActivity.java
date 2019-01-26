@@ -43,6 +43,9 @@ public class MenuActivity extends Activity implements OnClickListener {
                 case R.id.start:
                     startGameActivity();
                     break;
+                case R.id.settings_bt:
+                    startSettingsActivity();
+                    break;
                 default: break;
             }
         }
@@ -53,11 +56,15 @@ public class MenuActivity extends Activity implements OnClickListener {
         long seed = System.currentTimeMillis();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("seed", seed);
-        intent.putExtra("xsize", /*Integer.parseInt(xsize.getText().toString())*/40);
-        intent.putExtra("ysize", /*Integer.parseInt(ysize.getText().toString())*/40);
-        intent.putExtra("uses_joystick", /*joystick.isChecked()*/true);
-        intent.putExtra("is_debug", /*debug.isChecked()*/false);
-        intent.putExtra("fog_enabled", /*fog.isChecked()*/false);
+        //intent.putExtra("xsize", /*Integer.parseInt(xsize.getText().toString())*/40);
+        //intent.putExtra("ysize", /*Integer.parseInt(ysize.getText().toString())*/40);
+        //intent.putExtra("uses_joystick", /*joystick.isChecked()*/true);
+        //intent.putExtra("is_debug", /*debug.isChecked()*/false);
+        //intent.putExtra("fog_enabled", /*fog.isChecked()*/false);
+        startActivity(intent);
+    }
+    void startSettingsActivity(){
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
@@ -66,6 +73,8 @@ public class MenuActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_menu);
+
+        justLoadedState = true;
 
         title = findViewById(R.id.main_title);
         start = findViewById(R.id.start);
@@ -92,8 +101,8 @@ public class MenuActivity extends Activity implements OnClickListener {
     protected void onResume(){
         super.onResume();
         loadData();
-        justLoadedState = true;
-        startWelcomingAnimations();
+        if (justLoadedState)
+            startWelcomingAnimations();
     }
     @Override
     protected void onPause(){
