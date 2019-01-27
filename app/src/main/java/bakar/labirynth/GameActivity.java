@@ -19,6 +19,7 @@ public class GameActivity extends Activity{
     // TODO: 15.05.2018 сделать режим на время
     // TODO: 19.05.2018 rate this app
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
+    // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     GameRenderer gameRenderer;
     GameLogic gameLogic;
     CustomTouchListener touchListener;
