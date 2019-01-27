@@ -898,6 +898,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         AnimationBitmaps(){
             setCoin();
             setExit();
+
+            rescaleAll();
+
             setPathfinder();
             setTeleport();
             setPointer();
