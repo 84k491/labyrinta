@@ -46,6 +46,9 @@ public class MenuActivity extends Activity implements OnClickListener {
                 case R.id.settings_bt:
                     startSettingsActivity();
                     break;
+                case R.id.shop_bt:
+                    startResearchActivity();
+                    break;
                 default: break;
             }
         }
@@ -65,6 +68,10 @@ public class MenuActivity extends Activity implements OnClickListener {
     }
     void startSettingsActivity(){
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+    void startResearchActivity(){
+        Intent intent = new Intent(this, ResearchActivity.class);
         startActivity(intent);
     }
 

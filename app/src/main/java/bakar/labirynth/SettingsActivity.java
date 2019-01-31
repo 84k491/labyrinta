@@ -42,7 +42,7 @@ public class SettingsActivity extends Activity {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putInt("xsize", Integer.parseInt(xsize.getText().toString()));
-        ed.putInt("ysize", Integer.parseInt(xsize.getText().toString()));
+        ed.putInt("ysize", Integer.parseInt(ysize.getText().toString()));
         ed.putBoolean("uses_joystick", joystick.isChecked());
         ed.putBoolean("is_debug", debug.isChecked());
         ed.putBoolean("fog_enabled", fog.isChecked());

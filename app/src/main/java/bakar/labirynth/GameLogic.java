@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
-
 /**
  * Created by Bakar on 10.03.2018.
  */
@@ -104,6 +103,15 @@ class GameLogic {
         AStarAlg alg = new AStarAlg(from, to);
         finded_path = alg.AStar();
         return finded_path;
+    }
+    float getPathLength(LinkedList<CPoint.Game> path){
+        float result = 0;
+
+        for (int i = 1; i < path.size(); ++i){
+            result += distance(path.get(i - 1), path.get(i));
+        }
+
+        return result;
     }
 
     void startEndActivity(){
