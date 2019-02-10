@@ -71,7 +71,7 @@ public class MenuActivity extends Activity implements OnClickListener {
         startActivity(intent);
     }
     void startResearchActivity(){
-        Intent intent = new Intent(this, ResearchActivity.class);
+        Intent intent = new Intent(this, ShopActivity.class);
         startActivity(intent);
     }
 
