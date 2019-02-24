@@ -50,9 +50,6 @@ public class GameActivity extends Activity{
         gameRenderer.setOnTouchListener(touchListener);
         gameRenderer.setGameLogic(gameLogic);
         loadData();
-        gameLogic.pathfinderAmount = 10;
-        gameLogic.pointerAmount = 10;
-        gameLogic.teleportAmount = 10;
         setContentView(gameRenderer);
         touchListener.setRenderer(gameRenderer);
 
