@@ -589,9 +589,10 @@ class GameLogic {
         // TODO check Glide
         LinkedList<Entity> entities = new LinkedList<>();
 
-        float pointerProbability = 80.f;
-        float pathfinderProbability = 80.f;
-        float teleportProbability = 80.f;
+        // сделать зависимыми от размера поля
+        float pointerProbability = 5.f;
+        float pathfinderProbability = 3.f;
+        float teleportProbability = 2.5f;
 
         void init(){
         }

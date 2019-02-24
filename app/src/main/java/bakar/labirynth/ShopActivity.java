@@ -93,13 +93,13 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     void setItems(){
-        items.add(new UpgrageItem("Level size", "level_upg", 355));
-        items.add(new BonusBuyItem("Teleport", "teleportAmount", 50));
-        items.add(new BonusBuyItem("Pathfinder", "pathfinderAmount", 30));
-        items.add(new BonusBuyItem("Pointer", "pointerAmount", 20));
-        items.add(new UpgrageItem("Teleport upgrade", "tp_upg", 450));
-        items.add(new UpgrageItem("Pathfinder upgrade","pf_upg", 220));
-        items.add(new UpgrageItem("Pointer upgrade", "pt_upg", 320));
+        items.add(new UpgrageItem("Level size", "level_upg", 1000));
+        items.add(new BonusBuyItem("Teleport", "teleportAmount", 2000));
+        items.add(new BonusBuyItem("Pathfinder", "pathfinderAmount", 1400));
+        items.add(new BonusBuyItem("Pointer", "pointerAmount", 800));
+        items.add(new UpgrageItem("Teleport upgrade", "tp_upg", 4000));
+        items.add(new UpgrageItem("Pathfinder upgrade","pf_upg", 3200));
+        items.add(new UpgrageItem("Pointer upgrade", "pt_upg", 2700));
         items.add(new GoldBuyItem("More credits (100)",3, 100));
         items.add(new GoldBuyItem("More credits (300)", 5,300));
         items.add(new GoldBuyItem("More credits (1000)", 10,1000));
