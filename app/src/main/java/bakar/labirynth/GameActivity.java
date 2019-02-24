@@ -3,6 +3,7 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -10,6 +11,8 @@ import android.view.WindowManager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+
+import java.util.Random;
 
 public class GameActivity extends Activity{
     //Todo: rename
@@ -25,6 +28,20 @@ public class GameActivity extends Activity{
     CustomTouchListener touchListener;
     SharedPreferences sPref;
     private InterstitialAd mInterstitialAd;
+
+    Point difficultyToActualSize(int lvl_difficulty){
+        // от сложности должна зависеть диагональ прямоугольника
+
+        Point result = new Point();
+        int square_side = lvl_difficulty * 5 + 15; // это квадратный корень площади уровня
+
+        Random random = new Random(System.currentTimeMillis());
+
+        result.x = random.nextInt(square_side / 4) + square_side;
+        result.y = Math.round((float)Math.sqrt(square_side * 2 + result.x * result.x));
+
+        return result;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -43,8 +60,11 @@ public class GameActivity extends Activity{
         gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
 
         touchListener = new CustomTouchListener();
+
+        Point lvl_size = difficultyToActualSize(intent.getIntExtra("level_size", 0));
+
         gameLogic = new GameLogic(gameRenderer, intent.getLongExtra("seed", 123456789),
-                sPref.getInt("xsize", 42), sPref.getInt("ysize", 42));
+                lvl_size.x, lvl_size.y);
 
         gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
         gameRenderer.setOnTouchListener(touchListener);
@@ -84,6 +104,7 @@ public class GameActivity extends Activity{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //TODO переделать. в resultCode должно быть -1. остальное в интент
         if (resultCode == "next".hashCode()){
             showInterstitial();
         }
@@ -91,7 +112,6 @@ public class GameActivity extends Activity{
             saveData();
             finish();
         }
-
         if (resultCode == "pointer".hashCode()){
             gameLogic.activatePointer();
         }

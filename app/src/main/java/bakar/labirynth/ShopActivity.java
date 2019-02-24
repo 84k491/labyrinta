@@ -93,7 +93,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     void setItems(){
-        items.add(new UpgrageItem("Level size", "next_level", 355));
+        items.add(new UpgrageItem("Level size", "level_upg", 355));
         items.add(new BonusBuyItem("Teleport", "teleportAmount", 50));
         items.add(new BonusBuyItem("Pathfinder", "pathfinderAmount", 30));
         items.add(new BonusBuyItem("Pointer", "pointerAmount", 20));

@@ -583,8 +583,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             ArrayList<String> outputs = new ArrayList<>();
 
-            //outputs.add("Scale: " + getGlobalScale());
-            //outputs.add("Offset: " + getGlobalOffset());
+            outputs.add("xSize: " + gameLogic.field.getxSize());
+            outputs.add("ySize: " + gameLogic.field.getySize());
 
             outputs.add("FPS: " + calcFps());
             //outputs.add("Free mem: " + availMemory() + " MB");

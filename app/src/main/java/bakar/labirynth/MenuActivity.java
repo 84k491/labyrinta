@@ -41,29 +41,30 @@ public class MenuActivity extends Activity implements OnClickListener {
         {
             switch (view.getId()){
                 case R.id.start:
-                    startGameActivity();
+                    //startGameActivity();
+                    startLevelSelectActivity();
                     break;
                 case R.id.settings_bt:
                     startSettingsActivity();
                     break;
                 case R.id.shop_bt:
-                    startResearchActivity();
+                    startShopActivity();
                     break;
                 default: break;
             }
         }
-
     }
 
-    void startGameActivity(){
+    void startLevelSelectActivity(){
+        Intent intent = new Intent(this, LevelSelectActivity.class);
+        intent.putExtra("max_level_allowed", sPref.getInt("level_upg", 1) + 1);
+        startActivityForResult(intent, 1);
+    }
+    void startGameActivity(int level_size){
         long seed = System.currentTimeMillis();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("seed", seed);
-        //intent.putExtra("xsize", /*Integer.parseInt(xsize.getText().toString())*/40);
-        //intent.putExtra("ysize", /*Integer.parseInt(ysize.getText().toString())*/40);
-        //intent.putExtra("uses_joystick", /*joystick.isChecked()*/true);
-        //intent.putExtra("is_debug", /*debug.isChecked()*/false);
-        //intent.putExtra("fog_enabled", /*fog.isChecked()*/false);
+        intent.putExtra("level_size", level_size);
         startActivity(intent);
     }
     void startSettingsActivity(){
@@ -71,8 +72,18 @@ public class MenuActivity extends Activity implements OnClickListener {
         startActivity(intent);
     }
     void startResearchActivity(){
+        Intent intent = new Intent(this, ResearchActivity.class);
+        startActivity(intent);
+    }
+    void startShopActivity(){
         Intent intent = new Intent(this, ShopActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK)
+            startGameActivity(data.getIntExtra("level_size", 1));
     }
 
     @Override
