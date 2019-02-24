@@ -148,12 +148,6 @@ public class MenuActivity extends Activity implements OnClickListener {
     }
     void loadData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
-        //joystick.setChecked(sPref.getBoolean("uses_joystick", true));
-        //debug.setChecked(sPref.getBoolean("is_debug", false));
-        //fog.setChecked(sPref.getBoolean("fog_enabled", false));
-
-        //xsize.setText(String.valueOf(sPref.getInt("xsize", 42)));
-        //ysize.setText(String.valueOf(sPref.getInt("ysize", 42)));
         gold.setText(String.valueOf(sPref.getInt("gold", 0)));
     }
     void startWelcomingAnimations(){
