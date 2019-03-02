@@ -17,25 +17,6 @@ public class SettingsActivity extends Activity {
     Switch fog;
     Button reset_bt;
 
-    void resetSavedData(){
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putInt("level_upg", 0);
-        ed.putInt("teleportAmount", 0);
-        ed.putInt("pathfinderAmount", 0);
-        ed.putInt("pointerAmount", 0);
-        ed.putInt("tp_upg", 0);
-        ed.putInt("pf_upg", 0);
-        ed.putInt("pt_upg", 0);
-        ed.putInt("gold", 0);
-        ed.putInt("level_upg", 0);
-        ed.putInt("level_upg", 0);
-        ed.putInt("level_upg", 0);
-        ed.putInt("level_upg", 0);
-
-        ed.apply();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +30,7 @@ public class SettingsActivity extends Activity {
         reset_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resetSavedData();
+                StoredProgress.getInstance().resetAll();
             }
         });
     }
@@ -69,7 +50,7 @@ public class SettingsActivity extends Activity {
         ed.putBoolean("uses_joystick", joystick.isChecked());
         ed.putBoolean("is_debug", debug.isChecked());
         ed.putBoolean("fog_enabled", fog.isChecked());
-        ed.commit(); //ed.apply();
+        ed.apply();
     }
     void loadData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);

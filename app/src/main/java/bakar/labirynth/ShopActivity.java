@@ -1,6 +1,7 @@
 package bakar.labirynth;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -23,7 +24,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     LinearLayout layout;
     ArrayList<ShopItem> items = new ArrayList<>();
     Random random = new Random(6654345);
-    SharedPreferences sharedPreferences;
     TextView gold;
 
     @Override
@@ -34,8 +34,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         //setGoldAmount(10);
 
-        layout = findViewById(R.id.ll_scroll_layout);
-        gold = findViewById(R.id.tw_gold_amount);
+        layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
+        gold = (TextView)findViewById(R.id.tw_gold_amount);
         updateGoldLabel();
 
         setItems();
@@ -47,12 +47,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             item.getLayout().setOnClickListener(this);
         }
     }
-    void setGoldAmount(int ga){
-        sharedPreferences = getSharedPreferences("global", MODE_PRIVATE);
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putInt("gold", ga);
-        ed.commit();
-    }
 
     @Override
     public void onClick(View view){
@@ -62,32 +56,27 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 item.onTrigger();
                 updateGoldLabel();
             }
-
         }
     }
 
     void updateGoldLabel(){
         if (gold != null) {
-            gold.setText(String.valueOf(getGoldBalance()));
+            gold.setText(String.valueOf(StoredProgress.getInstance().getGoldAmount()));
         }
     }
 
     private int getRandomId(){
         return random.nextInt();
     }
-    int getGoldBalance(){
-        sharedPreferences = getSharedPreferences("global", MODE_PRIVATE);
-        return sharedPreferences.getInt("gold", 0);
-    }
 
     void setItems(){
-        items.add(new NextLevelDifficulty("Level size", "level_upg", 1000));
-        items.add(new BonusBuyItem("Teleport", "teleportAmount", 2000));
-        items.add(new BonusBuyItem("Pathfinder", "pathfinderAmount", 1400));
-        items.add(new BonusBuyItem("Pointer", "pointerAmount", 800));
-        items.add(new UpgrageItem("Teleport upgrade", "tp_upg", 4000));
-        items.add(new UpgrageItem("Pathfinder upgrade","pf_upg", 3200));
-        items.add(new UpgrageItem("Pointer upgrade", "pt_upg", 2700));
+        items.add(new UpgrageItem("Level size", StoredProgress.getInstance().levelUpgKey));
+        items.add(new BonusBuyItem("Teleport", StoredProgress.getInstance().teleportAmountKey));
+        items.add(new BonusBuyItem("Pathfinder", StoredProgress.getInstance().pathfinderAmountKey));
+        items.add(new BonusBuyItem("Pointer", StoredProgress.getInstance().pointerAmountKey));
+        items.add(new UpgrageItem("Teleport upgrade", StoredProgress.getInstance().teleportUpgKey));
+        items.add(new UpgrageItem("Pathfinder upgrade", StoredProgress.getInstance().pathfinderUpgKey));
+        items.add(new UpgrageItem("Pointer upgrade", StoredProgress.getInstance().pointerUpgKey));
         items.add(new GoldBuyItem("More credits (100)",3, 100));
         items.add(new GoldBuyItem("More credits (300)", 5,300));
         items.add(new GoldBuyItem("More credits (1000)", 10,1000));
@@ -103,7 +92,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     abstract class ShopItem{
 
         String label;
-        int startCost;
         LinearLayout assosiatedLayout = null;
         TextView label_tw = null;
         TextView cost_tw = null;
@@ -111,16 +99,13 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         ShopItem(){}
 
         void removeGold(int g){
-            sharedPreferences = getSharedPreferences("global", MODE_PRIVATE);
-            SharedPreferences.Editor ed = sharedPreferences.edit();
-            ed.putInt("gold", getGoldBalance() - getCost());
-            ed.commit();
+            StoredProgress.getInstance().setGold(StoredProgress.getInstance().getGoldAmount() - g);
         }
         void resetValue(){}
 
         void updateLabelText(){label_tw.setText(label);}
         void updateCostText(){cost_tw.setText(String.valueOf(getCost()) + " Cr");}
-        int getCost(){return  startCost;}
+        abstract int getCost();
         abstract void onTrigger();
 
         LinearLayout getLayout(){
@@ -178,76 +163,49 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    // todo remove
     abstract class NotRealBuyItem extends ShopItem{
         String dataKey;
 
         void incrementValue(){
-            int value = getValue();
-            SharedPreferences.Editor ed = sharedPreferences.edit();
-            ed.putInt(dataKey, value + 1);
-            ed.commit();
+            StoredProgress.getInstance().setValue(dataKey, getValue() + 1);
         }
         int getValue(){
-            sharedPreferences = getSharedPreferences("global", MODE_PRIVATE);
-            return sharedPreferences.getInt(dataKey, 0);
-
+            return StoredProgress.getInstance().getValue(dataKey);
         }
         @Override
         void resetValue(){
-            SharedPreferences.Editor ed = sharedPreferences.edit();
-            ed.putInt(dataKey, 0);
-            ed.commit();
+            StoredProgress.getInstance().setValue(dataKey, 0);
         }
         @Override
         void onTrigger(){
-            if (getGoldBalance() > getCost()){
-                removeGold(getValue());
+            if (StoredProgress.getInstance().getGoldAmount() > getCost()){
+                removeGold(getCost());
                 incrementValue();
                 updateCostText();
                 updateLabelText();
                 updateGoldLabel();
             }
         }
-    }
-
-    class NextLevelDifficulty extends NotRealBuyItem{
-        NextLevelDifficulty(String _label, String _dataKey, int _cost){
-            dataKey = _dataKey;
-            label = _label;
-            startCost = _cost;
-        }
-        @Override
-        void updateLabelText(){
-            label_tw.setText(label + " " +(getValue() + 2));
-        }
         @Override
         int getCost(){
-            int result = startCost;
-            for (int i = 0; i < getValue(); ++i)
-                result = Math.round(result * 1.5f);
-            return result;
+            return Economist.getInstance().price_map.get(dataKey).apply(getValue());
         }
     }
+
     class UpgrageItem extends NotRealBuyItem{
-        UpgrageItem(String _label, String _dataKey, int _cost){
+        UpgrageItem(String _label, String _dataKey){
             dataKey = _dataKey;
             label = _label;
-            startCost = _cost;
         }
         @Override
         void updateLabelText(){
             label_tw.setText(label + " " +(getValue() + 1));
         }
-        @Override
-        int getCost(){
-            int result = startCost;
-            for (int i = 0; i < getValue(); ++i)
-                result = result * 2;
-            return result;
-        }
     }
     class GoldBuyItem extends ShopItem{
         int gold;
+        int startCost;
 
         GoldBuyItem(String _label, int _cost, int _gold){
             label = _label;
@@ -256,19 +214,22 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
 
         @Override
+        int getCost() {
+            return startCost;
+        }
+        @Override
         void updateCostText(){
             cost_tw.setText(String.valueOf(getCost()) + " $");
         }
         @Override
         void onTrigger() {
-            setGoldAmount(getGoldBalance() + gold);
+            StoredProgress.getInstance().setGold(StoredProgress.getInstance().getGoldAmount() + gold);
         }
     }
     class BonusBuyItem extends NotRealBuyItem{
-        BonusBuyItem(String _label, String _dataKey, int _cost){
+        BonusBuyItem(String _label, String _dataKey){
             label = _label;
             dataKey = _dataKey;
-            startCost = _cost;
         }
 
         @Override

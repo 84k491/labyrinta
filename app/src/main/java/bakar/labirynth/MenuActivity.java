@@ -92,6 +92,9 @@ public class MenuActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_menu);
 
+        StoredProgress.getInstance().
+                setSharedPreferences(getSharedPreferences("global", MODE_PRIVATE));
+
         justLoadedState = true;
 
         title = findViewById(R.id.main_title);
@@ -139,11 +142,6 @@ public class MenuActivity extends Activity implements OnClickListener {
     void saveData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
-        //ed.putInt("xsize", Integer.parseInt(xsize.getText().toString()));
-        //ed.putInt("ysize", Integer.parseInt(xsize.getText().toString()));
-        //ed.putBoolean("uses_joystick", joystick.isChecked());
-        //ed.putBoolean("is_debug", debug.isChecked());
-        //ed.putBoolean("fog_enabled", fog.isChecked());
         ed.commit(); //ed.apply();
     }
     void loadData() {

@@ -1,7 +1,10 @@
 package bakar.labirynth;
 
+import android.arch.core.util.Function;
 import android.graphics.Point;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class Economist {
@@ -27,6 +30,8 @@ public class Economist {
     private final LinearFunction levelRewardOfSide;
     private final LinearFunction coinsAmountOfSide;
 
+    Map<String, Function<Integer, Integer> > price_map = new HashMap<>();
+
     public static Economist getInstance() {
         return ourInstance;
     }
@@ -36,6 +41,31 @@ public class Economist {
 
         coinsAmountOfSide = new LinearFunction(.5f, .0f);
         levelRewardOfSide = new LinearFunction((float)coinCost, .0f);
+
+        price_map.put(StoredProgress.teleportUpgKey,
+                (Integer upgLevel) -> {return Math.round(teleportUpgCostOfUpgLevel.calc(upgLevel));});
+
+        price_map.put(StoredProgress.pointerUpgKey,
+                (Integer upgLevel) -> {return Math.round(pointerUpgCostOfUpgLevel.calc(upgLevel));});
+
+        price_map.put(StoredProgress.pathfinderUpgKey,
+                (Integer upgLevel) -> {return Math.round(pathfinderUpgCostOfUpgLevel.calc(upgLevel));});
+
+        price_map.put(StoredProgress.pathfinderAmountKey,
+                (Integer upgLevel) -> {return Math.round(pathfinderCostOfUpgLevel.calc(upgLevel));});
+
+        price_map.put(StoredProgress.teleportAmountKey,
+                (Integer upgLevel) -> {return Math.round(teleportCostOfUpgLevel.calc(upgLevel));});
+
+        price_map.put(StoredProgress.pointerAmountKey,
+                (Integer upgLevel) -> {return Math.round(pointerCostOfUpgLevel.calc(upgLevel));});
+
+        price_map.put(StoredProgress.levelUpgKey,
+                (Integer upgLevel) -> {return getNextLevelCost(getLevelHypotByUpg(upgLevel));});
+    }
+
+    float getLevelHypotByUpg(Integer upgLevel){
+        return upgLevel * nextLevelHypotIncrementation;
     }
 
     float getSquareSide(float hypot){
@@ -77,26 +107,6 @@ public class Economist {
     int getCoinsAmountRand(float hypot){
         float avg = getCoinsAmountAvg(hypot);
         return Math.round(avg + random.nextFloat() * avg * 0.15f);
-    }
-
-    int getPathfinderCost(int upgLevel){
-        return Math.round(pathfinderCostOfUpgLevel.calc(upgLevel));
-    }
-    int getPointerCost(int upgLevel){
-        return Math.round(pointerCostOfUpgLevel.calc(upgLevel));
-    }
-    int getTeleportCost(int upgLevel){
-        return Math.round(teleportCostOfUpgLevel.calc(upgLevel));
-    }
-
-    int getPointerUpgCost(int upgLevel){
-        return Math.round(pointerUpgCostOfUpgLevel.calc(upgLevel));
-    }
-    int getPathfinderUpgCost(int upgLevel){
-        return Math.round(pathfinderUpgCostOfUpgLevel.calc(upgLevel));
-    }
-    int getTeleportUpgCost(int upgLevel){
-        return Math.round(teleportUpgCostOfUpgLevel.calc(upgLevel));
     }
 
     private class LinearFunction{
