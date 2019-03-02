@@ -57,7 +57,7 @@ public class MenuActivity extends Activity implements OnClickListener {
 
     void startLevelSelectActivity(){
         Intent intent = new Intent(this, LevelSelectActivity.class);
-        intent.putExtra("max_level_allowed", sPref.getInt("level_upg", 1) + 1);
+        intent.putExtra("max_level_allowed", sPref.getInt("level_upg", 1));
         startActivityForResult(intent, 1);
     }
     void startGameActivity(int level_size){

@@ -10,7 +10,7 @@ import java.util.Random;
 public class Economist {
     private static final Economist ourInstance = new Economist();
 
-    final int coinCost = 3;
+    static final int coinCost = 3;
 
     private final Random random;
 
@@ -28,7 +28,11 @@ public class Economist {
     private final LinearFunction pointerUpgCostOfUpgLevel = new LinearFunction(2000.f, 5000.f);
 
     private final LinearFunction levelRewardOfSide;
-    private final LinearFunction coinsAmountOfSide;
+
+    private final LinearFunction coinsAmountOfSquare;
+    private final LinearFunction pointerPropabilityOfSquare;
+    private final LinearFunction teleportPropabilityOfSquare;
+    private final LinearFunction pathfinderPropabilityOfSquare;
 
     Map<String, Function<Integer, Integer> > price_map = new HashMap<>();
 
@@ -39,7 +43,7 @@ public class Economist {
     private Economist(){
         random = new Random(System.currentTimeMillis());
 
-        coinsAmountOfSide = new LinearFunction(.5f, .0f);
+        coinsAmountOfSquare = new LinearFunction(.006f, .0f);
         levelRewardOfSide = new LinearFunction((float)coinCost, .0f);
 
         price_map.put(StoredProgress.teleportUpgKey,
@@ -52,13 +56,19 @@ public class Economist {
                 (Integer upgLevel) -> {return Math.round(pathfinderUpgCostOfUpgLevel.calc(upgLevel));});
 
         price_map.put(StoredProgress.pathfinderAmountKey,
-                (Integer upgLevel) -> {return Math.round(pathfinderCostOfUpgLevel.calc(upgLevel));});
+                (Integer upgLevel) -> {return Math.round(
+                        pathfinderCostOfUpgLevel.calc(StoredProgress.getInstance().getValue(
+                                StoredProgress.pathfinderUpgKey)));});
 
         price_map.put(StoredProgress.teleportAmountKey,
-                (Integer upgLevel) -> {return Math.round(teleportCostOfUpgLevel.calc(upgLevel));});
+                (Integer upgLevel) -> {return Math.round(
+                        teleportCostOfUpgLevel.calc(StoredProgress.getInstance().getValue(
+                                StoredProgress.teleportUpgKey)));});
 
         price_map.put(StoredProgress.pointerAmountKey,
-                (Integer upgLevel) -> {return Math.round(pointerCostOfUpgLevel.calc(upgLevel));});
+                (Integer upgLevel) -> {return Math.round(
+                        pointerCostOfUpgLevel.calc(StoredProgress.getInstance().getValue(
+                                StoredProgress.pointerUpgKey)));});
 
         price_map.put(StoredProgress.levelUpgKey,
                 (Integer upgLevel) -> {return getNextLevelCost(getLevelHypotByUpg(upgLevel));});
@@ -71,12 +81,15 @@ public class Economist {
     float getSquareSide(float hypot){
         return (float)(hypot / Math.sqrt(2));
     }
+    float getSquare(float hypot){
+        return getSquareSide(hypot) * getSquareSide(hypot);
+    }
 
     float getAverageLength(float hypot){
         return avgLengthOfHypot.calc(hypot);
     }
 
-    float getHypot(Point levelSize){
+    static float getHypot(Point levelSize){
         return (float)Math.sqrt(levelSize.x * levelSize.x + levelSize.y * levelSize.y);
     }
 
@@ -101,7 +114,7 @@ public class Economist {
     }
 
     float getCoinsAmountAvg(float hypot){
-        return coinsAmountOfSide.calc(getSquareSide(hypot));
+        return coinsAmountOfSquare.calc(getSquare(hypot));
     }
 
     int getCoinsAmountRand(float hypot){

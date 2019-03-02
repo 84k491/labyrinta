@@ -156,7 +156,10 @@ class GameLogic {
     }
 
     void onExitReached(){
-        earnedGold += field.getxSize() + field.getySize();
+        int levelReward = Economist.getInstance().getLevelReward(
+                Economist.getHypot(new Point(field.getxSize(), field.getySize())));
+        earnedGold += levelReward;
+
         gameRenderer.onTouchUp(null);
         seed = System.currentTimeMillis();
         finded_path = null;
@@ -165,8 +168,8 @@ class GameLogic {
         startEndActivity();
     }
     void onCoinPickedUp(){
-        earnedGold += 50;
-        gameRenderer.addPickUpAnimation(playerCoords(), "+50");
+        earnedGold += Economist.coinCost;
+        gameRenderer.addPickUpAnimation(playerCoords(), "+" + String.valueOf(Economist.coinCost));
     }
     void onPointerPickedUp(){
         pointerAmount++;
@@ -584,7 +587,6 @@ class GameLogic {
         }
     }
 
-
     class EntityFactory{
         // TODO check Glide
         LinkedList<Entity> entities = new LinkedList<>();
@@ -638,8 +640,7 @@ class GameLogic {
         }
 
         void dropCoins(){
-            Random random = new Random(seed);
-            int amount_of_coins = (field.getxSize() + field.getySize()) / 10;
+            int amount_of_coins = Economist.getInstance().getCoinsAmountRand(field.getHypot());
             for (int i = 0; i < amount_of_coins; ++i)
                 makeCoin(getFreeCell());
         }

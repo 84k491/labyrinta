@@ -100,6 +100,9 @@ class Field {
      void set(int x, int y, boolean value){cells[x][y] = value;}
      int getxSize(){return xSize;}
      int getySize(){return ySize;}
+     float getHypot(){
+         return (float) Math.sqrt(xSize * xSize + ySize * ySize);
+     }
 
      class Architect{
          CPoint.Field cursor;

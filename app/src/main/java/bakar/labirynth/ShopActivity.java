@@ -163,7 +163,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    // todo remove
     abstract class NotRealBuyItem extends ShopItem{
         String dataKey;
 
