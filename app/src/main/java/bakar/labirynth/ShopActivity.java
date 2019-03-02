@@ -2,33 +2,21 @@ package bakar.labirynth;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.util.Log;
 import android.util.Xml;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Level;
 
 public class ShopActivity extends Activity implements View.OnClickListener {
 
@@ -93,7 +81,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     void setItems(){
-        items.add(new UpgrageItem("Level size", "level_upg", 1000));
+        items.add(new NextLevelDifficulty("Level size", "level_upg", 1000));
         items.add(new BonusBuyItem("Teleport", "teleportAmount", 2000));
         items.add(new BonusBuyItem("Pathfinder", "pathfinderAmount", 1400));
         items.add(new BonusBuyItem("Pointer", "pointerAmount", 800));
@@ -219,6 +207,25 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 updateLabelText();
                 updateGoldLabel();
             }
+        }
+    }
+
+    class NextLevelDifficulty extends NotRealBuyItem{
+        NextLevelDifficulty(String _label, String _dataKey, int _cost){
+            dataKey = _dataKey;
+            label = _label;
+            startCost = _cost;
+        }
+        @Override
+        void updateLabelText(){
+            label_tw.setText(label + " " +(getValue() + 2));
+        }
+        @Override
+        int getCost(){
+            int result = startCost;
+            for (int i = 0; i < getValue(); ++i)
+                result = Math.round(result * 1.5f);
+            return result;
         }
     }
     class UpgrageItem extends NotRealBuyItem{
