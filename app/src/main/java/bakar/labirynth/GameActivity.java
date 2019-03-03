@@ -50,8 +50,8 @@ public class GameActivity extends Activity{
         result.x = Math.round(resultF.x);
         result.y = Math.round(resultF.y);
 
-        float hypot_check = (float)Math.sqrt(result.x * result.x + result.y * result.y);
-        float diff = hypot - hypot_check;
+//        float hypot_check = (float)Math.sqrt(result.x * result.x + result.y * result.y);
+//        float diff = hypot - hypot_check;
 
         return result;
     }
@@ -74,12 +74,14 @@ public class GameActivity extends Activity{
 
         touchListener = new CustomTouchListener();
 
-        Point lvl_size = difficultyToActualSize(intent.getIntExtra("level_size", 1));
+        int difficulty = intent.getIntExtra("level_size", 1);
 
+        Point lvl_size = difficultyToActualSize(difficulty);
         gameLogic = new GameLogic(gameRenderer, intent.getLongExtra("seed", 123456789),
                 lvl_size.x, lvl_size.y);
+        gameLogic.level_difficulty = difficulty;
 
-        gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
+                gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
         gameRenderer.setOnTouchListener(touchListener);
         gameRenderer.setGameLogic(gameLogic);
         loadData();
@@ -156,7 +158,8 @@ public class GameActivity extends Activity{
 
     void goToNextLevel(){
         gameLogic.isInited = false;
-        gameLogic.init(gameLogic.field.getxSize(), gameLogic.field.getySize());
+        Point size = difficultyToActualSize(gameLogic.level_difficulty);
+        gameLogic.init(size.x, size.y);
         gameRenderer.buttons.get(0).onClick(); // center to player
         ((GameRenderer.PlayerFinder)gameRenderer.buttons.get(0)).instantAnimation();
         gameRenderer.onTouchUp(null);

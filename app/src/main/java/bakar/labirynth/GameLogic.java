@@ -27,6 +27,8 @@ class GameLogic {
     boolean pathfinderActive = false;
     boolean teleportActive = false;
 
+    int level_difficulty = 1;
+
     int pointerAmount = 0;
     int teleportAmount = 0;
     int pathfinderAmount = 0;
