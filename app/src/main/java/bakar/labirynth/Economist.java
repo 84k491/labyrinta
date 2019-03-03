@@ -10,12 +10,14 @@ import java.util.Random;
 public class Economist {
     private static final Economist ourInstance = new Economist();
 
-    static final int coinCost = 3;
+    private final float coinCostAvg;
 
     private final Random random;
 
-    final float nextLevelHypotIncrementation = (float)(5.f * Math.sqrt(2));
-    final float startLevelHypot = (float)(15.f * Math.sqrt(2));
+    private final float nextLevelHypotIncrementation = (float)(5.f * Math.sqrt(2));
+    private final float startLevelHypot = (float)(15.f * Math.sqrt(2));
+
+    private final float coinIncomeToRewardCoef = 1.f;
 
     private final LinearFunction avgLengthOfHypot = new LinearFunction(1.7f, 3.f);
     private final LinearFunction levelAmountOfLength = new LinearFunction(0.f, 5.f);
@@ -81,6 +83,9 @@ public class Economist {
         pointerPropabilityOfSquare = new LinearFunction(.03f * (1 / square), 0.f);
         teleportPropabilityOfSquare = new LinearFunction(.01f * (1 / square), 0.f);
         pathfinderPropabilityOfSquare = new LinearFunction(.02f * (1 / square), 0.f);
+
+        float exampleHypot = 25.f;
+        coinCostAvg = (getLevelReward(exampleHypot) * coinIncomeToRewardCoef) / getCoinsAmountAvg(exampleHypot);
     }
 
     float getLevelHypotByUpg(Integer upgLevel){
@@ -117,7 +122,7 @@ public class Economist {
 
     int getLevelTotalIncome(float hypot, float coinsPercent){
         float result = 0;
-        result += getCoinsAmountAvg(hypot) * coinCost * (coinsPercent / 100.f);
+        result += getCoinsAmountAvg(hypot) * coinCostAvg * (coinsPercent / 100.f);
         result += getLevelReward(hypot);
         return Math.round(result);
     }
@@ -131,6 +136,12 @@ public class Economist {
         float rand = random.nextFloat() * 2.f - 1.f;
         rand *= avg * 0.15f;
         return Math.round(avg + rand);
+    }
+
+    int getCoinCostRand(){
+        float rand = random.nextFloat() * 2.f - 1.f;
+        rand *= coinCostAvg * 0.2;
+        return Math.round(coinCostAvg + rand);
     }
 
     float getTeleportPropability(float hypot){

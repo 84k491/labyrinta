@@ -172,8 +172,9 @@ class GameLogic {
         startEndActivity();
     }
     void onCoinPickedUp(){
-        earnedGold += Economist.coinCost;
-        gameRenderer.addPickUpAnimation(playerCoords(), "+" + String.valueOf(Economist.coinCost));
+        int pickedUpCoinCost = Economist.getInstance().getCoinCostRand();
+        earnedGold += pickedUpCoinCost;
+        gameRenderer.addPickUpAnimation(playerCoords(), "+" + String.valueOf(pickedUpCoinCost));
     }
     void onPointerPickedUp(){
         pointerAmount++;
