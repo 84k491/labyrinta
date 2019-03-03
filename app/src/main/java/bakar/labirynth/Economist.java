@@ -15,6 +15,7 @@ public class Economist {
     private final Random random;
 
     final float nextLevelHypotIncrementation = (float)(5.f * Math.sqrt(2));
+    final float startLevelHypot = (float)(15.f * Math.sqrt(2));
 
     private final LinearFunction avgLengthOfHypot = new LinearFunction(1.7f, 3.f);
     private final LinearFunction levelAmountOfLength = new LinearFunction(0.f, 5.f);
@@ -27,7 +28,7 @@ public class Economist {
     private final LinearFunction teleportUpgCostOfUpgLevel = new LinearFunction(4000.f, 12000.f);
     private final LinearFunction pointerUpgCostOfUpgLevel = new LinearFunction(2000.f, 5000.f);
 
-    private final LinearFunction levelRewardOfSide;
+    private final LinearFunction levelRewardOfLength;
 
     private final LinearFunction coinsAmountOfSquare;
     private final LinearFunction pointerPropabilityOfSquare;
@@ -39,13 +40,7 @@ public class Economist {
     public static Economist getInstance() {
         return ourInstance;
     }
-
-    private Economist(){
-        random = new Random(System.currentTimeMillis());
-
-        coinsAmountOfSquare = new LinearFunction(.006f, .0f);
-        levelRewardOfSide = new LinearFunction((float)coinCost, .0f);
-
+    void priceMapSetUp(){
         price_map.put(StoredProgress.teleportUpgKey,
                 (Integer upgLevel) -> {return Math.round(teleportUpgCostOfUpgLevel.calc(upgLevel));});
 
@@ -74,8 +69,22 @@ public class Economist {
                 (Integer upgLevel) -> {return getNextLevelCost(getLevelHypotByUpg(upgLevel));});
     }
 
+    private Economist(){
+        priceMapSetUp();
+        random = new Random(System.currentTimeMillis());
+
+        levelRewardOfLength = new LinearFunction(.5f, .0f);
+
+        float square = 20 * 20;
+
+        coinsAmountOfSquare = new LinearFunction(4.f * (1 / square), .0f);
+        pointerPropabilityOfSquare = new LinearFunction(.03f * (1 / square), 0.f);
+        teleportPropabilityOfSquare = new LinearFunction(.01f * (1 / square), 0.f);
+        pathfinderPropabilityOfSquare = new LinearFunction(.02f * (1 / square), 0.f);
+    }
+
     float getLevelHypotByUpg(Integer upgLevel){
-        return upgLevel * nextLevelHypotIncrementation;
+        return startLevelHypot + (upgLevel - 1) * nextLevelHypotIncrementation;
     }
 
     float getSquareSide(float hypot){
@@ -103,14 +112,14 @@ public class Economist {
     }
 
     int getLevelReward(float hypot){
-        return Math.round(levelRewardOfSide.calc(getSquareSide(hypot)));
+        return Math.round(levelRewardOfLength.calc(getAverageLength(hypot)));
     }
 
     int getLevelTotalIncome(float hypot, float coinsPercent){
-        int result = 0;
+        float result = 0;
         result += getCoinsAmountAvg(hypot) * coinCost * (coinsPercent / 100.f);
         result += getLevelReward(hypot);
-        return result;
+        return Math.round(result);
     }
 
     float getCoinsAmountAvg(float hypot){
@@ -119,7 +128,19 @@ public class Economist {
 
     int getCoinsAmountRand(float hypot){
         float avg = getCoinsAmountAvg(hypot);
-        return Math.round(avg + random.nextFloat() * avg * 0.15f);
+        float rand = random.nextFloat() * 2.f - 1.f;
+        rand *= avg * 0.15f;
+        return Math.round(avg + rand);
+    }
+
+    float getTeleportPropability(float hypot){
+        return teleportPropabilityOfSquare.calc(getSquare(hypot));
+    }
+    float getPathfinderPropability(float hypot){
+        return pathfinderPropabilityOfSquare.calc(getSquare(hypot));
+    }
+    float getPointerPropability(float hypot){
+        return pointerPropabilityOfSquare.calc(getSquare(hypot));
     }
 
     private class LinearFunction{

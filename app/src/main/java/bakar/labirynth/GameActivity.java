@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,6 +24,7 @@ public class GameActivity extends Activity{
     // TODO: 19.05.2018 rate this app
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
+    // todo OOM при переходе на след. уровень
     GameRenderer gameRenderer;
     GameLogic gameLogic;
     CustomTouchListener touchListener;
@@ -32,13 +34,24 @@ public class GameActivity extends Activity{
     Point difficultyToActualSize(int lvl_difficulty){
         // от сложности должна зависеть диагональ прямоугольника
 
-        Point result = new Point();
-        int square_side = lvl_difficulty * 5 + 15; // это квадратный корень площади уровня
+        float hypot = Economist.getInstance().getLevelHypotByUpg(lvl_difficulty);
+
+        float square_side = Economist.getInstance().getSquareSide(hypot);
 
         Random random = new Random(System.currentTimeMillis());
+        float rand = random.nextFloat() * 2.f - 1.f;
+        rand *= square_side / 4.f;
 
-        result.x = random.nextInt(square_side / 4) + square_side;
-        result.y = Math.round((float)Math.sqrt(square_side * 2 + result.x * result.x));
+        PointF resultF = new PointF(0,0);
+        resultF.x = square_side + rand;
+        resultF.y = (float)Math.sqrt(hypot * hypot - resultF.x * resultF.x);
+
+        Point result = new Point();
+        result.x = Math.round(resultF.x);
+        result.y = Math.round(resultF.y);
+
+        float hypot_check = (float)Math.sqrt(result.x * result.x + result.y * result.y);
+        float diff = hypot - hypot_check;
 
         return result;
     }
@@ -61,7 +74,7 @@ public class GameActivity extends Activity{
 
         touchListener = new CustomTouchListener();
 
-        Point lvl_size = difficultyToActualSize(intent.getIntExtra("level_size", 0));
+        Point lvl_size = difficultyToActualSize(intent.getIntExtra("level_size", 1));
 
         gameLogic = new GameLogic(gameRenderer, intent.getLongExtra("seed", 123456789),
                 lvl_size.x, lvl_size.y);

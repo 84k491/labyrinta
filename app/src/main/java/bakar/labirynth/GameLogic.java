@@ -82,6 +82,8 @@ class GameLogic {
         traces.clear();
         traces.add(game2field(playerPt));
 
+        earnedGold = 0;
+
         eFactory.reset();
         eFactory.makeExit(field.exitPos);
         //eFactory.makePointer(new Point(1, 1));
@@ -591,11 +593,6 @@ class GameLogic {
         // TODO check Glide
         LinkedList<Entity> entities = new LinkedList<>();
 
-        // сделать зависимыми от размера поля
-        float pointerProbability = 5.f;
-        float pathfinderProbability = 3.f;
-        float teleportProbability = 2.5f;
-
         void init(){
         }
 
@@ -646,16 +643,17 @@ class GameLogic {
         }
         void dropBonuses(){
             Random random = new Random(seed);
-            int nextint = random.nextInt(1000);
-            if ((float)(nextint) / 10.f < pointerProbability){
+            int bound = 10000;
+            int nextint = random.nextInt(bound);
+            if ((float)(nextint) / (float)bound < Economist.getInstance().getPointerPropability(field.getHypot())){
                 makePointer(getFreeCell());
             }
-            nextint = random.nextInt(1000);
-            if ((float)(nextint) / 10.f < teleportProbability){
+            nextint = random.nextInt(bound);
+            if ((float)(nextint) / (float)bound < Economist.getInstance().getTeleportPropability(field.getHypot())){
                 makeTeleport(getFreeCell());
             }
-            nextint = random.nextInt(1000);
-            if ((float)(nextint) / 10.f < pathfinderProbability){
+            nextint = random.nextInt(bound);
+            if ((float)(nextint) / (float)bound < Economist.getInstance().getPathfinderPropability(field.getHypot())){
                 makePathfinder(getFreeCell());
             }
         }
