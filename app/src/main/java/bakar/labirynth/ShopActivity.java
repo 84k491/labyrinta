@@ -32,8 +32,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_shop);
 
-        //setGoldAmount(10);
-
         layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
         gold = (TextView)findViewById(R.id.tw_gold_amount);
         updateGoldLabel();
@@ -178,7 +176,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
         @Override
         void onTrigger(){
-            if (StoredProgress.getInstance().getGoldAmount() > getCost()){
+            if (StoredProgress.getInstance().getGoldAmount() >= getCost()){
                 removeGold(getCost());
                 incrementValue();
                 updateCostText();

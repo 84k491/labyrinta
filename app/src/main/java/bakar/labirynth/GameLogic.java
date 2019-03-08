@@ -161,7 +161,7 @@ class GameLogic {
 
     void onExitReached(){
         int levelReward = Economist.getInstance().getLevelReward(
-                Economist.getHypot(new Point(field.getxSize(), field.getySize())));
+                Economist.hypot(new Point(field.getxSize(), field.getySize())));
         earnedGold += levelReward;
 
         gameRenderer.onTouchUp(null);

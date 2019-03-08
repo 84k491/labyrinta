@@ -103,7 +103,7 @@ public class Economist {
         return avgLengthOfHypot.calc(hypot);
     }
 
-    static float getHypot(Point levelSize){
+    static float hypot(Point levelSize){
         return (float)Math.sqrt(levelSize.x * levelSize.x + levelSize.y * levelSize.y);
     }
 

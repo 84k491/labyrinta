@@ -3,6 +3,7 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -63,13 +64,13 @@ public class GameActivity extends Activity{
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        //getWindow().setFormat(PixelFormat.RGBA_8888);
 
         Intent intent = getIntent();
         sPref = getSharedPreferences("global", MODE_PRIVATE);
 
         gameRenderer = new GameRenderer(this);
         gameRenderer.isDebug = sPref.getBoolean("is_debug",false);
-
         gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
 
         touchListener = new CustomTouchListener();
