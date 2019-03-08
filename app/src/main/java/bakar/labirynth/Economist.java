@@ -22,13 +22,13 @@ public class Economist {
     private final LinearFunction avgLengthOfHypot = new LinearFunction(1.7f, 3.f);
     private final LinearFunction levelAmountOfLength = new LinearFunction(0.f, 5.f);
 
-    private final LinearFunction pathfinderCostOfUpgLevel = new LinearFunction(200.f, 400.f);
-    private final LinearFunction teleportCostOfUpgLevel = new LinearFunction(230.f, 500.f);
-    private final LinearFunction pointerCostOfUpgLevel = new LinearFunction(170f, 300.f);
+    private final LinearFunction pathfinderCostOfUpgLevel;
+    private final LinearFunction teleportCostOfUpgLevel;
+    private final LinearFunction pointerCostOfUpgLevel;
 
-    private final LinearFunction pathfinderUpgCostOfUpgLevel = new LinearFunction(3000.f, 8000.f);
-    private final LinearFunction teleportUpgCostOfUpgLevel = new LinearFunction(4000.f, 12000.f);
-    private final LinearFunction pointerUpgCostOfUpgLevel = new LinearFunction(2000.f, 5000.f);
+    private final LinearFunction pathfinderUpgCostOfUpgLevel;
+    private final LinearFunction teleportUpgCostOfUpgLevel;
+    private final LinearFunction pointerUpgCostOfUpgLevel;
 
     private final LinearFunction levelRewardOfLength;
 
@@ -79,13 +79,23 @@ public class Economist {
 
         float square = 20 * 20;
 
-        coinsAmountOfSquare = new LinearFunction(4.f * (1 / square), .0f);
+        coinsAmountOfSquare = new LinearFunction(2.f * (1 / square), .0f);
         pointerPropabilityOfSquare = new LinearFunction(.03f * (1 / square), 0.f);
         teleportPropabilityOfSquare = new LinearFunction(.01f * (1 / square), 0.f);
         pathfinderPropabilityOfSquare = new LinearFunction(.02f * (1 / square), 0.f);
 
         float exampleHypot = 25.f;
         coinCostAvg = (getLevelReward(exampleHypot) * coinIncomeToRewardCoef) / getCoinsAmountAvg(exampleHypot);
+
+        float baseCost = getLevelReward(getLevelHypotByUpg(1));
+
+        pathfinderCostOfUpgLevel = new LinearFunction(baseCost * 2.f, baseCost * 9);
+        teleportCostOfUpgLevel = new LinearFunction(baseCost * 3.f, baseCost * 12);
+        pointerCostOfUpgLevel = new LinearFunction(baseCost * 1.2f, baseCost * 7);
+
+        pathfinderUpgCostOfUpgLevel = new LinearFunction(baseCost * 4.1f, baseCost * 34);
+        teleportUpgCostOfUpgLevel = new LinearFunction(baseCost * 5.3f, baseCost * 40);
+        pointerUpgCostOfUpgLevel = new LinearFunction(baseCost * 4.2f, baseCost * 25);
     }
 
     float getLevelHypotByUpg(Integer upgLevel){
