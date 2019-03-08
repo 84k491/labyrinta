@@ -471,8 +471,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             Bitmap blured = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
-            int color1 = Color.rgb(170, 50, 110);
-            int color2 = Color.rgb(23, 130, 170);
+            int color1 = Color.parseColor("#1e508c");
+            int color2 = Color.parseColor("#da2b90");
             LinearGradient shader = new LinearGradient(0, 0, w, h - 70,
                     color1, color2, Shader.TileMode.MIRROR);
             Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
