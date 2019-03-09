@@ -1015,8 +1015,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-
-
     class BitmapList extends ArrayList<Bitmap>{
         String whoami;
 
@@ -1884,5 +1882,4 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
     }
-
 }
