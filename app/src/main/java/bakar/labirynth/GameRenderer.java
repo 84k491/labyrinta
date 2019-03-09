@@ -32,8 +32,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
 
 import static android.graphics.Path.Direction.CW;
 
@@ -70,6 +72,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     private GameLogic gameLogic;
     private RenderThread renderThread;
+    private RenderScript rs = RenderScript.create(getContext());
 
     private Context context;
 
@@ -392,6 +395,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private long redrawPeriod = 30; // milliS // microS
         private long fpsTimer = 0;
 
+        private int dotDepthLevelAmount = 10;
+        private float maxDotBlurRadius = 24.f;
+
         private Bitmap labBitmap;
         private Bitmap fogBitmap;
         private Bitmap backgroundBitmap;
@@ -416,6 +422,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         AnimationBitmaps bitmaps = new AnimationBitmaps();
 
         //Todo: перенести Paint в ресурсы цвета
+        private Paint dotPaint = new Paint();
         private Paint common = new Paint();
         private Paint floor = new Paint();
         private Paint wall = new Paint();
@@ -464,29 +471,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
 
+            random = new Random(System.currentTimeMillis());
+
+            for (int i = 0; i < 100; ++i){
+                dotPool.add(new TheDot());
+            }
+
             createFogBmp();
-
-            int h = getHeight();
-            int w = getWidth();
-
-            Bitmap blured = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-
-            int color1 = Color.parseColor("#1e508c");
-            int color2 = Color.parseColor("#da2b90");
-            LinearGradient shader = new LinearGradient(0, 0, w, h - 70,
-                    color1, color2, Shader.TileMode.MIRROR);
-            Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-            p.setDither(false);
-            p.setShader(shader);
-
-            Canvas c = new Canvas(blured);
-            c.drawRect(0,0,w, h, p);
-            //backgroundBitmap = blur(getContext(), blured);
-            //backgroundBitmap = blurFastGauss(1000, blured);
-            //backgroundBitmap = blurStack(100, blured);
-            //backgroundBitmap = blurBox(500, blured);
-            //backgroundBitmap = blurSuperFast(100, blured);
-            backgroundBitmap = blured;
+            updateBackgroundBmp();
         }
 
         private long getTime(){
@@ -587,6 +579,72 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawPath(poly, wall);
         }
 
+        Bitmap makeTransparentBmp(int size){
+            int width =  size;
+            int height = size;
+            Bitmap myBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            int [] allpixels = new int [ myBitmap.getHeight()*myBitmap.getWidth()];
+            myBitmap.setPixels(allpixels, 0, width, 0, 0, width, height);
+
+            for(int i =0; i<myBitmap.getHeight() * myBitmap.getWidth(); i++) {
+                allpixels[i] = Color.alpha(Color.TRANSPARENT);
+            }
+
+            myBitmap.setPixels(allpixels, 0, myBitmap.getWidth(), 0, 0, myBitmap.getWidth(), myBitmap.getHeight());
+            return myBitmap;
+        }
+        Bitmap makeDotBmp(float dot_radius, float blur_radius){
+            Bitmap dot = makeTransparentBmp(Math.round(dot_radius * 2 + dot_radius * blur_radius / 2));
+
+            Canvas dot_canvas = new Canvas(dot);
+            Paint dot_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            dot_paint.setColor(Color.argb(255, 255, 255, 255));
+            dot_canvas.drawCircle(dot.getWidth() / 2, dot.getHeight() / 2, dot_radius, dot_paint);
+            if (0 != blur_radius)
+                dot = blurRs(blur_radius, dot);
+
+            return dot;
+        }
+        Bitmap getDotBmp(int dot_radius, int depthLevel){
+            long key = Math.round(Math.pow(dot_radius, depthLevel));
+
+            if (!dotBitmaps.containsKey(key)){
+                float blur_radius = depthLevel * maxDotBlurRadius / dotDepthLevelAmount;
+                dotBitmaps.put(key, makeDotBmp(dot_radius, blur_radius));
+            }
+            return dotBitmaps.get(key);
+        }
+        ArrayList<TheDot> dotPool = new ArrayList<>();
+        Map<Long, Bitmap> dotBitmaps = new HashMap<>();
+        Random random;
+
+        void updateBackgroundBmp(){
+            int h = getHeight();
+            int w = getWidth();
+
+            Bitmap blured = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+            int color1 = Color.parseColor("#1e508c");
+            int color2 = Color.parseColor("#da2b90");
+            LinearGradient shader = new LinearGradient(0, 0, w, h - 70,
+                    color1, color2, Shader.TileMode.MIRROR);
+            Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+            p.setDither(false);
+            p.setShader(shader);
+
+            Canvas c = new Canvas(blured);
+            c.drawRect(0,0,w, h, p);
+
+            //c.drawBitmap(makeDotBmp(5, 25), new Matrix(), common);
+            //backgroundBitmap = blur(getContext(), blured);
+            //backgroundBitmap = blurFastGauss(40, blured);
+            //backgroundBitmap = blurStack(100, blured);
+            //backgroundBitmap = blurBox(500, blured);
+            //backgroundBitmap = blurSuperFast(100, blured);
+            backgroundBitmap = blured;
+        }
+
         void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge){
             translate_matrix.reset();
             if (isLarge)
@@ -607,6 +665,20 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             canvas.drawBitmap(bmp,
                     translate_matrix, common);
+        }
+        void drawDotBitmap(Canvas canvas, Bitmap bmp, CPoint.Screen pos){
+            translate_matrix.reset();
+
+            translate_matrix.preTranslate(pos.x - (float)bmp.getWidth() / 2,
+                    pos.y  - (float)bmp.getHeight() / 2);
+
+            canvas.drawBitmap(bmp,
+                    translate_matrix, dotPaint);
+        }
+        void drawDots(Canvas canvas){
+            for(TheDot dot: dotPool){
+                dot.draw(canvas);
+            }
         }
         void drawDebugText(Canvas canvas){
             if (!isDebug)
@@ -827,6 +899,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawBackground(canvas);
             profiler.stop("BG");
 
+            profiler.start("Dots");
+            drawDots(canvas);
+            profiler.stop("Dots");
+
             // отрисовка игровых объектов в игровых координатах
             camera.applyToCanvas(canvas);
 
@@ -898,7 +974,48 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 }
             }
         }
+
+        class TheDot{
+            CPoint.Screen pos = new CPoint.Screen();
+            int radius;
+            int depth;
+            PointF moveVector = new PointF();
+            int alpha;
+            int alphaStep = 1;
+
+            TheDot(){
+                randomValues();
+                alpha = random.nextInt(200) - 100;
+            }
+            void randomValues(){
+                pos.x = random.nextFloat() * getWidth();
+                pos.y = random.nextFloat() * getHeight();
+
+                moveVector.x = random.nextFloat() * .4f - .2f;
+                moveVector.y = random.nextFloat() * .4f - .2f;
+
+                radius = random.nextInt(3) + 1;
+                depth = random.nextInt(dotDepthLevelAmount);
+            }
+            void moveByVector(){
+                pos.offset(moveVector.x, moveVector.y);
+            }
+            void draw(Canvas canvas){
+                //dotPaint.setAlpha(100 - Math.abs(alpha));
+                drawDotBitmap(canvas, getDotBmp(radius, depth), pos);
+
+                moveByVector();
+
+                alpha += alphaStep;
+                if (alpha > 40){
+                    alpha = -40;
+                    randomValues();
+                }
+            }
+        }
     }
+
+
 
     class BitmapList extends ArrayList<Bitmap>{
         String whoami;
@@ -1322,22 +1439,19 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private static final float BITMAP_SCALE = 1.f;
-    private static final float BLUR_RADIUS = 15.f;
 
-    public Bitmap blurRs(Context context, Bitmap image) {
+    public Bitmap blurRs(float radius, Bitmap image) {
         int width = Math.round(image.getWidth() * BITMAP_SCALE);
         int height = Math.round(image.getHeight() * BITMAP_SCALE);
 
         Bitmap inputBitmap = Bitmap.createScaledBitmap(image, width, height, false);
         Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
 
-        RenderScript rs = RenderScript.create(context);
-
         ScriptIntrinsicBlur intrinsicBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
         Allocation tmpIn = Allocation.createFromBitmap(rs, inputBitmap);
         Allocation tmpOut = Allocation.createFromBitmap(rs, outputBitmap);
 
-        intrinsicBlur.setRadius(BLUR_RADIUS);
+        intrinsicBlur.setRadius(radius);
         intrinsicBlur.setInput(tmpIn);
         intrinsicBlur.forEach(tmpOut);
         tmpOut.copyTo(outputBitmap);
