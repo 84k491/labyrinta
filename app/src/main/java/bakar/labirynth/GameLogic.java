@@ -141,10 +141,10 @@ class GameLogic {
         teleportAmount--;
     }
     float getTeleportRadius(){
-        return cellSize * 5; // game
+        return cellSize * (5 + 1.1f * StoredProgress.getInstance().getTeleportUpg()); // game
     }
     float getPathfinderRadius(){
-        return cellSize * 18; // game
+        return cellSize * (8 + 1.3f * StoredProgress.getInstance().getPathfinderUpg()); // game
     }
     CPoint.Game getClosestFloorCoord(CPoint.Game gm){
         CPoint.Field fi = game2field(gm);

@@ -75,6 +75,26 @@ class StoredProgress {
         return result;
     }
 
+    int getTeleportUpg(){
+        return sharedPreferences.getInt(teleportUpgKey, 0);
+    }
+    int getPathfinderUpg(){
+        return sharedPreferences.getInt(pathfinderUpgKey, 0);
+    }
+    int getPointerUpg(){
+        return sharedPreferences.getInt(pointerUpgKey, 0);
+    }
+
+    int getTeleportAmount(){
+        return sharedPreferences.getInt(teleportAmountKey, 0);
+    }
+    int getPathfinderAmount(){
+        return sharedPreferences.getInt(pathfinderAmountKey, 0);
+    }
+    int getPointerAmount(){
+        return sharedPreferences.getInt(pointerAmountKey, 0);
+    }
+
     int getGoldAmount(){
         return sharedPreferences.getInt(goldKey, 0);
     }

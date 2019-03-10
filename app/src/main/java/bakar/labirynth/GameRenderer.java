@@ -318,7 +318,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     void changeScale(float value){
         camera.save();
-        camera.translate(0,0, -value * (cellSize / 5));
+        camera.translate(0,0, -value * (cellSize / 60));
         if (getGlobalScale() > max_scale || getGlobalScale() < min_scale)
             camera.restore();
         if (renderThread.fogBmpScale != getGlobalScale())

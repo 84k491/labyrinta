@@ -89,13 +89,13 @@ public class Economist {
 
         float baseCost = getLevelReward(getLevelHypotByUpg(1));
 
-        pathfinderCostOfUpgLevel = new LinearFunction(baseCost * 2.f, baseCost * 9);
-        teleportCostOfUpgLevel = new LinearFunction(baseCost * 3.f, baseCost * 12);
-        pointerCostOfUpgLevel = new LinearFunction(baseCost * 1.2f, baseCost * 7);
+        pathfinderCostOfUpgLevel = new LinearFunction(baseCost * 2.f, baseCost * 7);
+        teleportCostOfUpgLevel = new LinearFunction(baseCost * 3.f, baseCost * 9);
+        pointerCostOfUpgLevel = new LinearFunction(baseCost * 1.2f, baseCost * 5);
 
-        pathfinderUpgCostOfUpgLevel = new LinearFunction(baseCost * 4.1f, baseCost * 34);
-        teleportUpgCostOfUpgLevel = new LinearFunction(baseCost * 5.3f, baseCost * 40);
-        pointerUpgCostOfUpgLevel = new LinearFunction(baseCost * 4.2f, baseCost * 25);
+        pathfinderUpgCostOfUpgLevel = new LinearFunction(baseCost * 3.7f, baseCost * 24);
+        teleportUpgCostOfUpgLevel = new LinearFunction(baseCost * 5.3f, baseCost * 30);
+        pointerUpgCostOfUpgLevel = new LinearFunction(baseCost * 3.2f, baseCost * 15);
     }
 
     float getLevelHypotByUpg(Integer upgLevel){
