@@ -79,7 +79,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     ArrayList<Button> buttons = new ArrayList<>();
     ArrayList<PickUpAnimation> pickUpAnimations = new ArrayList<>();
 
-
     public GameRenderer(Context _context) {
         super(_context);
         context = _context;
@@ -357,7 +356,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         // тред создается последним
-        renderThread = new RenderThread(this);
+        renderThread = new RenderThread();
         renderThread.setHolder(getHolder());
         renderThread.setRunning(true);
         renderThread.start();
@@ -382,7 +381,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private class RenderThread extends Thread{
-        GameRenderer gameRenderer;
         private boolean running = false;
         private SurfaceHolder surfaceHolder;
         private Profiler profiler = new Profiler();
@@ -441,8 +439,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private Paint puanim = new Paint();
         private Paint bonusRadius = new Paint();
 
-        RenderThread(GameRenderer game_renderer){
-            gameRenderer = game_renderer;
+        RenderThread(){
             floor.setColor(Color.argb(120,30, 30, 30));
             wall.setColor(Color.argb(240,230, 230, 230));
             node.setStrokeWidth(1);
@@ -547,8 +544,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     floor);
 
             Path poly = new Path();
-            for (int x = 0; x < gameRenderer.gameLogic.field.getxSize(); ++x){
-                for (int y = 0; y < gameRenderer.gameLogic.field.getySize(); ++y){
+            for (int x = 0; x < gameLogic.field.getxSize(); ++x){
+                for (int y = 0; y < gameLogic.field.getySize(); ++y){
                     CPoint.Game rectScreenPt = field2game(new CPoint.Field(x, y));
                     if (!gameLogic.field.get(x, y)){
                         poly.addRect(pt2RectScaled(rectScreenPt, smallSquareScale), CW);

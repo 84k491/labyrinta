@@ -61,9 +61,6 @@ public class GameActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState){
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-//                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().setFormat(PixelFormat.RGBA_8888);
@@ -84,7 +81,7 @@ public class GameActivity extends Activity{
                 lvl_size.x, lvl_size.y);
         gameLogic.level_difficulty = difficulty;
 
-                gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
+        gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
         gameRenderer.setOnTouchListener(touchListener);
         gameRenderer.setGameLogic(gameLogic);
         loadData();

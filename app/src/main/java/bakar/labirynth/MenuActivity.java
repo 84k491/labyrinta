@@ -24,6 +24,7 @@ public class MenuActivity extends Activity implements OnClickListener {
 
     boolean justLoadedState;
 
+    //Background background = new Background(this);
     SharedPreferences sPref;
     ConstraintLayout layout;
     Button start;
@@ -111,6 +112,8 @@ public class MenuActivity extends Activity implements OnClickListener {
         settings.setOnClickListener(this);
         shop = findViewById(R.id.shop_bt);
         shop.setOnClickListener(this);
+
+        layout.addView(new Background(this), 0);
 
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf");
         title.setTypeface(custom_font);
