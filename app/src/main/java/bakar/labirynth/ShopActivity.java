@@ -12,6 +12,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     ArrayList<ShopItem> items = new ArrayList<>();
     Random random = new Random(6654345);
     TextView gold;
+    Animation on_click_anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_shop);
+
+        on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
         gold = (TextView)findViewById(R.id.tw_gold_amount);
@@ -57,6 +62,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         for (ShopItem item:items
              ) {
             if (item.getLayout().getId() == view.getId()){
+                item.getLayout().startAnimation(on_click_anim);
                 item.onTrigger();
                 updateGoldLabel();
             }

@@ -13,6 +13,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TableLayout;
@@ -28,12 +30,14 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     Random random = new Random(274412536);
     LinearLayout mainLayout;
+    Animation on_click_anim;
     final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
 
     @Override
     public void onClick(View view){
         for (NumeratedTextView tv:textViews){
             if (tv.getId() == view.getId()){
+                tv.startAnimation(on_click_anim);
                 Intent intent = new Intent(this, LevelSelectActivity.class);
                 intent.putExtra("level_size", tv.number);
                 setResult(RESULT_OK, intent);
@@ -59,6 +63,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.activity_level_select);
 
         mainLayout = findViewById(R.id.ll_level_select);
+        on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         fillLayout(getIntent().getIntExtra("max_level_allowed", 0));
         for (NumeratedTextView tv:textViews){
