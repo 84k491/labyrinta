@@ -30,7 +30,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     Random random = new Random(274412536);
     LinearLayout mainLayout;
-    Animation on_click_anim;
+    Animation on_click_anim; //todo анимация не успевает показаться
     final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
 
     @Override
@@ -38,10 +38,12 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         for (NumeratedTextView tv:textViews){
             if (tv.getId() == view.getId()){
                 tv.startAnimation(on_click_anim);
-                Intent intent = new Intent(this, LevelSelectActivity.class);
-                intent.putExtra("level_size", tv.number);
-                setResult(RESULT_OK, intent);
-                finish();
+                if (tv.number > 0){
+                    Intent intent = new Intent(this, LevelSelectActivity.class);
+                    intent.putExtra("level_size", tv.number);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
                 break;
             }
         }
@@ -84,7 +86,11 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 if (iter < lvl_amount)
                     hlo.addView(generateTV(++iter));
                 else
-                    hlo.addView(generateTV(-1));
+                    if (iter++ == lvl_amount)
+                        hlo.addView(generateTV(0));
+                    else
+                        hlo.addView(generateTV(-1));
+
 
                     hlo.addView(getSpace());
             }
@@ -133,24 +139,27 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 res.setText("0" + String.valueOf(num));
             }
         }
-        else{
-            res.setText("  ");
+
+        if (0 == num){
+            res.setText("S");
         }
 
-        res.setLayoutParams(params);
         res.setTextSize(40);
+        res.setLayoutParams(params);
         res.setTextColor(Color.WHITE);
         res.setGravity(Gravity.CENTER);
 
-        try{
-            Drawable bg;
-            bg = Drawable.createFromXml(getResources(), getResources().getXml(R.xml.level_select_bg));
-            XmlPullParser parser = getResources().getXml(R.xml.level_select_bg);
-            bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
+        if (num >= 0){
+            try{
+                Drawable bg;
+                bg = Drawable.createFromXml(getResources(), getResources().getXml(R.xml.level_select_bg));
+                XmlPullParser parser = getResources().getXml(R.xml.level_select_bg);
+                bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
 
-            res.setBackground(bg);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+                res.setBackground(bg);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         textViews.add(res);
@@ -167,5 +176,4 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         lo.setOrientation(LinearLayout.HORIZONTAL);
         return lo;
     }
-
 }

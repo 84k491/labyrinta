@@ -219,3 +219,7 @@ public class GameActivity extends Activity{
 // #dcd549 #ff4274 red & yellow | mid
 // #ffc501 #da2b90 yellow & pink | bright
 // #1e508c #da2b90 blue & pink | deep
+
+/*
+*
+* */
