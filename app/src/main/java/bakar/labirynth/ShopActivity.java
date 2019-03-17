@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Xml;
@@ -45,7 +46,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         for (ShopItem item : items){
             //item.resetValue();
-            layout.addView(item.getLayout());
+            layout.addView(item.spacesDecorator(item.getLayout()));
             layout.addView(getSpace());
             item.getLayout().setOnClickListener(this);
         }
@@ -111,6 +112,33 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         abstract int getCost();
         abstract void onTrigger();
 
+        LinearLayout spacesDecorator(LinearLayout centerLO){
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    250,
+                    1
+            );
+
+            LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
+                    70,
+                    50,
+                    1
+            );
+
+            LinearLayout result = new LinearLayout(ShopActivity.this);
+
+            Space space1 = new Space(ShopActivity.this);
+            Space space2 = new Space(ShopActivity.this);
+            space1.setLayoutParams(spaceParams);
+            space2.setLayoutParams(spaceParams);
+
+            result.setLayoutParams(layoutParams);
+            result.addView(space1);
+            result.addView(getLayout());
+            result.addView(space2);
+
+            return result;
+        }
         LinearLayout getLayout(){
             if (assosiatedLayout != null) return assosiatedLayout;
 
@@ -127,7 +155,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     250,
-                    1
+                    2
             );
 
             label_tw = new TextView(ShopActivity.this);
@@ -135,6 +163,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             label_tw.setTextSize(20);
             label_tw.setTextColor(Color.WHITE);
             label_tw.setGravity(Gravity.CENTER);
+            label_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
             updateLabelText();
 
             cost_tw = new TextView(ShopActivity.this);
@@ -142,6 +171,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             cost_tw.setTextSize(25);
             cost_tw.setTextColor(Color.WHITE);
             cost_tw.setGravity(Gravity.CENTER);
+            cost_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
             updateCostText();
 
             assosiatedLayout = new LinearLayout(ShopActivity.this);
@@ -160,7 +190,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 ex.printStackTrace();
             }
 
-            assosiatedLayout.setId(getRandomId());
+            assosiatedLayout.setId(getRandomId()); // fix
 
             return assosiatedLayout;
         }

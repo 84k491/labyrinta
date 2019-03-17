@@ -114,9 +114,7 @@ public class MenuActivity extends Activity implements OnClickListener {
         shop.setOnClickListener(this);
 
         layout.addView(new Background(this), 0);
-
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf");
-        title.setTypeface(custom_font);
+        title.setTypeface(Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf"));
     }
     protected void onRestart(){
         super.onRestart();

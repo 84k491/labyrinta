@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatTextView;
@@ -73,18 +74,19 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         for (int i = 0; i < row_amount; ++i){
             LinearLayout hlo = generateHorLayout();
             mainLayout.addView(hlo);
+            hlo.addView(getSpace());
             for (int k = 0; k < row_volume; ++k){
                 if (iter < lvl_amount)
                     hlo.addView(generateTV(++iter));
                 else
                     hlo.addView(generateTV(-1));
 
-                if (k != row_volume - 1)
                     hlo.addView(getSpace());
             }
 
-            if (i != row_amount - 1)
+            if (i != row_amount - 1){
                 mainLayout.addView(getSpace());
+            }
         }
     }
 
@@ -94,6 +96,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         NumeratedTextView(Context c, int _number){
             super(c);
             number = _number;
+            setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            setGravity(Gravity.RIGHT);
         }
     }
 
