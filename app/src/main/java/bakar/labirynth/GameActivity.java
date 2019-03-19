@@ -17,15 +17,28 @@ import com.google.android.gms.ads.InterstitialAd;
 import java.util.Random;
 
 public class GameActivity extends Activity{
+
     //Todo: rename
-    //Todo: сделать выбор подожения джойстика и кнопок
+    //Todo: сделать выбор положения джойстика и кнопок
     //Todo: заблочить кнопку "назад"
     //Todo: белые кнопки рисуются заново при разворачивании
     // TODO: 15.05.2018 сделать режим на время
     // TODO: 19.05.2018 rate this app
+
+    // STEPS-TO-BETA
+    // TODO: 3/18/19 back buttons in menu
+    // TODO: 3/18/19 put icons in shop activity
+    // TODO: 3/18/19 app icon
+    // TODO: 3/18/19 player, exit, coin sprites
+    // TODO: 3/18/19 loading screen
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
-    // todo OOM при переходе на след. уровень
+    // TODO: 3/18/19 accelerometer movement
+    // TODO: 3/18/19 in-app purchases
+    // TODO: 3/18/19 credits for video
+    // TODO: 3/18/19 OOM fixes
+    // TODO: 3/18/19 background fix
+
     GameRenderer gameRenderer;
     GameLogic gameLogic;
     CustomTouchListener touchListener;
@@ -220,6 +233,10 @@ public class GameActivity extends Activity{
 // #ffc501 #da2b90 yellow & pink | bright
 // #1e508c #da2b90 blue & pink | deep
 
-/*
-*
+/* STEPS-TO-BETA
+*  accelerometer movement
+*  in-app purchases
+*  credits for video
+*  OOM fixes
+*  background fix
 * */

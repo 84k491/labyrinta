@@ -20,6 +20,7 @@ import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -460,9 +461,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             fog.setColor(Color.rgb(20, 20, 30));
             enlighten.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
             enlighten.setColor(Color.argb(0, 60, 50, 60));
-            puanim.setColor(Color.CYAN);
+            puanim.setColor(Color.WHITE);
             puanim.setTextAlign(Paint.Align.CENTER);
             puanim.setTextSize(20);
+            puanim.setTypeface(Typeface.createFromAsset(getContext().getAssets(),  "fonts/trench100free.ttf"));
             bonusRadius.setColor(Color.argb(120, 255, 10, 10));
 
             final BitmapFactory.Options options = new BitmapFactory.Options();
