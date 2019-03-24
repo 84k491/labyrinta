@@ -30,7 +30,6 @@ public class MenuActivity extends Activity implements OnClickListener {
     Button start;
     Button settings;
     Button shop;
-    TextView gold;
     TextView title;
 
     @Override
@@ -105,7 +104,6 @@ public class MenuActivity extends Activity implements OnClickListener {
         title = findViewById(R.id.main_title);
         start = findViewById(R.id.start);
         start.setOnClickListener(this);
-        gold = findViewById(R.id.gold);
         layout = findViewById(R.id.menu_layout);
         layout.setOnClickListener(this);
         settings = findViewById(R.id.settings_bt);
@@ -145,13 +143,12 @@ public class MenuActivity extends Activity implements OnClickListener {
     }
 
     void saveData() {
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.commit(); //ed.apply();
+//        sPref = getSharedPreferences("global", MODE_PRIVATE);
+//        SharedPreferences.Editor ed = sPref.edit();
+//        ed.commit(); //ed.apply();
     }
     void loadData() {
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        gold.setText(String.valueOf(sPref.getInt("gold", 0)));
+        //sPref = getSharedPreferences("global", MODE_PRIVATE);
     }
     void startWelcomingAnimations(){
         Animation move_anim = AnimationUtils.loadAnimation(this, R.anim.keep_title_offset);
@@ -161,7 +158,6 @@ public class MenuActivity extends Activity implements OnClickListener {
         start.startAnimation(inv_anim);
         shop.startAnimation(inv_anim);
         settings.startAnimation(inv_anim);
-        gold.startAnimation(inv_anim);
     }
     void startOnTouchAnimations(){
         Animation move_anim = AnimationUtils.loadAnimation(this, R.anim.title_move);
@@ -173,6 +169,5 @@ public class MenuActivity extends Activity implements OnClickListener {
         start.startAnimation(inv_anim);
         shop.startAnimation(inv_anim);
         settings.startAnimation(inv_anim);
-        gold.startAnimation(inv_anim);
     }
 }

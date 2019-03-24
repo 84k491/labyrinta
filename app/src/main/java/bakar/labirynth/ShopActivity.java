@@ -55,10 +55,16 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             layout.addView(getSpace());
             item.getLayout().setOnClickListener(this);
         }
+
+        findViewById(R.id.bt_shop_back).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view){
+        if (view.getId() == R.id.bt_shop_back){
+            finish();
+        }
+
         for (ShopItem item:items
              ) {
             if (item.getLayout().getId() == view.getId()){

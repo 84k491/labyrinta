@@ -35,6 +35,13 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     @Override
     public void onClick(View view){
+        if (view.getId() == R.id.bt_select_back){
+            Intent intent = new Intent(this, LevelSelectActivity.class);
+            intent.putExtra("level_size", -1);
+            setResult(RESULT_CANCELED, intent);
+            finish();
+        }
+
         for (NumeratedTextView tv:textViews){
             if (tv.getId() == view.getId()){
                 tv.startAnimation(on_click_anim);
@@ -66,6 +73,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
         mainLayout = findViewById(R.id.ll_level_select);
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
+
+        findViewById(R.id.bt_select_back).setOnClickListener(this);
 
         fillLayout(getIntent().getIntExtra("max_level_allowed", 0));
         for (NumeratedTextView tv:textViews){
