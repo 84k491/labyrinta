@@ -3,10 +3,15 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.util.Xml;
 import android.view.Gravity;
 import android.view.View;
@@ -14,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
@@ -21,6 +27,8 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class ShopActivity extends Activity implements View.OnClickListener {
@@ -28,9 +36,25 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     LinearLayout layout;
     ArrayList<ShopItem> items = new ArrayList<>();
     Random random = new Random(6654345);
+    final int layoutHeight = 250; // FIXME: 3/27/19
     TextView gold;
     Animation on_click_anim;
+    Map<String, Integer> id_map;
 
+    void setIdMap(){
+        id_map = new HashMap<>();
+
+        id_map.put(StoredProgress.levelUpgKey, R.drawable.level_up);
+
+        id_map.put(StoredProgress.teleportAmountKey, R.drawable.teleport);
+        id_map.put(StoredProgress.teleportUpgKey, R.drawable.teleport);
+
+        id_map.put(StoredProgress.pathfinderAmountKey, R.drawable.pathfinder);
+        id_map.put(StoredProgress.pathfinderUpgKey, R.drawable.pathfinder);
+
+        id_map.put(StoredProgress.pointerAmountKey, R.drawable.pointer);
+        id_map.put(StoredProgress.pointerUpgKey, R.drawable.pointer);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,19 +65,23 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         setContentView(R.layout.activity_shop);
 
+        setIdMap();
+
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
         gold = (TextView)findViewById(R.id.tw_gold_amount);
+        gold.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
         updateGoldLabel();
 
         setItems();
 
+        layout.addView(getSpace());
         for (ShopItem item : items){
             //item.resetValue();
-            layout.addView(item.spacesDecorator(item.getLayout()));
+            layout.addView(item.spacesDecorator(item.getMainLayout()));
             layout.addView(getSpace());
-            item.getLayout().setOnClickListener(this);
+            item.getMainLayout().setOnClickListener(this);
         }
 
         findViewById(R.id.bt_shop_back).setOnClickListener(this);
@@ -67,8 +95,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         for (ShopItem item:items
              ) {
-            if (item.getLayout().getId() == view.getId()){
-                item.getLayout().startAnimation(on_click_anim);
+            if (item.getMainLayout().getId() == view.getId()){
+                item.getMainLayout().startAnimation(on_click_anim);
                 item.onTrigger();
                 updateGoldLabel();
             }
@@ -86,16 +114,16 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     void setItems(){
-        items.add(new UpgrageItem("Level size", StoredProgress.getInstance().levelUpgKey));
-        items.add(new BonusBuyItem("Teleport", StoredProgress.getInstance().teleportAmountKey));
-        items.add(new BonusBuyItem("Pathfinder", StoredProgress.getInstance().pathfinderAmountKey));
-        items.add(new BonusBuyItem("Pointer", StoredProgress.getInstance().pointerAmountKey));
-        items.add(new UpgrageItem("Teleport upgrade", StoredProgress.getInstance().teleportUpgKey));
-        items.add(new UpgrageItem("Pathfinder upgrade", StoredProgress.getInstance().pathfinderUpgKey));
-        items.add(new UpgrageItem("Pointer upgrade", StoredProgress.getInstance().pointerUpgKey));
-        items.add(new GoldBuyItem("More credits (100)",3, 100));
-        items.add(new GoldBuyItem("More credits (300)", 5,300));
-        items.add(new GoldBuyItem("More credits (1000)", 10,1000));
+        items.add(new UpgrageItem(StoredProgress.getInstance().levelUpgKey));
+        items.add(new BonusBuyItem(StoredProgress.getInstance().teleportAmountKey));
+        items.add(new BonusBuyItem(StoredProgress.getInstance().pathfinderAmountKey));
+        items.add(new BonusBuyItem(StoredProgress.getInstance().pointerAmountKey));
+        items.add(new UpgrageItem(StoredProgress.getInstance().teleportUpgKey));
+        items.add(new UpgrageItem(StoredProgress.getInstance().pathfinderUpgKey));
+        items.add(new UpgrageItem(StoredProgress.getInstance().pointerUpgKey));
+        items.add(new GoldBuyItem(3, 100));
+        items.add(new GoldBuyItem(5,300));
+        items.add(new GoldBuyItem(10,1000));
     }
     Space getSpace(){
         Space space = new Space(ShopActivity.this);
@@ -106,10 +134,12 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     abstract class ShopItem{
-
         String label;
         LinearLayout assosiatedLayout = null;
-        TextView label_tw = null;
+        int iconResource = -1;
+        ImageView icon;
+        float iconSizeCoef = .7f;
+        TextView label_tw = null; // TODO: 3/27/19 rename
         TextView cost_tw = null;
 
         ShopItem(){}
@@ -117,7 +147,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         void removeGold(int g){
             StoredProgress.getInstance().setGold(StoredProgress.getInstance().getGoldAmount() - g);
         }
-        void resetValue(){}
 
         void updateLabelText(){label_tw.setText(label);}
         void updateCostText(){cost_tw.setText(String.valueOf(getCost()) + " Cr");}
@@ -146,27 +175,27 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             result.setLayoutParams(layoutParams);
             result.addView(space1);
-            result.addView(getLayout());
+            result.addView(getMainLayout());
             result.addView(space2);
 
             return result;
         }
-        LinearLayout getLayout(){
+        LinearLayout getMainLayout(){
             if (assosiatedLayout != null) return assosiatedLayout;
 
             LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    2
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1
             );
             LinearLayout.LayoutParams costParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    1
+                    2
             );
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    250,
+                    layoutHeight,
                     2
             );
 
@@ -178,6 +207,10 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             label_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
             updateLabelText();
 
+            ImageView icon = new ImageView(ShopActivity.this);
+            icon.setBackgroundResource(R.drawable.teleport);
+            icon.setLayoutParams(labelParams);
+
             cost_tw = new TextView(ShopActivity.this);
             cost_tw.setLayoutParams(costParams);
             cost_tw.setTextSize(25);
@@ -188,8 +221,17 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             assosiatedLayout = new LinearLayout(ShopActivity.this);
             assosiatedLayout.setLayoutParams(layoutParams);
-            assosiatedLayout.addView(label_tw);
+            assosiatedLayout.addView(getFinalIconLayout());
+
+//            Space space = new Space(ShopActivity.this);
+//            space.setLayoutParams(new LinearLayout.LayoutParams(
+//                    300, // TODO: 3/24/19 fix hardcoded size!!!
+//                    50));
+//
+//            assosiatedLayout.addView(space);
             assosiatedLayout.addView(cost_tw);
+
+            //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.teleport);
 
             try{
                 Drawable bg;
@@ -206,6 +248,41 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             return assosiatedLayout;
         }
+        ConstraintLayout getBaseIconLayout(){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1
+            );
+
+            ConstraintLayout constraintLayout = new ConstraintLayout(ShopActivity.this);
+            //constraintLayout.setBackgroundColor(Color.GRAY);
+            constraintLayout.setLayoutParams(params);
+            constraintLayout.setId(getRandomId());
+            constraintLayout.setMaxHeight(layoutHeight);
+            constraintLayout.setMaxWidth(layoutHeight);
+
+            icon = new ImageView(ShopActivity.this);
+            if (iconResource != -1)
+                icon.setBackgroundResource(iconResource);
+            icon.setId(getRandomId());
+            constraintLayout.addView(icon);
+
+            ConstraintSet set = new ConstraintSet();
+            set.clone(constraintLayout);
+
+            set.centerHorizontally(icon.getId(), ConstraintSet.PARENT_ID);
+            set.centerVertically(icon.getId(), ConstraintSet.PARENT_ID);
+
+            set.constrainWidth(icon.getId(), Math.round(layoutHeight * iconSizeCoef));
+            set.constrainHeight(icon.getId(), Math.round(layoutHeight * iconSizeCoef));
+
+            set.applyTo(constraintLayout);
+            return constraintLayout;
+        }
+        ConstraintLayout getFinalIconLayout(){
+            return getBaseIconLayout();
+        }
     }
 
     abstract class NotRealBuyItem extends ShopItem{
@@ -216,10 +293,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
         int getValue(){
             return StoredProgress.getInstance().getValue(dataKey);
-        }
-        @Override
-        void resetValue(){
-            StoredProgress.getInstance().setValue(dataKey, 0);
         }
         @Override
         void onTrigger(){
@@ -235,24 +308,71 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         int getCost(){
             return Economist.getInstance().price_map.get(dataKey).apply(getValue());
         }
+
+        ConstraintLayout addAmountToLayout(ConstraintLayout constraintLayout){
+            label_tw.setTextSize(20);
+            label_tw.setTextColor(Color.WHITE);
+            label_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            //amount.setBackgroundColor(Color.RED);
+            label_tw.setGravity(Gravity.RIGHT);
+            constraintLayout.addView(label_tw);
+            label_tw.setId(getRandomId());
+            updateLabelText();
+
+            ConstraintSet set = new ConstraintSet();
+            set.clone(constraintLayout);
+
+            set.connect(label_tw.getId(), ConstraintSet.BOTTOM, icon.getId(), ConstraintSet.BOTTOM,1);
+            set.connect(label_tw.getId(), ConstraintSet.RIGHT, icon.getId(), ConstraintSet.RIGHT,1);
+
+            set.applyTo(constraintLayout);
+            return constraintLayout;
+        }
     }
 
     class UpgrageItem extends NotRealBuyItem{
-        UpgrageItem(String _label, String _dataKey){
+        UpgrageItem(String _dataKey){
             dataKey = _dataKey;
-            label = _label;
+            if (dataKey != null){
+                iconResource = id_map.get(dataKey);
+            }
         }
         @Override
         void updateLabelText(){
-            label_tw.setText(label + " " +(getValue() + 1));
+            label_tw.setText(String.valueOf(getValue() + 1));
+        }
+
+        ConstraintLayout addUpdArrowToLayout(ConstraintLayout constraintLayout){
+            ImageView green_arrow = new ImageView(ShopActivity.this);
+            green_arrow.setBackgroundResource(R.drawable.green_arrow);
+            green_arrow.setId(getRandomId());
+            constraintLayout.addView(green_arrow);
+
+            ConstraintSet set = new ConstraintSet();
+            set.clone(constraintLayout);
+
+            set.constrainWidth(green_arrow.getId(), Math.round(layoutHeight * iconSizeCoef / 3.f));
+            set.constrainHeight(green_arrow.getId(), Math.round(layoutHeight * iconSizeCoef / 3.f));
+
+            set.connect(green_arrow.getId(), ConstraintSet.TOP, icon.getId(), ConstraintSet.TOP,1);
+            set.connect(green_arrow.getId(), ConstraintSet.RIGHT, icon.getId(), ConstraintSet.RIGHT,1);
+
+            set.applyTo(constraintLayout);
+            return constraintLayout;
+        }
+
+        @Override
+        ConstraintLayout getFinalIconLayout(){
+            return addUpdArrowToLayout(addAmountToLayout(getBaseIconLayout()));
         }
     }
     class GoldBuyItem extends ShopItem{
         int gold;
         int startCost;
 
-        GoldBuyItem(String _label, int _cost, int _gold){
-            label = _label;
+        GoldBuyItem(int _cost, int _gold){
+            iconResource = R.drawable.coin_anim1;
+
             startCost = _cost;
             gold = _gold;
         }
@@ -271,14 +391,20 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
     }
     class BonusBuyItem extends NotRealBuyItem{
-        BonusBuyItem(String _label, String _dataKey){
-            label = _label;
+        BonusBuyItem(String _dataKey){
             dataKey = _dataKey;
+            if (dataKey != null)
+                iconResource = id_map.get(dataKey);
         }
 
         @Override
         void updateLabelText(){
-            label_tw.setText(label + " (" +(getValue()) + ")");
+            label_tw.setText(String.valueOf(getValue()));
+        }
+
+        @Override
+        ConstraintLayout getFinalIconLayout(){
+            return addAmountToLayout(getBaseIconLayout());
         }
     }
 }

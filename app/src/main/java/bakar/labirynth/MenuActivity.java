@@ -148,7 +148,7 @@ public class MenuActivity extends Activity implements OnClickListener {
 //        ed.commit(); //ed.apply();
     }
     void loadData() {
-        //sPref = getSharedPreferences("global", MODE_PRIVATE);
+        sPref = getSharedPreferences("global", MODE_PRIVATE);
     }
     void startWelcomingAnimations(){
         Animation move_anim = AnimationUtils.loadAnimation(this, R.anim.keep_title_offset);

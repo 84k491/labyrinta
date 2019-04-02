@@ -26,8 +26,9 @@ public class GameActivity extends Activity{
     // TODO: 19.05.2018 rate this app
 
     // STEPS-TO-BETA
-    // TODO: 3/18/19 back buttons in menu
+    // TODO: 3/18/19 back buttons in menus
     // TODO: 3/18/19 put icons in shop activity
+
     // TODO: 3/18/19 app icon
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 3/18/19 loading screen
@@ -232,11 +233,3 @@ public class GameActivity extends Activity{
 // #dcd549 #ff4274 red & yellow | mid
 // #ffc501 #da2b90 yellow & pink | bright
 // #1e508c #da2b90 blue & pink | deep
-
-/* STEPS-TO-BETA
-*  accelerometer movement
-*  in-app purchases
-*  credits for video
-*  OOM fixes
-*  background fix
-* */

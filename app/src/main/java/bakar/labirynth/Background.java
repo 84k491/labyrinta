@@ -135,7 +135,7 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
             p.setShader(shader);
 
             Canvas c = new Canvas(blured);
-            c.drawRect(0,0,w, h, p);
+            c.drawRect(0,0, w, h, p);
 
             //c.drawBitmap(makeDotBmp(5, 25), new Matrix(), common);
             //backgroundBitmap = blur(getContext(), blured);
