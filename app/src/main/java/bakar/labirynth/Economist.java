@@ -19,7 +19,7 @@ public class Economist {
 
     private final float coinIncomeToRewardCoef = 1.f;
 
-    private final LinearFunction avgLengthOfHypot = new LinearFunction(1.7f, 3.f);
+    private final LinearFunction avgLengthOfHypot = new LinearFunction(1.6862f, 5.8403f);
     private final LinearFunction levelAmountOfLength = new LinearFunction(0.f, 5.f);
 
     private final LinearFunction pathfinderCostOfUpgLevel;

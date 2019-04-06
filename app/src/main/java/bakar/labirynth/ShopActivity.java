@@ -83,6 +83,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             layout.addView(getSpace());
             item.getMainLayout().setOnClickListener(this);
         }
+        layout.addView(getSpace()); // FIXME: 4/6/19
+        layout.addView(getSpace());
+        layout.addView(getSpace());
 
         findViewById(R.id.bt_shop_back).setOnClickListener(this);
     }
@@ -136,8 +139,10 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     abstract class ShopItem{
         String label;
         LinearLayout assosiatedLayout = null;
-        int iconResource = -1;
-        ImageView icon;
+        int costIconResource = R.drawable.coin_anim1;
+        ImageView costIcon = null;
+        int mainIconResource = -1;
+        ImageView mainIcon = null;
         float iconSizeCoef = .7f;
         TextView label_tw = null; // TODO: 3/27/19 rename
         TextView cost_tw = null;
@@ -149,7 +154,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
 
         void updateLabelText(){label_tw.setText(label);}
-        void updateCostText(){cost_tw.setText(String.valueOf(getCost()) + " Cr");}
+        void updateCostText(){cost_tw.setText(" " + String.valueOf(getCost()));}
         abstract int getCost();
         abstract void onTrigger();
 
@@ -183,55 +188,22 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         LinearLayout getMainLayout(){
             if (assosiatedLayout != null) return assosiatedLayout;
 
-            LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1
-            );
-            LinearLayout.LayoutParams costParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    2
-            );
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     layoutHeight,
                     2
             );
 
-            label_tw = new TextView(ShopActivity.this);
-            label_tw.setLayoutParams(labelParams);
-            label_tw.setTextSize(20);
-            label_tw.setTextColor(Color.WHITE);
-            label_tw.setGravity(Gravity.CENTER);
-            label_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
-            updateLabelText();
-
-            ImageView icon = new ImageView(ShopActivity.this);
-            icon.setBackgroundResource(R.drawable.teleport);
-            icon.setLayoutParams(labelParams);
-
-            cost_tw = new TextView(ShopActivity.this);
-            cost_tw.setLayoutParams(costParams);
-            cost_tw.setTextSize(25);
-            cost_tw.setTextColor(Color.WHITE);
-            cost_tw.setGravity(Gravity.CENTER);
-            cost_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
-            updateCostText();
-
             assosiatedLayout = new LinearLayout(ShopActivity.this);
             assosiatedLayout.setLayoutParams(layoutParams);
             assosiatedLayout.addView(getFinalIconLayout());
-
-//            Space space = new Space(ShopActivity.this);
-//            space.setLayoutParams(new LinearLayout.LayoutParams(
-//                    300, // TODO: 3/24/19 fix hardcoded size!!!
-//                    50));
-//
-//            assosiatedLayout.addView(space);
-            assosiatedLayout.addView(cost_tw);
-
-            //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.teleport);
+            Space space = new Space(ShopActivity.this);
+            space.setLayoutParams(new LinearLayout.LayoutParams(
+                    50,
+                    50, 1));
+            assosiatedLayout.addView(space);
+            assosiatedLayout.addView(getCostLayout());
+            updateCostText();
 
             try{
                 Drawable bg;
@@ -248,7 +220,64 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             return assosiatedLayout;
         }
-        ConstraintLayout getBaseIconLayout(){
+
+        LinearLayout getCostLayout(){
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1
+            );
+            LinearLayout.LayoutParams costParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1
+            );
+            LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(
+                    50,  // TODO: 4/2/19 remove hardcode in whole method
+                    50,
+                    1
+            );
+
+            LinearLayout costLayout = new LinearLayout(ShopActivity.this);
+            costLayout.setLayoutParams(layoutParams);
+            costLayout.setOrientation(LinearLayout.HORIZONTAL);
+            cost_tw = new TextView(ShopActivity.this);
+            cost_tw.setLayoutParams(costParams);
+            cost_tw.setTextSize(25);
+            cost_tw.setTextColor(Color.WHITE);
+            cost_tw.setGravity(Gravity.CENTER);
+            cost_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            costLayout.addView(cost_tw);
+
+            costIcon = new ImageView(ShopActivity.this);
+            if (costIconResource != -1)
+                costIcon.setBackgroundResource(costIconResource);
+            costIcon.setId(getRandomId());
+            costIcon.setLayoutParams(iconParams);
+            costLayout.addView(costIcon);
+
+            Space space1 = new Space(ShopActivity.this);
+            space1.setLayoutParams(new LinearLayout.LayoutParams(
+                    50,
+                    100,
+                    1));
+            Space space2 = new Space(ShopActivity.this);
+            space2.setLayoutParams(new LinearLayout.LayoutParams(
+                    50,
+                    100,
+                    1));
+
+            LinearLayout wrapingLo = new LinearLayout(ShopActivity.this);
+            wrapingLo.setLayoutParams(layoutParams);
+            wrapingLo.setOrientation(LinearLayout.VERTICAL);
+
+            wrapingLo.addView(space1);
+            wrapingLo.addView(costLayout);
+            wrapingLo.addView(space2);
+
+            return wrapingLo;
+        }
+        ConstraintLayout getMainIconLayout(){
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -262,26 +291,26 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             constraintLayout.setMaxHeight(layoutHeight);
             constraintLayout.setMaxWidth(layoutHeight);
 
-            icon = new ImageView(ShopActivity.this);
-            if (iconResource != -1)
-                icon.setBackgroundResource(iconResource);
-            icon.setId(getRandomId());
-            constraintLayout.addView(icon);
+            mainIcon = new ImageView(ShopActivity.this);
+            if (mainIconResource != -1)
+                mainIcon.setBackgroundResource(mainIconResource);
+            mainIcon.setId(getRandomId());
+            constraintLayout.addView(mainIcon);
 
             ConstraintSet set = new ConstraintSet();
             set.clone(constraintLayout);
 
-            set.centerHorizontally(icon.getId(), ConstraintSet.PARENT_ID);
-            set.centerVertically(icon.getId(), ConstraintSet.PARENT_ID);
+            set.centerHorizontally(mainIcon.getId(), ConstraintSet.PARENT_ID);
+            set.centerVertically(mainIcon.getId(), ConstraintSet.PARENT_ID);
 
-            set.constrainWidth(icon.getId(), Math.round(layoutHeight * iconSizeCoef));
-            set.constrainHeight(icon.getId(), Math.round(layoutHeight * iconSizeCoef));
+            set.constrainWidth(mainIcon.getId(), Math.round(layoutHeight * iconSizeCoef));
+            set.constrainHeight(mainIcon.getId(), Math.round(layoutHeight * iconSizeCoef));
 
             set.applyTo(constraintLayout);
             return constraintLayout;
         }
         ConstraintLayout getFinalIconLayout(){
-            return getBaseIconLayout();
+            return getMainIconLayout();
         }
     }
 
@@ -310,6 +339,14 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
 
         ConstraintLayout addAmountToLayout(ConstraintLayout constraintLayout){
+            LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1
+            );
+
+            label_tw = new TextView(ShopActivity.this);
+            label_tw.setLayoutParams(labelParams);
             label_tw.setTextSize(20);
             label_tw.setTextColor(Color.WHITE);
             label_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
@@ -322,8 +359,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             ConstraintSet set = new ConstraintSet();
             set.clone(constraintLayout);
 
-            set.connect(label_tw.getId(), ConstraintSet.BOTTOM, icon.getId(), ConstraintSet.BOTTOM,1);
-            set.connect(label_tw.getId(), ConstraintSet.RIGHT, icon.getId(), ConstraintSet.RIGHT,1);
+            set.connect(label_tw.getId(), ConstraintSet.BOTTOM, mainIcon.getId(), ConstraintSet.BOTTOM,1);
+            set.connect(label_tw.getId(), ConstraintSet.RIGHT, mainIcon.getId(), ConstraintSet.RIGHT,1);
 
             set.applyTo(constraintLayout);
             return constraintLayout;
@@ -334,7 +371,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         UpgrageItem(String _dataKey){
             dataKey = _dataKey;
             if (dataKey != null){
-                iconResource = id_map.get(dataKey);
+                mainIconResource = id_map.get(dataKey);
             }
         }
         @Override
@@ -354,8 +391,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             set.constrainWidth(green_arrow.getId(), Math.round(layoutHeight * iconSizeCoef / 3.f));
             set.constrainHeight(green_arrow.getId(), Math.round(layoutHeight * iconSizeCoef / 3.f));
 
-            set.connect(green_arrow.getId(), ConstraintSet.TOP, icon.getId(), ConstraintSet.TOP,1);
-            set.connect(green_arrow.getId(), ConstraintSet.RIGHT, icon.getId(), ConstraintSet.RIGHT,1);
+            set.connect(green_arrow.getId(), ConstraintSet.TOP, mainIcon.getId(), ConstraintSet.TOP,1);
+            set.connect(green_arrow.getId(), ConstraintSet.RIGHT, mainIcon.getId(), ConstraintSet.RIGHT,1);
 
             set.applyTo(constraintLayout);
             return constraintLayout;
@@ -363,7 +400,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         @Override
         ConstraintLayout getFinalIconLayout(){
-            return addUpdArrowToLayout(addAmountToLayout(getBaseIconLayout()));
+            return addUpdArrowToLayout(addAmountToLayout(getMainIconLayout()));
         }
     }
     class GoldBuyItem extends ShopItem{
@@ -371,7 +408,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         int startCost;
 
         GoldBuyItem(int _cost, int _gold){
-            iconResource = R.drawable.coin_anim1;
+            mainIconResource = R.drawable.coin_anim1;
 
             startCost = _cost;
             gold = _gold;
@@ -383,7 +420,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
         @Override
         void updateCostText(){
-            cost_tw.setText(String.valueOf(getCost()) + " $");
+            cost_tw.setText(String.valueOf(getCost()));
         }
         @Override
         void onTrigger() {
@@ -394,7 +431,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         BonusBuyItem(String _dataKey){
             dataKey = _dataKey;
             if (dataKey != null)
-                iconResource = id_map.get(dataKey);
+                mainIconResource = id_map.get(dataKey);
         }
 
         @Override
@@ -404,7 +441,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         @Override
         ConstraintLayout getFinalIconLayout(){
-            return addAmountToLayout(getBaseIconLayout());
+            return addAmountToLayout(getMainIconLayout());
         }
     }
 }
