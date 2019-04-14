@@ -687,6 +687,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             outputs.add("xSize: " + gameLogic.field.getxSize());
             outputs.add("ySize: " + gameLogic.field.getySize());
 
+
+            outputs.add("Gravity: " + gameLogic.tiltControler.getCurrentVelocity());
+
             outputs.add("FPS: " + calcFps());
             //outputs.add("Free mem: " + availMemory() + " MB");
             //outputs.add("Lab bmp size: " + labBitmap.getRowBytes() * labBitmap.getHeight() / 1024 + " kB");
@@ -957,8 +960,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 canvas = null;
                 if (getTime() - prevDrawTime > redrawPeriod) {
                     prevDrawTime = getTime();
-                    if (gameLogic.usesJoystick)
-                        gameLogic.remoteMove();
+                    //if (gameLogic.usesJoystick)
+                    gameLogic.remoteMove();
                     ((PlayerFinder)buttons.get(0)).remoteAnimation();
                     try {
                         canvas = surfaceHolder.lockCanvas(null);
@@ -1431,7 +1434,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         @Override
         void onClick() {
             //gameLogic.getPath(gameLogic.playerCoords(), field2game(gameLogic.field.exitPos));
+            gameLogic.remote_move_flag = false;
             startBonusActivity();
+            //gameLogic.remote_move_flag = true;
         }
     }
 

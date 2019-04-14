@@ -125,6 +125,7 @@ public class MenuActivity extends Activity implements OnClickListener {
     protected void onResume(){
         super.onResume();
         loadData();
+        //System.gc();
         if (justLoadedState)
             startWelcomingAnimations();
     }

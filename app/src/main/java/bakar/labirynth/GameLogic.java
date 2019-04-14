@@ -8,12 +8,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.util.ArrayMap;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+
+import static android.content.Context.SENSOR_SERVICE;
 
 /**
  * Created by Bakar on 10.03.2018.
@@ -22,6 +26,7 @@ import java.util.Random;
 class GameLogic {
     boolean isInited = false;
     boolean usesJoystick;
+    boolean remote_move_flag = true;
 
     boolean pointerActive = false;
     boolean pathfinderActive = false;
@@ -34,6 +39,8 @@ class GameLogic {
     int pathfinderAmount = 0;
 
     float cellSize = 10;
+
+    VelosityControllerInterface tiltControler = null;
 
     GameRenderer gameRenderer;
     Field field;
@@ -95,6 +102,7 @@ class GameLogic {
         eFactory.dropBonuses();
 
         isInited = true;
+        remote_move_flag = true;
     }
     void init(long _seed, int xsize, int ysize){
         seed = _seed;
@@ -160,6 +168,7 @@ class GameLogic {
     }
 
     void onExitReached(){
+        remote_move_flag = false;
         int levelReward = Economist.getInstance().getLevelReward(
                 Economist.hypot(new Point(field.getxSize(), field.getySize())));
         earnedGold += levelReward;
@@ -210,10 +219,17 @@ class GameLogic {
             return distance(pointF, gameRenderer.game2screen(playerCoords())) < gameRenderer.playerHitbox;
     }
     void remoteMove(){
+
         if (usesJoystick && gameRenderer.isMovingPlayer)
             movePlayerTo(joystick.lastTouch);
+        if (!usesJoystick && remote_move_flag){
+            CPoint.Game l_playerPt = new CPoint.Game(playerPt.x, playerPt.y);
+            CPoint.Game vel = tiltControler.getCurrentVelocity();
+            l_playerPt.offset(vel.x, vel.y);
+            movePlayerTo(l_playerPt);
+        }
     }
-    void movePlayerTo(CPoint.Game pointF){ // gameCoord rly
+    void movePlayerTo(CPoint.Game pointF){
         if (!gameRenderer.isPlayerInSight())
             gameRenderer.buttons.get(0).onClick();
 
@@ -255,7 +271,7 @@ class GameLogic {
         for (int i = 0; i < currentNode.availableDirections.size(); ++i){
             if (distance(newPlayerPt,
                     field2game(currentNode.links.get(currentNode.availableDirections.get(i)).pos)) <
-                    gameRenderer.getCellSize() * (3/2)){
+                    gameRenderer.getCellSize() * (3 / 2)){
                 currentNode = currentNode.links.get(currentNode.availableDirections.get(i));
                 currentNode.updateLinks();
             }
@@ -388,8 +404,6 @@ class GameLogic {
         float stickRadius; // только для отрисовки
         float speed = (cellSize * 20 / 70);
 
-        boolean isInUse = false;
-
         Joystick(CPoint.Screen _mainPos, float _mainRadius){
             mainPos = _mainPos;
             curPos = new CPoint.Screen(_mainPos.x, _mainPos.y);
@@ -400,7 +414,6 @@ class GameLogic {
 
         boolean isTouched(CPoint.Screen pointF){ // screencoord
             if (distance(pointF, mainPos) < mainRadius){
-                isInUse = true;
                 curPos = pointF;
                 return true;
             }
@@ -409,14 +422,6 @@ class GameLogic {
         }
 
         CPoint.Game getPlayerOffsetOnMove(CPoint.Game pointF){ // gameCoord на инпуте // аккуратно с конвертацией
-//            if (distance(gameRenderer.game2screen(pointF), mainPos) < mainRadius){
-//                curPos = gameRenderer.game2screen(pointF);
-//            }
-//            else{
-//                Line line = new Line(gameRenderer.game2screen(pointF), mainPos);
-//                curPos.set(mainPos.x - line.normalizedVector().x * mainRadius,
-//                        mainPos.y - line.normalizedVector().y * mainRadius);
-//            }
             if (distance(gameRenderer.game2screen(pointF), mainPos) < mainRadius){
                 curPos = gameRenderer.game2screen(pointF);
             }
@@ -438,9 +443,7 @@ class GameLogic {
         }
 
         void touchReleased(){
-            isInUse = false;
             curPos.set(mainPos.x, mainPos.y);
-            //lastTouch = playerCoords();
             lastTouch = gameRenderer.screen2game(mainPos);
         }
     }

@@ -6,6 +6,10 @@ import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -26,10 +30,10 @@ public class GameActivity extends Activity{
     // TODO: 19.05.2018 rate this app
 
     // STEPS-TO-BETA
-    // TODO: 3/18/19 back buttons in menus
     // TODO: 3/18/19 put icons in shop activity
 
-    // TODO: 3/18/19 app icon
+    // TODO: 3/18/19 back buttons in menus move up
+    // TODO: 3/18/19 bigger app icon
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 3/18/19 loading screen
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
@@ -44,6 +48,7 @@ public class GameActivity extends Activity{
     GameLogic gameLogic;
     CustomTouchListener touchListener;
     SharedPreferences sPref;
+    TiltController tiltController;
     private InterstitialAd mInterstitialAd;
 
     Point difficultyToActualSize(int lvl_difficulty){
@@ -79,6 +84,7 @@ public class GameActivity extends Activity{
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().setFormat(PixelFormat.RGBA_8888);
 
+
         Intent intent = getIntent();
         sPref = getSharedPreferences("global", MODE_PRIVATE);
 
@@ -96,6 +102,12 @@ public class GameActivity extends Activity{
         gameLogic.level_difficulty = difficulty;
 
         gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
+
+        if (!gameLogic.usesJoystick){
+            tiltController = new TiltController();
+            gameLogic.tiltControler = tiltController;
+        }
+
         gameRenderer.setOnTouchListener(touchListener);
         gameRenderer.setGameLogic(gameLogic);
         loadData();
@@ -116,10 +128,17 @@ public class GameActivity extends Activity{
     @Override
     protected void onResume(){
         super.onResume();
+
+        if (tiltController != null) {
+            tiltController.registerSensors();
+        }
     }
     @Override
     protected void onPause(){
         saveData();
+        if (tiltController != null) {
+            tiltController.unregisterSensors();
+        }
         super.onPause();
     }
     @Override
@@ -143,14 +162,19 @@ public class GameActivity extends Activity{
         }
         if (resultCode == "pointer".hashCode()){
             gameLogic.activatePointer();
+            gameLogic.remote_move_flag = true;
         }
         if (resultCode == "teleport".hashCode()){
             gameLogic.teleportActive = true;
+            gameLogic.remote_move_flag = true;
         }
         if (resultCode == "path".hashCode()){
             gameLogic.pathfinderActive = true;
+            gameLogic.remote_move_flag = true;
         }
-        if (resultCode == "abort".hashCode()){}
+        if (resultCode == "abort".hashCode()){
+            gameLogic.remote_move_flag = true;
+        }
     }
 
     void saveData() {
@@ -217,6 +241,84 @@ public class GameActivity extends Activity{
         else {
             goToNextLevel();
             loadInterstitial();
+        }
+    }
+
+    class TiltController implements VelosityControllerInterface{
+
+        SensorManager sensorManager;
+        Sensor sensorAccel;
+        Sensor sensorLinAccel;
+        Sensor sensorGravity;
+
+        float[] valuesAccel = new float[3];
+        float[] valuesAccelMotion = new float[3];
+        float[] valuesAccelGravity = new float[3];
+        float[] valuesGravity = new float[3];
+
+        SensorEventListener listener = new SensorEventListener() {
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                switch (event.sensor.getType()) {
+                    case Sensor.TYPE_ACCELEROMETER:
+                        for (int i = 0; i < 3; i++) {
+                            valuesAccel[i] = event.values[i];
+                            valuesAccelGravity[i] = (float) (0.1 * event.values[i] + 0.9 * valuesAccelGravity[i]);
+                            valuesAccelMotion[i] = event.values[i]
+                                    - valuesAccelGravity[i];
+                        }
+                        break;
+                    case Sensor.TYPE_GRAVITY:
+                        for (int i = 0; i < 3; i++) {
+                            valuesGravity[i] = event.values[i];
+                        }
+                        break;
+                }
+            }
+        };
+
+        TiltController(){
+            sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+            sensorAccel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            sensorLinAccel = sensorManager
+                    .getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+            sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        }
+
+        void registerSensors(){
+            int period = SensorManager.SENSOR_DELAY_GAME;
+            sensorManager.registerListener(listener, sensorAccel,
+                    period);
+            sensorManager.registerListener(listener, sensorLinAccel,
+                    period);
+            sensorManager.registerListener(listener, sensorGravity,
+                    period);
+        }
+        void unregisterSensors(){
+            sensorManager.unregisterListener(listener);
+        }
+
+        CPoint.Game speed_vector = new CPoint.Game(0.f, 0.f);
+        final float coef = 1.7f;
+        private long lastCallTime_ms = 0;
+
+        private long getTimeSinceLastCall(){
+            long result = System.currentTimeMillis() - lastCallTime_ms;
+            lastCallTime_ms = System.currentTimeMillis();
+            return result;
+        }
+
+        @Override
+        public CPoint.Game getCurrentVelocity() {
+            speed_vector.x = -valuesGravity[0] * coef;
+            speed_vector.y = valuesGravity[1] * coef;
+            //changeSpeedVector();
+            return speed_vector;
         }
     }
 }

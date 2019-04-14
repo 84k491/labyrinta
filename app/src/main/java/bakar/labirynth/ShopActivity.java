@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     TextView gold;
     Animation on_click_anim;
     Map<String, Integer> id_map;
+    Drawable coinIcon;
 
     void setIdMap(){
         id_map = new HashMap<>();
@@ -67,6 +69,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         setIdMap();
 
+        coinIcon = new BitmapDrawable(getResources(),
+                BitmapFactory.decodeResource(getResources(), R.drawable.coin_anim1));
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
@@ -88,6 +92,16 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         layout.addView(getSpace());
 
         findViewById(R.id.bt_shop_back).setOnClickListener(this);
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+
+        for (ShopItem item : items){
+            item.assosiatedLayout = null;
+        }
+        items.clear();
     }
 
     @Override
@@ -249,9 +263,12 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             cost_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
             costLayout.addView(cost_tw);
 
+
             costIcon = new ImageView(ShopActivity.this);
-            if (costIconResource != -1)
-                costIcon.setBackgroundResource(costIconResource);
+//            if (costIconResource != -1)
+//                costIcon.setBackgroundResource(costIconResource);
+            costIcon.setBackground(coinIcon);
+            //costIcon.setBackgroundColor(Color.RED);
             costIcon.setId(getRandomId());
             costIcon.setLayoutParams(iconParams);
             costLayout.addView(costIcon);
