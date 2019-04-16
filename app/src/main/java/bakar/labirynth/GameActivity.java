@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -49,6 +50,7 @@ public class GameActivity extends Activity{
     CustomTouchListener touchListener;
     SharedPreferences sPref;
     TiltController tiltController;
+    ConstraintLayout mainLayout;
     private InterstitialAd mInterstitialAd;
 
     Point difficultyToActualSize(int lvl_difficulty){
@@ -84,6 +86,7 @@ public class GameActivity extends Activity{
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().setFormat(PixelFormat.RGBA_8888);
 
+        mainLayout = new ConstraintLayout(this);
 
         Intent intent = getIntent();
         sPref = getSharedPreferences("global", MODE_PRIVATE);
@@ -112,6 +115,8 @@ public class GameActivity extends Activity{
         gameRenderer.setGameLogic(gameLogic);
         loadData();
         setContentView(gameRenderer);
+//        mainLayout.addView();
+//        mainLayout.addView(new Background(this));
         touchListener.setRenderer(gameRenderer);
 
         mInterstitialAd = newInterstitialAd();

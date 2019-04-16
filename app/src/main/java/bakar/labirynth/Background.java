@@ -55,69 +55,26 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    private class RenderThread extends Thread{
+    class RenderThread extends Thread{
 
         boolean running = false;
         private SurfaceHolder surfaceHolder;
         Random random;
-        final Matrix bgScaleMatrix = new Matrix();
-        final Matrix translate_matrix = new Matrix();
-        ArrayList<TheDot> dotPool = new ArrayList<>();
-        Map<Long, Bitmap> dotBitmaps = new HashMap<>();
-
-        private int dotDepthLevelAmount = 10;
-        private float maxDotBlurRadius = 24.f;
-
-        private Paint dotPaint = new Paint();
-        private Paint common = new Paint();
-
-        Bitmap backgroundBitmap;
 
         RenderThread(){
             random = new Random(System.currentTimeMillis());
 
-            dotPaint.setColor(Color.argb(255,255,255,255));
+            BgResources.inst().dotPaint.setColor(Color.argb(255,255,255,255));
             updateBackgroundBmp();
+
+            while (BgResources.inst().isDotsArrayLocked){}
+            BgResources.inst().isDotsArrayLocked = true;
+
             for (int i = 0; i < 100; ++i){
-                dotPool.add(new TheDot());
-            }
-        }
-
-        Bitmap makeTransparentBmp(int size){
-            int width =  size;
-            int height = size;
-            Bitmap myBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            int [] allpixels = new int [ myBitmap.getHeight()*myBitmap.getWidth()];
-            myBitmap.setPixels(allpixels, 0, width, 0, 0, width, height);
-
-            for(int i =0; i<myBitmap.getHeight() * myBitmap.getWidth(); i++) {
-                allpixels[i] = Color.alpha(Color.TRANSPARENT);
+                BgResources.inst().dotPool.add(new TheDot(getWidth(), getHeight()));
             }
 
-            myBitmap.setPixels(allpixels, 0, myBitmap.getWidth(), 0, 0, myBitmap.getWidth(), myBitmap.getHeight());
-            return myBitmap;
-        }
-        Bitmap makeDotBmp(float dot_radius, float blur_radius){
-            Bitmap dot = makeTransparentBmp(Math.round(dot_radius * 2 + dot_radius * blur_radius / 2));
-
-            Canvas dot_canvas = new Canvas(dot);
-            Paint dot_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-            dot_paint.setColor(Color.argb(255, 255, 255, 255));
-            dot_canvas.drawCircle(dot.getWidth() / 2, dot.getHeight() / 2, dot_radius, dot_paint);
-            if (0 != blur_radius)
-                dot = blurRs(blur_radius, dot);
-
-            return dot;
-        }
-        Bitmap getDotBmp(int dot_radius, int depthLevel){
-            long key = Math.round(Math.pow(dot_radius, depthLevel));
-
-            if (!dotBitmaps.containsKey(key)){
-                float blur_radius = depthLevel * maxDotBlurRadius / dotDepthLevelAmount;
-                dotBitmaps.put(key, makeDotBmp(dot_radius, blur_radius));
-            }
-            return dotBitmaps.get(key);
+            BgResources.inst().isDotsArrayLocked = false;
         }
 
         void updateBackgroundBmp(){
@@ -143,26 +100,30 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
             //backgroundBitmap = blurStack(100, blured);
             //backgroundBitmap = blurBox(500, blured);
             //backgroundBitmap = blurSuperFast(100, blured);
-            backgroundBitmap = blured;
+            BgResources.inst().backgroundBitmap = blured;
         }
         void drawBackground(Canvas canvas){
-            int h = backgroundBitmap.getHeight();
-            int w = backgroundBitmap.getWidth();
-            canvas.drawBitmap(backgroundBitmap, bgScaleMatrix, common);
+//            int h = backgroundBitmap.getHeight();
+//            int w = backgroundBitmap.getWidth();
+            canvas.drawBitmap(BgResources.inst().backgroundBitmap, BgResources.inst().bgScaleMatrix, BgResources.inst().common);
         }
         void drawDotBitmap(Canvas canvas, Bitmap bmp, CPoint.Screen pos){
-            translate_matrix.reset();
+            BgResources.inst().translate_matrix.reset();
 
-            translate_matrix.preTranslate(pos.x - (float)bmp.getWidth() / 2,
+            BgResources.inst().translate_matrix.preTranslate(pos.x - (float)bmp.getWidth() / 2,
                     pos.y  - (float)bmp.getHeight() / 2);
 
             canvas.drawBitmap(bmp,
-                    translate_matrix, dotPaint);
+                    BgResources.inst().translate_matrix, BgResources.inst().dotPaint);
         }
         void drawDots(Canvas canvas){
-            for(TheDot dot: dotPool){
-                dot.draw(canvas);
+            while (BgResources.inst().isDotsArrayLocked){}
+            BgResources.inst().isDotsArrayLocked = true;
+            for(TheDot dot : BgResources.inst().dotPool){
+                drawDotBitmap(canvas, BgResources.inst().getDotBmp(dot.radius, dot.depth, rs), dot.pos);
+                dot.onDraw(); // FIXME: 4/16/19
             }
+            BgResources.inst().isDotsArrayLocked = false;
         }
 
         void onDraw(Canvas canvas){
@@ -192,65 +153,146 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
                 }
             }
         }
+    }
+}
 
-        class TheDot{
-            CPoint.Screen pos = new CPoint.Screen();
-            int radius;
-            int depth;
-            PointF moveVector = new PointF();
-            int alpha;
-            int alphaStep = 1;
+class TheDot{
+    Random random;
+    CPoint.Screen pos = new CPoint.Screen();
+    int radius;
+    int depth;
+    PointF moveVector = new PointF();
+    int alpha;
+    int alphaStep = 1;
+    int max_x = 500;
+    int max_y = 500;
 
-            TheDot(){
-                randomValues();
-                alpha = random.nextInt(200) - 100;
-            }
-            void randomValues(){
-                pos.x = random.nextFloat() * getWidth();
-                pos.y = random.nextFloat() * getHeight();
+    TheDot(int _max_x, int _max_y){
+        random = new Random(System.currentTimeMillis());
+        max_x = _max_x;
+        max_y = _max_y;
+        randomValues();
+        alpha = random.nextInt(200) - 100;
+    }
+    void randomValues(){
+        pos.x = random.nextFloat() * max_x;
+        pos.y = random.nextFloat() * max_y;
 
-                moveVector.x = random.nextFloat() * .4f - .2f;
-                moveVector.y = random.nextFloat() * .4f - .2f;
+        moveVector.x = random.nextFloat() * .4f - .2f;
+        moveVector.y = random.nextFloat() * .4f - .2f;
 
-                radius = random.nextInt(3) + 1;
-                depth = random.nextInt(dotDepthLevelAmount);
-            }
-            void moveByVector(){
-                pos.offset(moveVector.x, moveVector.y);
-            }
-            void draw(Canvas canvas){
-                //dotPaint.setAlpha(100 - Math.abs(alpha));
-                drawDotBitmap(canvas, getDotBmp(radius, depth), pos);
+        radius = random.nextInt(3) + 1;
+        depth = random.nextInt(BgResources.inst().dotDepthLevelAmount);
+    }
+    void moveByVector(){
+        pos.offset(moveVector.x, moveVector.y);
+    }
 
-                moveByVector();
+    void onDraw(){
+        moveByVector();
 
-                alpha += alphaStep;
-                if (alpha > 40){
-                    alpha = -40;
-                    randomValues();
-                }
-            }
+        alpha += alphaStep;
+        if (alpha > 40){
+            alpha = -40;
+            randomValues();
+        }
+    }
+}
+
+class BgResources{
+    private static BgResources instance = new BgResources();
+
+    // TODO: 4/16/19 make mutex methods
+    boolean isDotsArrayLocked = false;
+
+    final Matrix bgScaleMatrix = new Matrix();
+    final Matrix translate_matrix = new Matrix();
+    ArrayList<TheDot> dotPool = new ArrayList<>();
+    Map<Long, Bitmap> dotBitmaps = new HashMap<>();
+
+    int dotDepthLevelAmount = 10;
+    float maxDotBlurRadius = 24.f;
+
+    Paint dotPaint = new Paint();
+    Paint common = new Paint();
+
+    Bitmap backgroundBitmap;
+
+    static BgResources inst(){
+        return instance;
+    }
+
+    private BgResources(){
+
+    }
+
+    void makeNewDot(int screen_w, int screen_h){
+        while (BgResources.inst().isDotsArrayLocked){}
+        BgResources.inst().isDotsArrayLocked = true;
+
+        dotPool.add(new TheDot(screen_w, screen_h));
+
+        BgResources.inst().isDotsArrayLocked = false;
+    }
+
+    Bitmap makeTransparentBmp(int size){
+        int width =  size;
+        int height = size;
+        Bitmap myBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        int [] allpixels = new int [ myBitmap.getHeight()*myBitmap.getWidth()];
+        myBitmap.setPixels(allpixels, 0, width, 0, 0, width, height);
+
+        for(int i =0; i<myBitmap.getHeight() * myBitmap.getWidth(); i++) {
+            allpixels[i] = Color.alpha(Color.TRANSPARENT);
         }
 
-        private static final float BITMAP_SCALE = 1.f;
+        myBitmap.setPixels(allpixels, 0, myBitmap.getWidth(), 0, 0, myBitmap.getWidth(), myBitmap.getHeight());
+        return myBitmap;
+    }
 
-        public Bitmap blurRs(float radius, Bitmap image) {
-            int width = Math.round(image.getWidth() * BITMAP_SCALE);
-            int height = Math.round(image.getHeight() * BITMAP_SCALE);
+    Bitmap makeDotBmp(float dot_radius, float blur_radius, RenderScript rs){
+        Bitmap dot = makeTransparentBmp(Math.round(dot_radius * 2 + dot_radius * blur_radius / 2));
 
-            Bitmap inputBitmap = Bitmap.createScaledBitmap(image, width, height, false);
-            Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
+        Canvas dot_canvas = new Canvas(dot);
+        Paint dot_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-            ScriptIntrinsicBlur intrinsicBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-            Allocation tmpIn = Allocation.createFromBitmap(rs, inputBitmap);
-            Allocation tmpOut = Allocation.createFromBitmap(rs, outputBitmap);
+        dot_paint.setColor(Color.argb(255, 255, 255, 255));
+        dot_canvas.drawCircle(dot.getWidth() / 2, dot.getHeight() / 2, dot_radius, dot_paint);
+        if (0 != blur_radius)
+            dot = blurRs(blur_radius, dot, rs);
 
-            intrinsicBlur.setRadius(radius);
-            intrinsicBlur.setInput(tmpIn);
-            intrinsicBlur.forEach(tmpOut);
-            tmpOut.copyTo(outputBitmap);
+        return dot;
+    }
 
-            return outputBitmap;
+    Bitmap getDotBmp(int dot_radius, int depthLevel, RenderScript rs){
+        long key = Math.round(Math.pow(dot_radius, depthLevel));
+
+        if (!BgResources.inst().dotBitmaps.containsKey(key)){
+            float blur_radius = depthLevel * BgResources.inst().maxDotBlurRadius /
+                    BgResources.inst().dotDepthLevelAmount;
+            BgResources.inst().dotBitmaps.put(key, makeDotBmp(dot_radius, blur_radius, rs));
         }
+        return BgResources.inst().dotBitmaps.get(key);
+    }
+
+    private static final float BITMAP_SCALE = 1.f;
+
+    public Bitmap blurRs(float radius, Bitmap image, RenderScript rs) {
+        int width = Math.round(image.getWidth() * BITMAP_SCALE);
+        int height = Math.round(image.getHeight() * BITMAP_SCALE);
+
+        Bitmap inputBitmap = Bitmap.createScaledBitmap(image, width, height, false);
+        Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
+
+        ScriptIntrinsicBlur intrinsicBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+        Allocation tmpIn = Allocation.createFromBitmap(rs, inputBitmap);
+        Allocation tmpOut = Allocation.createFromBitmap(rs, outputBitmap);
+
+        intrinsicBlur.setRadius(radius);
+        intrinsicBlur.setInput(tmpIn);
+        intrinsicBlur.forEach(tmpOut);
+        tmpOut.copyTo(outputBitmap);
+
+        return outputBitmap;
     }
 }

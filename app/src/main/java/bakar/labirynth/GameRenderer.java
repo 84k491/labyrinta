@@ -386,7 +386,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private SurfaceHolder surfaceHolder;
         private Profiler profiler = new Profiler();
         final Matrix Ematrix = new Matrix();
-        final Matrix bgScaleMatrix = new Matrix();
         final Matrix fogMatrix = new Matrix();
         final Matrix translate_matrix = new Matrix();
 
@@ -399,7 +398,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         private Bitmap labBitmap;
         private Bitmap fogBitmap;
-        private Bitmap backgroundBitmap;
         private float fogBmpScale = -1;
         private Bitmap pointerBitmap;
         private boolean canClearBmp = true;
@@ -473,7 +471,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             random = new Random(System.currentTimeMillis());
 
             for (int i = 0; i < 100; ++i){
-                dotPool.add(new TheDot());
+                BgResources.inst().makeNewDot(getWidth(), getHeight());
             }
 
             createFogBmp();
@@ -578,44 +576,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawPath(poly, wall);
         }
 
-        Bitmap makeTransparentBmp(int size){
-            int width =  size;
-            int height = size;
-            Bitmap myBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            int [] allpixels = new int [ myBitmap.getHeight()*myBitmap.getWidth()];
-            myBitmap.setPixels(allpixels, 0, width, 0, 0, width, height);
-
-            for(int i =0; i<myBitmap.getHeight() * myBitmap.getWidth(); i++) {
-                allpixels[i] = Color.alpha(Color.TRANSPARENT);
-            }
-
-            myBitmap.setPixels(allpixels, 0, myBitmap.getWidth(), 0, 0, myBitmap.getWidth(), myBitmap.getHeight());
-            return myBitmap;
-        }
-        Bitmap makeDotBmp(float dot_radius, float blur_radius){
-            Bitmap dot = makeTransparentBmp(Math.round(dot_radius * 2 + dot_radius * blur_radius / 2));
-
-            Canvas dot_canvas = new Canvas(dot);
-            Paint dot_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-            dot_paint.setColor(Color.argb(255, 255, 255, 255));
-            dot_canvas.drawCircle(dot.getWidth() / 2, dot.getHeight() / 2, dot_radius, dot_paint);
-            if (0 != blur_radius)
-                dot = blurRs(blur_radius, dot);
-
-            return dot;
-        }
-        Bitmap getDotBmp(int dot_radius, int depthLevel){
-            long key = Math.round(Math.pow(dot_radius, depthLevel));
-
-            if (!dotBitmaps.containsKey(key)){
-                float blur_radius = depthLevel * maxDotBlurRadius / dotDepthLevelAmount;
-                dotBitmaps.put(key, makeDotBmp(dot_radius, blur_radius));
-            }
-            return dotBitmaps.get(key);
-        }
-        ArrayList<TheDot> dotPool = new ArrayList<>();
-        Map<Long, Bitmap> dotBitmaps = new HashMap<>();
         Random random;
 
         void updateBackgroundBmp(){
@@ -641,7 +601,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             //backgroundBitmap = blurStack(100, blured);
             //backgroundBitmap = blurBox(500, blured);
             //backgroundBitmap = blurSuperFast(100, blured);
-            backgroundBitmap = blured;
+            BgResources.inst().backgroundBitmap = blured;
         }
 
         void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge){
@@ -675,9 +635,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     translate_matrix, dotPaint);
         }
         void drawDots(Canvas canvas){
-            for(TheDot dot: dotPool){
-                dot.draw(canvas);
+            while (BgResources.inst().isDotsArrayLocked){}
+            BgResources.inst().isDotsArrayLocked = true;
+            for(TheDot dot: BgResources.inst().dotPool){
+                drawDotBitmap(canvas, BgResources.inst().getDotBmp(dot.radius, dot.depth, rs), dot.pos);
+                dot.onDraw(); // FIXME: 4/16/19
             }
+            BgResources.inst().isDotsArrayLocked = false;
         }
         void drawDebugText(Canvas canvas){
             if (!isDebug)
@@ -885,9 +849,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(fogBitmap, Ematrix, fog);
         }
         void drawBackground(Canvas canvas){
-            int h = backgroundBitmap.getHeight();
-            int w = backgroundBitmap.getWidth();
-            canvas.drawBitmap(backgroundBitmap, bgScaleMatrix, common);
+            canvas.drawBitmap(BgResources.inst().backgroundBitmap,
+                    BgResources.inst().bgScaleMatrix,
+                    common);
         }
 
         void onDraw(Canvas canvas){
@@ -973,45 +937,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                             surfaceHolder.unlockCanvasAndPost(canvas);
                         }
                     }
-                }
-            }
-        }
-
-        class TheDot{
-            CPoint.Screen pos = new CPoint.Screen();
-            int radius;
-            int depth;
-            PointF moveVector = new PointF();
-            int alpha;
-            int alphaStep = 1;
-
-            TheDot(){
-                randomValues();
-                alpha = random.nextInt(200) - 100;
-            }
-            void randomValues(){
-                pos.x = random.nextFloat() * getWidth();
-                pos.y = random.nextFloat() * getHeight();
-
-                moveVector.x = random.nextFloat() * .4f - .2f;
-                moveVector.y = random.nextFloat() * .4f - .2f;
-
-                radius = random.nextInt(3) + 1;
-                depth = random.nextInt(dotDepthLevelAmount);
-            }
-            void moveByVector(){
-                pos.offset(moveVector.x, moveVector.y);
-            }
-            void draw(Canvas canvas){
-                //dotPaint.setAlpha(100 - Math.abs(alpha));
-                drawDotBitmap(canvas, getDotBmp(radius, depth), pos);
-
-                moveByVector();
-
-                alpha += alphaStep;
-                if (alpha > 40){
-                    alpha = -40;
-                    randomValues();
                 }
             }
         }
