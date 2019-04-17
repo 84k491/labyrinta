@@ -32,9 +32,12 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-BETA
     // TODO: 3/18/19 put icons in shop activity
+    // TODO: 3/18/19 OOM fixes
 
-    // TODO: 3/18/19 back buttons in menus move up
+    // TODO: 3/18/19 background fix
+    // TODO: 4/16/19 sounds
     // TODO: 3/18/19 bigger app icon
+    // TODO: 3/18/19 back buttons in menus move up
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 3/18/19 loading screen
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
@@ -42,8 +45,6 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 accelerometer movement
     // TODO: 3/18/19 in-app purchases
     // TODO: 3/18/19 credits for video
-    // TODO: 3/18/19 OOM fixes
-    // TODO: 3/18/19 background fix
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Xml;
 import android.view.Gravity;
@@ -72,6 +73,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.activity_level_select);
 
         mainLayout = findViewById(R.id.ll_level_select);
+        ((ConstraintLayout)findViewById(R.id.lsa_constraint_lo))
+                .addView(new Background(this), 0);
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         findViewById(R.id.bt_select_back).setOnClickListener(this);

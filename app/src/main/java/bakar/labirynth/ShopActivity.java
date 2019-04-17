@@ -74,6 +74,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
+        ((ConstraintLayout)findViewById(R.id.cl_shop_act))
+                .addView(new Background(this), 0);
+
         gold = (TextView)findViewById(R.id.tw_gold_amount);
         gold.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
         updateGoldLabel();

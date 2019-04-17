@@ -67,14 +67,16 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
             BgResources.inst().dotPaint.setColor(Color.argb(255,255,255,255));
             updateBackgroundBmp();
 
-            while (BgResources.inst().isDotsArrayLocked){}
-            BgResources.inst().isDotsArrayLocked = true;
+            if (BgResources.inst().dotPool.size() == 0){
+                while (BgResources.inst().isDotsArrayLocked){}
+                BgResources.inst().isDotsArrayLocked = true;
 
-            for (int i = 0; i < 100; ++i){
-                BgResources.inst().dotPool.add(new TheDot(getWidth(), getHeight()));
+                for (int i = 0; i < 100; ++i){
+                    BgResources.inst().dotPool.add(new TheDot(getWidth(), getHeight()));
+                }
+
+                BgResources.inst().isDotsArrayLocked = false;
             }
-
-            BgResources.inst().isDotsArrayLocked = false;
         }
 
         void updateBackgroundBmp(){
@@ -119,10 +121,12 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
         void drawDots(Canvas canvas){
             while (BgResources.inst().isDotsArrayLocked){}
             BgResources.inst().isDotsArrayLocked = true;
+
             for(TheDot dot : BgResources.inst().dotPool){
                 drawDotBitmap(canvas, BgResources.inst().getDotBmp(dot.radius, dot.depth, rs), dot.pos);
                 dot.onDraw(); // FIXME: 4/16/19
             }
+
             BgResources.inst().isDotsArrayLocked = false;
         }
 

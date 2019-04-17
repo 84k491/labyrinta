@@ -393,9 +393,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private long redrawPeriod = 30; // milliS // microS
         private long fpsTimer = 0;
 
-        private int dotDepthLevelAmount = 10;
-        private float maxDotBlurRadius = 24.f;
-
         private Bitmap labBitmap;
         private Bitmap fogBitmap;
         private float fogBmpScale = -1;
@@ -419,7 +416,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         AnimationBitmaps bitmaps = new AnimationBitmaps();
 
         //Todo: перенести Paint в ресурсы цвета
-        private Paint dotPaint = new Paint();
         private Paint common = new Paint();
         private Paint floor = new Paint();
         private Paint wall = new Paint();
@@ -469,10 +465,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             options.inSampleSize = 4;
 
             random = new Random(System.currentTimeMillis());
-
-            for (int i = 0; i < 100; ++i){
-                BgResources.inst().makeNewDot(getWidth(), getHeight());
-            }
 
             createFogBmp();
             updateBackgroundBmp();
@@ -632,7 +624,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     pos.y  - (float)bmp.getHeight() / 2);
 
             canvas.drawBitmap(bmp,
-                    translate_matrix, dotPaint);
+                    translate_matrix, BgResources.inst().dotPaint);
         }
         void drawDots(Canvas canvas){
             while (BgResources.inst().isDotsArrayLocked){}
