@@ -71,8 +71,10 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
                 while (BgResources.inst().isDotsArrayLocked){}
                 BgResources.inst().isDotsArrayLocked = true;
 
+                Random r = new Random(System.currentTimeMillis());
                 for (int i = 0; i < 100; ++i){
-                    BgResources.inst().dotPool.add(new TheDot(getWidth(), getHeight()));
+                    BgResources.inst().dotPool.
+                            add(new TheDot(getWidth(), getHeight(), r));
                 }
 
                 BgResources.inst().isDotsArrayLocked = false;
@@ -171,8 +173,8 @@ class TheDot{
     int max_x = 500;
     int max_y = 500;
 
-    TheDot(int _max_x, int _max_y){
-        random = new Random(System.currentTimeMillis());
+    TheDot(int _max_x, int _max_y, Random _random){
+        random = _random;
         max_x = _max_x;
         max_y = _max_y;
         randomValues();
@@ -187,6 +189,14 @@ class TheDot{
 
         radius = random.nextInt(3) + 1;
         depth = random.nextInt(BgResources.inst().dotDepthLevelAmount);
+
+//        pos.x = 500;
+//        pos.y = 500;
+//
+//        moveVector.x = 0;
+//        moveVector.y = 0;
+//        radius = 3;
+//        depth = 4;
     }
     void moveByVector(){
         pos.offset(moveVector.x, moveVector.y);
@@ -230,15 +240,6 @@ class BgResources{
 
     }
 
-    void makeNewDot(int screen_w, int screen_h){
-        while (BgResources.inst().isDotsArrayLocked){}
-        BgResources.inst().isDotsArrayLocked = true;
-
-        dotPool.add(new TheDot(screen_w, screen_h));
-
-        BgResources.inst().isDotsArrayLocked = false;
-    }
-
     Bitmap makeTransparentBmp(int size){
         int width =  size;
         int height = size;
@@ -269,7 +270,7 @@ class BgResources{
     }
 
     Bitmap getDotBmp(int dot_radius, int depthLevel, RenderScript rs){
-        long key = Math.round(Math.pow(dot_radius, depthLevel));
+        long key = Math.round(Math.pow(dot_radius + 1, depthLevel + 1));
 
         if (!BgResources.inst().dotBitmaps.containsKey(key)){
             float blur_radius = depthLevel * BgResources.inst().maxDotBlurRadius /

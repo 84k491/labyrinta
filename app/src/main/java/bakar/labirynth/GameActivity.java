@@ -33,8 +33,8 @@ public class GameActivity extends Activity{
     // STEPS-TO-BETA
     // TODO: 3/18/19 put icons in shop activity
     // TODO: 3/18/19 OOM fixes
-
     // TODO: 3/18/19 background fix
+
     // TODO: 4/16/19 sounds
     // TODO: 3/18/19 bigger app icon
     // TODO: 3/18/19 back buttons in menus move up
