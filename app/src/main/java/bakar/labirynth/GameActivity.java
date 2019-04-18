@@ -20,6 +20,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class GameActivity extends Activity{
 
@@ -134,6 +135,7 @@ public class GameActivity extends Activity{
     @Override
     protected void onResume(){
         super.onResume();
+        //Logger.getAnonymousLogger().info("GameActivity::onResume()");
 
         if (tiltController != null) {
             tiltController.registerSensors();

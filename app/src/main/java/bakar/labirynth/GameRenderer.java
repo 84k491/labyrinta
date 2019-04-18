@@ -467,7 +467,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             random = new Random(System.currentTimeMillis());
 
             createFogBmp();
-            updateBackgroundBmp();
+            //updateBackgroundBmp();
         }
 
         private long getTime(){
@@ -569,32 +569,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         Random random;
-
-        void updateBackgroundBmp(){
-            int h = getHeight();
-            int w = getWidth();
-
-            Bitmap blured = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-
-            int color1 = Color.parseColor("#1e508c");
-            int color2 = Color.parseColor("#da2b90");
-            LinearGradient shader = new LinearGradient(0, 0, w, h - 70,
-                    color1, color2, Shader.TileMode.MIRROR);
-            Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-            p.setDither(false);
-            p.setShader(shader);
-
-            Canvas c = new Canvas(blured);
-            c.drawRect(0,0,w, h, p);
-
-            //c.drawBitmap(makeDotBmp(5, 25), new Matrix(), common);
-            //backgroundBitmap = blur(getContext(), blured);
-            //backgroundBitmap = blurFastGauss(40, blured);
-            //backgroundBitmap = blurStack(100, blured);
-            //backgroundBitmap = blurBox(500, blured);
-            //backgroundBitmap = blurSuperFast(100, blured);
-            BgResources.inst().backgroundBitmap = blured;
-        }
 
         void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge){
             translate_matrix.reset();
