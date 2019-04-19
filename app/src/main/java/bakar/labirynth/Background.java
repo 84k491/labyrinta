@@ -113,8 +113,6 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
             BgResources.inst().backgroundBitmap = blured;
         }
         void drawBackground(Canvas canvas){
-//            int h = backgroundBitmap.getHeight();
-//            int w = backgroundBitmap.getWidth();
             canvas.drawBitmap(BgResources.inst().backgroundBitmap, BgResources.inst().bgScaleMatrix, BgResources.inst().common);
         }
         void drawDotBitmap(Canvas canvas, Bitmap bmp, CPoint.Screen pos){
@@ -228,7 +226,7 @@ class BgResources{
     final Matrix bgScaleMatrix = new Matrix();
     final Matrix translate_matrix = new Matrix();
     ArrayList<TheDot> dotPool = new ArrayList<>();
-    Map<Long, Bitmap> dotBitmaps = new HashMap<>();
+    private final Map<Long, Bitmap> dotBitmaps = new HashMap<>();
 
     int dotDepthLevelAmount = 10;
     float maxDotBlurRadius = 24.f;
@@ -246,7 +244,7 @@ class BgResources{
 
     }
 
-    Bitmap makeTransparentBmp(int size){
+    private Bitmap makeTransparentBmp(int size){
         int width =  size;
         int height = size;
         Bitmap myBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -261,7 +259,7 @@ class BgResources{
         return myBitmap;
     }
 
-    Bitmap makeDotBmp(float dot_radius, float blur_radius, RenderScript rs){
+    private Bitmap makeDotBmp(float dot_radius, float blur_radius, RenderScript rs){
         Bitmap dot = makeTransparentBmp(Math.round(dot_radius * 2 + dot_radius * blur_radius / 2));
 
         Canvas dot_canvas = new Canvas(dot);
@@ -288,7 +286,7 @@ class BgResources{
 
     private static final float BITMAP_SCALE = 1.f;
 
-    public Bitmap blurRs(float radius, Bitmap image, RenderScript rs) {
+    private Bitmap blurRs(float radius, Bitmap image, RenderScript rs) {
         int width = Math.round(image.getWidth() * BITMAP_SCALE);
         int height = Math.round(image.getHeight() * BITMAP_SCALE);
 
