@@ -65,7 +65,8 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
             random = new Random(System.currentTimeMillis());
 
             BgResources.inst().dotPaint.setColor(Color.argb(255,255,255,255));
-            updateBackgroundBmp();
+            if (BgResources.inst().backgroundBitmap == null)
+                updateBackgroundBmp();
 
             if (BgResources.inst().dotPool.size() == 0){
                 while (BgResources.inst().isDotsArrayLocked){}
@@ -82,8 +83,13 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         void updateBackgroundBmp(){
-            int h = getHeight();
-            int w = getWidth();
+            final float bmp_scale = 0.25f;
+
+            int h = Math.round(getHeight() * bmp_scale);
+            int w = Math.round(getWidth() * bmp_scale);
+
+            BgResources.inst().bgScaleMatrix.postScale(Math.round(1.f / bmp_scale),
+                                                       Math.round(1.f / bmp_scale));
 
             Bitmap blured = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 

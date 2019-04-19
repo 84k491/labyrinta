@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import static android.graphics.Path.Direction.CW;
 
@@ -348,8 +349,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         CPoint.Screen pos3 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 8);
         buttons.add(new Bonuses(pos3, rad1));
 
-        gameLogic.eFactory.init();
 
+        gameLogic.eFactory.init();
         if (gameLogic.usesJoystick){
             float rad = getWidth() / 10;
             CPoint.Screen pos = new CPoint.Screen(getWidth() - rad * 2, getHeight() - rad * 2);
@@ -360,13 +361,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread = new RenderThread();
         renderThread.setHolder(getHolder());
         renderThread.setRunning(true);
-        renderThread.start();
         renderThread.bitmaps.rescaleAll();
 
         playerHitbox = (float)getWidth() / 10.f;
 
         renderThread.resizeFogBmp();
         renderThread.enlightenFogBmp(gameLogic.playerCoords());
+
+        renderThread.start();
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -818,13 +820,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(BgResources.inst().backgroundBitmap,
                     BgResources.inst().bgScaleMatrix,
                     common);
+//            canvas.drawRect(0, 0, getWidth(), getHeight(), common);
         }
 
         void onDraw(Canvas canvas){
             if (!gameLogic.isInited) return;
             canClearBmp = false;
             //canvas.setMatrix(Ematrix);
-
             profiler.start("Frame");
 
             profiler.start("BG");
