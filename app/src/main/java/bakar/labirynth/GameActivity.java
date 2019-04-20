@@ -3,7 +3,6 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.hardware.Sensor;
@@ -20,7 +19,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class GameActivity extends Activity{
 
@@ -30,6 +28,8 @@ public class GameActivity extends Activity{
     //Todo: белые кнопки рисуются заново при разворачивании
     // TODO: 15.05.2018 сделать режим на время
     // TODO: 19.05.2018 rate this app
+    // TODO: 4/20/19 плавное движение от акселерометра
+    // TODO: 4/20/19 заблочить поворот
 
     // STEPS-TO-BETA
     // TODO: 3/18/19 put icons in shop activity
@@ -40,14 +40,14 @@ public class GameActivity extends Activity{
     // TODO: 4/19/19 nicer bonus ranges
 
     // TODO: 4/19/19 settings activity
-    // TODO: 4/16/19 sounds
-    // TODO: 3/18/19 back buttons in menus move up
-    // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 3/18/19 loading screen
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
+    // TODO: 4/16/19 sounds
+    // TODO: 3/18/19 back buttons in menus move up
     // TODO: 3/18/19 in-app purchases
     // TODO: 3/18/19 credits for video
+    // TODO: 3/18/19 player, exit, coin sprites
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;

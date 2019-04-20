@@ -15,7 +15,9 @@
         <activity android:name=".LevelSelectActivity"></activity>
         <activity android:name=".ShopActivity" />
         <activity android:name=".ResearchActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:theme="@style/Theme.IAPTheme"/>
         <activity android:name=".MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,13 +28,7 @@
         <activity android:name=".GameActivity" />
         <activity
             android:name=".EndActivity"
-            android:theme="@style/Theme.IAPTheme" /> <!-- <activity -->
-        <!-- android:name=".Ad" -->
-        <!-- android:label="@string/title_activity_ad" /> &lt;!&ndash; Include the AdActivity configChanges and theme. &ndash;&gt; -->
-        <!-- <activity -->
-        <!-- android:name="com.google.android.gms.ads.AdActivity" -->
-        <!-- android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" -->
-        <!-- android:theme="@android:style/Theme.Translucent" /> -->
+            android:theme="@style/Theme.IAPTheme" />
         <activity
             android:name=".BonusActivity"
             android:theme="@style/Theme.IAPTheme" />

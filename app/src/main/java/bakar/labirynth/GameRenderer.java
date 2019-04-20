@@ -105,6 +105,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         intent.putExtra("pointerAmount", gameLogic.pointerAmount);
         ((Activity)getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
     }
+    void startSettingsActivity(){
+        Intent intent = new Intent(getContext(), SettingsActivity.class);
+        getContext().startActivity(intent);
+    }
 
     boolean isFieldAtScreen(){
         float margin = playerHitbox / 2;
@@ -337,7 +341,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         while (getGlobalScale() < min_scale)
             camera.translate(0,0,10);
 
-        float rad1 = getWidth() / 20;
+        float rad1 = (float)getWidth() / 20;
         CPoint.Screen pos1 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 2);
         buttons.add(new PlayerFinder(pos1, rad1));
         buttons.get(0).onClick();
@@ -348,6 +352,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         CPoint.Screen pos3 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 8);
         buttons.add(new Bonuses(pos3, rad1));
+
+        CPoint.Screen pos4 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 11);
+        buttons.add(new Settings(pos4, rad1));
 
 
         gameLogic.eFactory.init();
@@ -614,22 +621,16 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawDebugText(Canvas canvas){
             if (!isDebug)
                 return;
-            ArrayList<String> outputs = new ArrayList<>();
+            final ArrayList<String> outputs = new ArrayList<>();
 
             outputs.add("xSize: " + gameLogic.field.getxSize());
             outputs.add("ySize: " + gameLogic.field.getySize());
 
-
-            outputs.add("Gravity: " + gameLogic.tiltControler.getCurrentVelocity());
+            if (gameLogic.tiltControler != null){
+                outputs.add("Gravity: " + gameLogic.tiltControler.getCurrentVelocity());
+            }
 
             outputs.add("FPS: " + calcFps());
-            //outputs.add("Free mem: " + availMemory() + " MB");
-            //outputs.add("Lab bmp size: " + labBitmap.getRowBytes() * labBitmap.getHeight() / 1024 + " kB");
-            //outputs.add("Lab bmp height: " + labBitmap.getHeight());
-//            if (fogBitmap != null){
-//                outputs.add("Fog bmp size: " + fogBitmap.getRowBytes() * fogBitmap.getHeight() / 1024 + " kB");
-//                outputs.add("Fog bmp height: " + fogBitmap.getHeight());
-//            }
 
             for (int i = 0; i < outputs.size(); ++i){
                 canvas.drawText(outputs.get(i), getWidth(), (i + 1) * 70, text);
@@ -800,6 +801,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             if (radius == 0) return;
 
+            // TODO: 4/20/19 don't create every time
             final RadialGradient gradient = new RadialGradient(pointF.x,
                     pointF.y,
                     radius,
@@ -965,6 +967,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             setMenuButton();
             setBonusesButton();
+            setSettingsButton();
             setCenterButton();
         }
         void setCoin(){
@@ -1110,6 +1113,15 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             BitmapList list = new BitmapList("BonusesButton");
 
             list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.bonuses_button));
+
+            add(list);
+        }
+        void setSettingsButton(){
+            if (null != getListByName("SettingsButton"))
+                return;
+            BitmapList list = new BitmapList("SettingsButton");
+
+            list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.gear_black));
 
             add(list);
         }
@@ -1349,6 +1361,19 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             gameLogic.remote_move_flag = false;
             startBonusActivity();
             //gameLogic.remote_move_flag = true;
+        }
+    }
+    class Settings extends Button{
+        Settings(CPoint.Screen position, float radius){
+            whoami = "SettingsButton";
+            pos = position;
+            rad = radius;
+            init();
+        }
+
+        @Override
+        void onClick() {
+            startSettingsActivity();
         }
     }
 }

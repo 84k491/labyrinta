@@ -5,71 +5,76 @@
     android:id="@+id/settings_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/transparent"
+    android:theme="@style/Theme.IAPTheme"
     tools:context=".SettingsActivity">
 
+    <ImageView
+        android:id="@+id/settings_bg_image"
+        android:layout_width="379dp"
+        android:layout_height="699dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/settings_imageview"
+        android:layout_width="335dp"
+        android:layout_height="265dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@android:drawable/screen_background_dark_transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="188dp"
-        android:layout_height="197dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="237dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.64"></LinearLayout>
+        app:layout_constraintBottom_toBottomOf="@+id/settings_imageview"
+        app:layout_constraintEnd_toEndOf="@+id/settings_imageview"
+        app:layout_constraintStart_toStartOf="@+id/settings_imageview"
+        app:layout_constraintTop_toTopOf="@+id/settings_imageview">
 
-    <Switch
-        android:id="@+id/joystick_sw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="42dp"
-        android:layout_marginBottom="8dp"
-        android:text="Joystick"
-        app:layout_constraintBottom_toTopOf="@+id/debug_sw"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout2" />
+        <Switch
+            android:id="@+id/music_sw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Music" />
 
-    <Switch
-        android:id="@+id/debug_sw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Debug"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout2" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
 
-    <Switch
-        android:id="@+id/fog_sw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fog"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout2"
-        app:layout_constraintVertical_bias="0.744" />
+        <Switch
+            android:id="@+id/joystick_sw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Joystick"
+            tools:layout_editor_absoluteX="116dp"
+            tools:layout_editor_absoluteY="351dp" />
 
-    <Button
-        android:id="@+id/bt_reset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Reset"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.29" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <Switch
+            android:id="@+id/debug_sw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Debug"
+            tools:layout_editor_absoluteX="123dp"
+            tools:layout_editor_absoluteY="416dp" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
