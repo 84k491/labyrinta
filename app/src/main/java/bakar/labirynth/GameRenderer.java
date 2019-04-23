@@ -348,14 +348,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         ((PlayerFinder)buttons.get(0)).instantAnimation(); //Button.class.getClasses()
 
         CPoint.Screen pos2 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 5);
-        buttons.add(new MenuButton(pos2, rad1));
+        buttons.add(new Bonuses(pos2, rad1));
 
-        CPoint.Screen pos3 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 8);
-        buttons.add(new Bonuses(pos3, rad1));
+        CPoint.Screen pos3 = new CPoint.Screen(getWidth() - rad1 * 2, rad1 * 2);
+        buttons.add(new MenuButton(pos3, rad1));
 
-        CPoint.Screen pos4 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 11);
+        CPoint.Screen pos4 = new CPoint.Screen(getWidth() - rad1 * 5, rad1 * 2);
         buttons.add(new Settings(pos4, rad1));
-
 
         gameLogic.eFactory.init();
         if (gameLogic.usesJoystick){
@@ -683,7 +682,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             offset_g.offset(size, 0);
             offset_g.offset(-size / 2, -size / 2);
 
-            CPoint.Screen offset_s = game2screen(offset_g);
             matrix.postTranslate(offset_g.x, offset_g.y);
 
             // 0 градусов это напрвление направо
@@ -781,7 +779,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(labBitmap, Ematrix, common);
         }
         void drawEntities(Canvas canvas){
-            for (Entity entity : gameLogic.eFactory.entities){
+            for (Entity entity : gameLogic.eFactory.entities){ // FIXME: 4/23/19 concurrent mod
                 drawTile(canvas,
                         bitmaps.getByEntity(entity),
                         field2game(entity.pos),

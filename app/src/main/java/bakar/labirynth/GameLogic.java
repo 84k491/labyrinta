@@ -50,7 +50,8 @@ class GameLogic {
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
     EntityFactory eFactory = new EntityFactory();
-    int earnedGold = 0;
+    int goldEarnedByCoins = 0;
+    int goldEarnedByLevel = 0;
 
     CPoint.Game debugTouchGameCoord = new CPoint.Game(0, 0);
 
@@ -91,7 +92,8 @@ class GameLogic {
         traces.clear();
         traces.add(game2field(playerPt));
 
-        earnedGold = 0;
+        goldEarnedByCoins = 0;
+        goldEarnedByLevel = 0;
 
         eFactory.reset();
         eFactory.makeExit(field.exitPos);
@@ -128,7 +130,8 @@ class GameLogic {
 
     void startEndActivity(){
         Intent intent = new Intent(gameRenderer.getContext(), EndActivity.class);
-        intent.putExtra("earned_gold", earnedGold);
+        intent.putExtra("goldEarnedByCoins", goldEarnedByCoins);
+        intent.putExtra("goldEarnedByLevel", goldEarnedByLevel);
         ((Activity)gameRenderer.getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
     }
 
@@ -169,9 +172,9 @@ class GameLogic {
 
     void onExitReached(){
         remote_move_flag = false;
-        int levelReward = Economist.getInstance().getLevelReward(
-                Economist.hypot(new Point(field.getxSize(), field.getySize())));
-        earnedGold += levelReward;
+        goldEarnedByLevel =
+                Economist.getInstance().getLevelReward(
+                        Economist.hypot(new Point(field.getxSize(), field.getySize())));
 
         gameRenderer.onTouchUp(null);
         seed = System.currentTimeMillis();
@@ -182,7 +185,7 @@ class GameLogic {
     }
     void onCoinPickedUp(){
         int pickedUpCoinCost = Economist.getInstance().getCoinCostRand();
-        earnedGold += pickedUpCoinCost;
+        goldEarnedByCoins += pickedUpCoinCost;
         gameRenderer.addPickUpAnimation(playerCoords(), "+" + String.valueOf(pickedUpCoinCost));
     }
     void onPointerPickedUp(){
