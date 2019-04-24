@@ -253,6 +253,7 @@ class GameLogic {
         PointF newPlayerPt = new PointF();//nearestRail.projection(pointF);
 
         for (int i = 0; i < currentNode.availableDirections.size(); ++i){
+            // FIXME: 4/24/19 java.lang.NullPointerException
             nearestRail.set(field2game(currentNode.pos),
                     field2game(currentNode.links.get(currentNode.availableDirections.get(i)).pos));
 

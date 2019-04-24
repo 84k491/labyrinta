@@ -2,6 +2,7 @@ package bakar.labirynth;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 
 public class SettingsActivity extends Activity {
 
@@ -29,6 +31,17 @@ public class SettingsActivity extends Activity {
         setContentView(R.layout.activity_settings);
         joystick = findViewById(R.id.joystick_sw);
         debug = findViewById(R.id.debug_sw);
+
+
+        joystick.setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
+        debug.setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
+        ((Switch)findViewById(R.id.music_sw)).setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
 
         findViewById(R.id.settings_imageview).setOnClickListener(new View.OnClickListener() {
             @Override

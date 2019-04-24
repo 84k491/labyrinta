@@ -3,9 +3,10 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.constraint.ConstraintSet;
-import android.view.Gravity;
+import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,7 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import org.xmlpull.v1.XmlPullParser;
+
 import java.util.HashMap;
 
 enum EndMenuItems{
@@ -57,6 +59,9 @@ public class EndActivity extends Activity implements View.OnClickListener{
         startGoldAmount = sPref.getInt("gold", 0);
         goldEarnedByCoins = getIntent().getIntExtra("goldEarnedByCoins", 0);
         goldEarnedByLevel = getIntent().getIntExtra("goldEarnedByLevel", 0);
+        ((TextView)findViewById(R.id.tw_nice)).setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
 
         //gold.setText(String.valueOf(startGoldAmount));
         SharedPreferences.Editor ed = sPref.edit();
@@ -64,6 +69,9 @@ public class EndActivity extends Activity implements View.OnClickListener{
         ed.apply();
 
         mainLayout = findViewById(R.id.end_layout);
+
+        mainLayout.addView(getSpace(), 2);
+        mainLayout.addView(getSpace(), 2);
 
         mainLayout.addView(getSpace(), 1);
         mainLayout.addView(getChangingTextWithIcon(EndMenuItems.goldTotal), 1);
@@ -75,6 +83,24 @@ public class EndActivity extends Activity implements View.OnClickListener{
         }
         mainLayout.addView(getSpace(), 1);
         mainLayout.addView(getSpace(), 1);
+
+        try{
+            Drawable bg;
+            bg = Drawable.createFromXml(getResources(), getResources().getXml(R.xml.level_select_bg));
+            XmlPullParser parser = getResources().getXml(R.xml.level_select_bg);
+            bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
+
+            findViewById(R.id.bt_menu).setBackground(bg);
+            findViewById(R.id.bt_shop).setBackground(bg);
+            findViewById(R.id.bt_next).setBackground(bg);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+//        ((Button)findViewById(R.id.bt_menu)).setBackgroundResource(R.drawable.menu_button);
+//        ((Button)findViewById(R.id.bt_shop)).setBackgroundResource(R.drawable.bag);
+//        ((Button)findViewById(R.id.bt_next)).setBackgroundResource(R.drawable.play);
+
     }
 
     LinearLayout getChangingTextWithIcon(EndMenuItems item){
@@ -112,14 +138,17 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
         TextView someText = new TextView(this);
         someText.setText(String.valueOf(item));
+        someText.setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
 
         if (EndMenuItems.goldTotal == item){
-            someText.setTextSize(15.f * size_coef);
+            someText.setTextSize(20.f * size_coef);
             someText.setTextColor(Color.rgb(170, 200, 20));
         }
         else{
             someText.setTextColor(Color.rgb(50, 200, 70));
-            someText.setTextSize(15.f);
+            someText.setTextSize(20.f);
         }
         //someText.setBackgroundColor(Color.BLUE);
         textViewMap.put(item, someText);
