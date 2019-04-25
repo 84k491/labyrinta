@@ -80,7 +80,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         findViewById(R.id.bt_select_back).setOnClickListener(this);
 
         fillLayout(getIntent().getIntExtra("max_level_allowed", 0));
-        for (NumeratedTextView tv:textViews){
+        for (NumeratedTextView tv : textViews){
             tv.setOnClickListener(this);
         }
     }
@@ -90,6 +90,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         int row_amount = 1 + lvl_amount / row_volume;
         int iter = 0;
 
+        mainLayout.addView(getSpace());
+        mainLayout.addView(getSpace());
         for (int i = 0; i < row_amount; ++i){
             LinearLayout hlo = generateHorLayout();
             mainLayout.addView(hlo);

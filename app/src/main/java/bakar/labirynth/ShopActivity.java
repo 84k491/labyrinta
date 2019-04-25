@@ -84,15 +84,17 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         setItems();
 
         layout.addView(getSpace());
+        layout.addView(getSpace());
+        layout.addView(getSpace());
+
         for (ShopItem item : items){
             //item.resetValue();
             layout.addView(item.spacesDecorator(item.getMainLayout()));
             layout.addView(getSpace());
             item.getMainLayout().setOnClickListener(this);
         }
-        layout.addView(getSpace()); // FIXME: 4/6/19
-        layout.addView(getSpace());
-        layout.addView(getSpace());
+
+        //layout.addView(getSpace());
 
         findViewById(R.id.bt_shop_back).setOnClickListener(this);
     }
