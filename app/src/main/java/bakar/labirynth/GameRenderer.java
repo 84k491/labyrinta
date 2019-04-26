@@ -203,13 +203,18 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     boolean threadIsStarted(){
         return renderThread.is_started;
     }
-
     boolean threadIsWaiting4Surface(){
         return renderThread.is_waiting_4_surface;
     }
-
     boolean threadIsDoingPreparations(){
         return renderThread.is_doing_preparations;
+    }
+    void prepareNewLevel(){
+        Logger.getAnonymousLogger().info("RenderThread prepareNewLevel()");
+        renderThread.need_2_prepare_new_level = true;
+    }
+    boolean threadIsPrepairingNewLevel(){
+        return renderThread.need_2_prepare_new_level;
     }
 
     boolean isPlayerInSight(){
@@ -401,21 +406,24 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        boolean retry = true;
-        renderThread.setRunning(false);
-        while (retry) {
-            try {
-                renderThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-            }
-        }
+        renderThread.is_waiting_4_surface = true;
+        Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed()");
+//        boolean retry = true;
+//        renderThread.setRunning(false);
+//        while (retry) {
+//            try {
+//                renderThread.join();
+//                retry = false;
+//            } catch (InterruptedException e) {
+//            }
+//        }
     }
 
     private class RenderThread extends Thread{
         boolean is_started = false;
         boolean is_waiting_4_surface = true;
         boolean is_doing_preparations = false;
+        boolean need_2_prepare_new_level = false;
 
         private boolean running = false;
         private SurfaceHolder surfaceHolder;
@@ -964,6 +972,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             Logger.getAnonymousLogger().info("RenderThread.run() drawing");
             while (running) {
+                if (need_2_prepare_new_level){
+                    doB4Surface();
+                    need_2_prepare_new_level = false;
+                }
+
                 canvas = null;
                 if (getTime() - prevDrawTime > redrawPeriod) {
                     prevDrawTime = getTime();

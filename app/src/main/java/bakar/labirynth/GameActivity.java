@@ -35,19 +35,19 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 заблочить поворот
 
     // STEPS-TO-BETA
-    // TODO: 3/18/19 put icons in shop activity
-    // TODO: 3/18/19 OOM fixes
-    // TODO: 3/18/19 background fix
-    // TODO: 3/18/19 accelerometer movement
-    // TODO: 3/18/19 bigger app icon
-    // TODO: 4/19/19 nicer bonus ranges
-    // TODO: 4/19/19 settings activity
-    // TODO: 4/20/19 endlevel counter
-    // TODO: 3/18/19 move up back buttons in menus
+    // DONE: 3/18/19 put icons in shop activity
+    // DONE: 3/18/19 OOM fixes
+    // DONE: 3/18/19 background fix
+    // DONE: 3/18/19 accelerometer movement
+    // DONE: 3/18/19 bigger app icon
+    // DONE: 4/19/19 nicer bonus ranges
+    // DONE: 4/19/19 settings activity
+    // DONE: 4/20/19 endlevel counter
+    // DONE: 3/18/19 move up back buttons in menus
+    // DONE: 3/18/19 loading screen
 
     // TODO: 4/25/19 end menu button icons
     // TODO: 4/22/19 switching controls @ runtime
-    // TODO: 3/18/19 loading screen
     // TODO: 4/22/19 go-to-menu confirmation
     // TODO: 4/25/19 zooming in center of a screen
     // TODO: 4/23/19 stored gold icon
@@ -100,6 +100,13 @@ public class GameActivity extends Activity{
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.loading_screen);
+
+        sPref = getSharedPreferences("global", MODE_PRIVATE);
+        boolean usesJoystick = sPref.getBoolean("uses_joystick", true);
+        if (!usesJoystick){
+            tiltController = new TiltController();
+        }
+
         Logger.getAnonymousLogger().info("GameActivity.onCreate()");
     }
 
@@ -117,7 +124,7 @@ public class GameActivity extends Activity{
         gameLogic.level_difficulty = difficulty;
         gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
         if (!gameLogic.usesJoystick){
-            tiltController = new TiltController();
+            //tiltController = new TiltController();
             gameLogic.tiltControler = tiltController;
         }
 
@@ -132,8 +139,6 @@ public class GameActivity extends Activity{
 
         gameLogic.gameRenderer = gameRenderer;
         loadData();
-//        mainLayout.addView();
-//        mainLayout.addView(new Background(this));
         touchListener.setRenderer(gameRenderer);
 
         mInterstitialAd = newInterstitialAd();
@@ -148,9 +153,23 @@ public class GameActivity extends Activity{
             }
         }
 
-        Logger.getAnonymousLogger().info("GameActivity.init() changing surface");
+        Logger.getAnonymousLogger().info("GameActivity.init() changing surface to gameRenderer");
         setContentView(gameRenderer);
         Logger.getAnonymousLogger().info("GameActivity.init() end");
+    }
+    void reInit(){
+        gameLogic.isInited = false;
+        Point size = difficultyToActualSize(gameLogic.level_difficulty);
+        gameLogic.init(size.x, size.y);
+        gameRenderer.onTouchUp(null);
+        gameRenderer.resetLab();
+        gameRenderer.resetFog();
+        gameRenderer.lightFog(gameLogic.playerCoords());
+
+        gameRenderer.prepareNewLevel();
+
+        gameRenderer.buttons.get(0).onClick(); // center to player
+        ((GameRenderer.PlayerFinder)gameRenderer.buttons.get(0)).instantAnimation();
     }
     @Override
     protected void onRestart(){
@@ -165,20 +184,22 @@ public class GameActivity extends Activity{
         super.onResume();
         Logger.getAnonymousLogger().info("GameActivity.onResume()");
 
-        if (tiltController != null) {
-            tiltController.registerSensors();
-        }
-
         if (gameRenderer == null){
             Logger.getAnonymousLogger().info("GameActivity new Loader()");
-            Loader loader = new Loader();
+            Loader loader = new Loader(true);
             loader.start();
+        }
+
+        if (tiltController != null) {
+            Logger.getAnonymousLogger().info("GameActivity tiltController.registerSensors()");
+            tiltController.registerSensors();
         }
     }
     @Override
     protected void onPause(){
         saveData();
         if (tiltController != null) {
+            Logger.getAnonymousLogger().info("GameActivity tiltController.unregisterSensors()s");
             tiltController.unregisterSensors();
         }
         super.onPause();
@@ -195,7 +216,10 @@ public class GameActivity extends Activity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //TODO переделать. в resultCode должно быть -1. остальное в интент
+        Logger.getAnonymousLogger().info("GameActivity.onActivityResult()");
         if (resultCode == "next".hashCode()){
+            Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
+            setContentView(R.layout.loading_screen);
             showInterstitial();
         }
         if (resultCode == "menu".hashCode()){
@@ -237,18 +261,31 @@ public class GameActivity extends Activity{
     }
 
     void goToNextLevel(){
-        gameLogic.isInited = false;
-        Point size = difficultyToActualSize(gameLogic.level_difficulty);
-        gameLogic.init(size.x, size.y);
-        gameRenderer.buttons.get(0).onClick(); // center to player
-        ((GameRenderer.PlayerFinder)gameRenderer.buttons.get(0)).instantAnimation();
-        gameRenderer.onTouchUp(null);
-        gameRenderer.resetLab();
-        gameRenderer.resetFog();
-        gameRenderer.lightFog(gameLogic.playerCoords());
+        Logger.getAnonymousLogger().info("GameActivity.goToNextLevel() start");
 
+//        Logger.getAnonymousLogger().info("GameActivity setting loading screen");
+//        setContentView(R.layout.loading_screen);
+        Loader loader = new Loader(false);
+        loader.start();
+        loader.is_running = true;
+
+        while (loader.is_running ||
+                gameRenderer.threadIsPrepairingNewLevel() ||
+                gameRenderer.threadIsDoingPreparations()){
+            try{
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+
+        Logger.getAnonymousLogger().info("GameActivity setContentView(gameRenderer);");
+        setContentView(gameRenderer);
         mInterstitialAd = newInterstitialAd();
         loadInterstitial();
+
+        Logger.getAnonymousLogger().info("GameActivity.goToNextLevel() end");
     }
     private InterstitialAd newInterstitialAd() {
         InterstitialAd interstitialAd = new InterstitialAd(this);
@@ -282,13 +319,19 @@ public class GameActivity extends Activity{
         }
         else {
             goToNextLevel();
-            loadInterstitial();
         }
     }
 
     class Loader extends Thread{
+        boolean is_first_launch;
+        boolean is_running = false;
+
+        Loader(boolean _is_first_launch){
+            is_first_launch = _is_first_launch;
+        }
         @Override
         public void run(){
+            is_running = true;
             Logger.getAnonymousLogger().info("Loader.run() begin");
             try{
                 sleep(100);
@@ -297,13 +340,23 @@ public class GameActivity extends Activity{
                 e.printStackTrace();
             }
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    init();
-                }
-            });
+            if (is_first_launch){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.getAnonymousLogger().info("Loader.run() init();");
+                        init();
+
+                    }
+                });
+            }
+            else{
+                Logger.getAnonymousLogger().info("Loader.run() reInit();");
+                reInit();
+            }
+
             Logger.getAnonymousLogger().info("Loader.run() end");
+            is_running = false;
         }
     }
 
