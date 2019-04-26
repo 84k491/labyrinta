@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import static android.content.Context.SENSOR_SERVICE;
 
@@ -59,6 +60,7 @@ class GameLogic {
     int tracesSize = 10;
 
     GameLogic(GameRenderer gameRenderer_, long _seed, int _xsize, int _ysize){
+        Logger.getAnonymousLogger().info("GameLogic.ctor");
         if (gameRenderer_ != null) {
             gameRenderer = gameRenderer_;
             cellSize = gameRenderer.cellSize;
@@ -81,6 +83,7 @@ class GameLogic {
     }
 
     void init(int xsize, int ysize){
+        Logger.getAnonymousLogger().info("GameLogic.init()");
         field = new Field(xsize, ysize);
         field.init(seed);
 

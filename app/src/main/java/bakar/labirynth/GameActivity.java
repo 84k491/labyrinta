@@ -19,6 +19,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class GameActivity extends Activity{
 
@@ -96,42 +99,58 @@ public class GameActivity extends Activity{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().setFormat(PixelFormat.RGBA_8888);
+        setContentView(R.layout.loading_screen);
+        Logger.getAnonymousLogger().info("GameActivity.onCreate()");
+    }
 
+    void init(){
+        Logger.getAnonymousLogger().info("GameActivity.init() begin");
         mainLayout = new ConstraintLayout(this);
 
         Intent intent = getIntent();
         sPref = getSharedPreferences("global", MODE_PRIVATE);
 
-        gameRenderer = new GameRenderer(this);
-        gameRenderer.isDebug = sPref.getBoolean("is_debug",false);
-        gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
-
-        touchListener = new CustomTouchListener();
-
         int difficulty = intent.getIntExtra("level_size", 1);
-
         Point lvl_size = difficultyToActualSize(difficulty);
-        gameLogic = new GameLogic(gameRenderer, intent.getLongExtra("seed", 123456789),
+        gameLogic = new GameLogic(null, intent.getLongExtra("seed", 123456789),
                 lvl_size.x, lvl_size.y);
         gameLogic.level_difficulty = difficulty;
-
         gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
-
         if (!gameLogic.usesJoystick){
             tiltController = new TiltController();
             gameLogic.tiltControler = tiltController;
         }
 
-        gameRenderer.setOnTouchListener(touchListener);
+        gameRenderer = new GameRenderer(this, gameLogic);
         gameRenderer.setGameLogic(gameLogic);
+        gameRenderer.isDebug = sPref.getBoolean("is_debug",false);
+        gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
+
+        touchListener = new CustomTouchListener();
+
+        gameRenderer.setOnTouchListener(touchListener);
+
+        gameLogic.gameRenderer = gameRenderer;
         loadData();
-        setContentView(gameRenderer);
 //        mainLayout.addView();
 //        mainLayout.addView(new Background(this));
         touchListener.setRenderer(gameRenderer);
 
         mInterstitialAd = newInterstitialAd();
         loadInterstitial();
+
+        while (!gameRenderer.threadIsStarted() || gameRenderer.threadIsDoingPreparations()){
+            try{
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+
+        Logger.getAnonymousLogger().info("GameActivity.init() changing surface");
+        setContentView(gameRenderer);
+        Logger.getAnonymousLogger().info("GameActivity.init() end");
     }
     @Override
     protected void onRestart(){
@@ -144,10 +163,16 @@ public class GameActivity extends Activity{
     @Override
     protected void onResume(){
         super.onResume();
-        //Logger.getAnonymousLogger().info("GameActivity::onResume()");
+        Logger.getAnonymousLogger().info("GameActivity.onResume()");
 
         if (tiltController != null) {
             tiltController.registerSensors();
+        }
+
+        if (gameRenderer == null){
+            Logger.getAnonymousLogger().info("GameActivity new Loader()");
+            Loader loader = new Loader();
+            loader.start();
         }
     }
     @Override
@@ -258,6 +283,27 @@ public class GameActivity extends Activity{
         else {
             goToNextLevel();
             loadInterstitial();
+        }
+    }
+
+    class Loader extends Thread{
+        @Override
+        public void run(){
+            Logger.getAnonymousLogger().info("Loader.run() begin");
+            try{
+                sleep(100);
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    init();
+                }
+            });
+            Logger.getAnonymousLogger().info("Loader.run() end");
         }
     }
 

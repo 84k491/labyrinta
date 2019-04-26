@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static android.graphics.Path.Direction.CW;
@@ -65,7 +66,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     final Camera camera = new Camera();
     public float playerHitbox = 0; // screenCoord // in surfaceCreated();
 
-    float max_scale;
+    float max_scale = 6;
     float min_scale;
 
     public boolean isMovingOffset = false;
@@ -81,13 +82,20 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     ArrayList<Button> buttons = new ArrayList<>();
     ArrayList<PickUpAnimation> pickUpAnimations = new ArrayList<>();
 
-    public GameRenderer(Context _context) {
+    public GameRenderer(Context _context, GameLogic _gameLogic) {
         super(_context);
+        Logger.getAnonymousLogger().info("GameRenderer.ctor begin");
         context = _context;
         camera.setLocation(0,0,10);
         camera.save();
         getHolder().addCallback(this);
         getHolder().setFormat(PixelFormat.RGBA_8888);
+
+        gameLogic = _gameLogic;
+
+        renderThread = new RenderThread();
+        renderThread.start();
+        Logger.getAnonymousLogger().info("GameRenderer.ctor end");
     }
     void addPickUpAnimation(CPoint.Game pointF, String text){
         pickUpAnimations.add(new PickUpAnimation(pointF, text));
@@ -190,6 +198,18 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         RectF res = new RectF(left, top, right, bot);
         return res;
+    }
+
+    boolean threadIsStarted(){
+        return renderThread.is_started;
+    }
+
+    boolean threadIsWaiting4Surface(){
+        return renderThread.is_waiting_4_surface;
+    }
+
+    boolean threadIsDoingPreparations(){
+        return renderThread.is_doing_preparations;
     }
 
     boolean isPlayerInSight(){
@@ -336,6 +356,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        Logger.getAnonymousLogger().info("GameRenderer.surfaceCreated() begin");
         min_scale = .9f * getWidth() / (gameLogic.field.getxSize() * cellSize);
         max_scale = 6;
         while (getGlobalScale() < min_scale)
@@ -364,7 +385,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         // тред создается последним
-        renderThread = new RenderThread();
+        //renderThread = new RenderThread(); // on create
         renderThread.setHolder(getHolder());
         renderThread.setRunning(true);
         renderThread.bitmaps.rescaleAll();
@@ -374,7 +395,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread.resizeFogBmp();
         renderThread.enlightenFogBmp(gameLogic.playerCoords());
 
-        renderThread.start();
+        renderThread.is_waiting_4_surface = false;
+
+        Logger.getAnonymousLogger().info("GameRenderer.surfaceCreated() end");
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -390,6 +413,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private class RenderThread extends Thread{
+        boolean is_started = false;
+        boolean is_waiting_4_surface = true;
+        boolean is_doing_preparations = false;
+
         private boolean running = false;
         private SurfaceHolder surfaceHolder;
         private Profiler profiler = new Profiler();
@@ -443,6 +470,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private Paint bonusRadius = new Paint();
 
         RenderThread(){
+            Logger.getAnonymousLogger().info("RenderThread.ctor begin");
             floor.setColor(Color.argb(120,30, 30, 30));
             wall.setColor(Color.argb(240,230, 230, 230));
             node.setStrokeWidth(1);
@@ -475,7 +503,16 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             random = new Random(System.currentTimeMillis());
 
             createFogBmp();
+            //updateLabyrinthBmp();
             //updateBackgroundBmp();
+            Logger.getAnonymousLogger().info("RenderThread.ctor end");
+        }
+        void doB4Surface(){
+            is_doing_preparations = true;
+            Logger.getAnonymousLogger().info("RenderThread.doB4Surface() begin");
+            updateLabyrinthBmp();
+            Logger.getAnonymousLogger().info("RenderThread.doB4Surface() end");
+            is_doing_preparations = false;
         }
 
         private long getTime(){
@@ -906,7 +943,26 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         @Override
         public void run() {
+            Logger.getAnonymousLogger().info("RenderThread.run() begin");
             Canvas canvas;
+            is_started = true;
+
+            Logger.getAnonymousLogger().info("RenderThread (is_waiting_4_surface)");
+            boolean flag = false;
+            while (is_waiting_4_surface){
+                if (!flag){
+                    doB4Surface();
+                    flag = true;
+                }
+                try {
+                    sleep(10);
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+
+            Logger.getAnonymousLogger().info("RenderThread.run() drawing");
             while (running) {
                 canvas = null;
                 if (getTime() - prevDrawTime > redrawPeriod) {
