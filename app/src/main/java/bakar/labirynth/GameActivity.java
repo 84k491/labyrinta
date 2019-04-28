@@ -45,15 +45,15 @@ public class GameActivity extends Activity{
     // DONE: 3/18/19 loading screen
     // DONE: 4/25/19 end menu button icons
     // DONE: 4/22/19 go-to-menu confirmation
+    // DONE: 4/22/19 switching controls @ runtime
 
-    // TODO: 4/22/19 switching controls @ runtime
     // TODO: 4/25/19 zooming in center of a screen
-    // TODO: 4/23/19 stored gold icon
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
-    // TODO: 4/16/19 sounds
-    // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 4/20/19 pointer upgrade
+    // TODO: 4/16/19 sounds
+    // TODO: 4/23/19 stored gold icon
+    // TODO: 3/18/19 player, exit, coin sprites
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;
@@ -241,6 +241,9 @@ public class GameActivity extends Activity{
         if (resultCode == "abort".hashCode()){
             gameLogic.remote_move_flag = true;
         }
+        if (resultCode == "settings_finished".hashCode()){
+            updateSettings();
+        }
     }
 
     void saveData() {
@@ -258,6 +261,26 @@ public class GameActivity extends Activity{
         gameLogic.pointerAmount = sPref.getInt("pointerAmount", 0);
         gameLogic.pathfinderAmount = sPref.getInt("pathfinderAmount", 0);
         gameLogic.teleportAmount = sPref.getInt("teleportAmount", 0);
+    }
+
+    void updateSettings(){
+        sPref = getSharedPreferences("global", MODE_PRIVATE);
+        gameLogic.usesJoystick  = sPref.getBoolean("uses_joystick", true);
+        if (!gameLogic.usesJoystick){
+            if (null == tiltController){
+                tiltController = new TiltController();
+            }
+            gameLogic.tiltControler = tiltController;
+            if (!tiltController.isRegistered()){
+                tiltController.registerSensors();
+            }
+        }
+        else{
+            gameRenderer.createJoystick();
+            if (tiltController != null) {
+                tiltController.unregisterSensors();
+            }
+        }
     }
 
     void goToNextLevel(){
@@ -366,6 +389,8 @@ public class GameActivity extends Activity{
         Sensor sensorAccel;
         Sensor sensorLinAccel;
         Sensor sensorGravity;
+        private boolean registered = false;
+        boolean isRegistered(){return registered;}
 
         float[] valuesAccel = new float[3];
         float[] valuesAccelMotion = new float[3];
@@ -414,9 +439,12 @@ public class GameActivity extends Activity{
                     period);
             sensorManager.registerListener(listener, sensorGravity,
                     period);
+
+            registered = true;
         }
         void unregisterSensors(){
             sensorManager.unregisterListener(listener);
+            registered = false;
         }
 
         CPoint.Game speed_vector = new CPoint.Game(0.f, 0.f);

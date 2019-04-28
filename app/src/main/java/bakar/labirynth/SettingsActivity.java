@@ -56,6 +56,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.settings_bg_image){
+                    setResult("settings_finished".hashCode());
                     finish();
                 }
             }

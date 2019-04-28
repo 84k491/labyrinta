@@ -115,7 +115,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     void startSettingsActivity(){
         Intent intent = new Intent(getContext(), SettingsActivity.class);
-        getContext().startActivity(intent);
+        ((Activity)getContext()).startActivityForResult(intent,
+                SettingsActivity.class.toString().hashCode());
     }
 
     boolean isFieldAtScreen(){
@@ -229,6 +230,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread.resizeFogBmp();
     }
     void resetLab(){renderThread.clearLabyrinthBmp();}
+    void createJoystick(){
+        float rad = getWidth() / 10.f;
+        CPoint.Screen pos = new CPoint.Screen(getWidth() - rad * 2, getHeight() - rad * 2);
+        gameLogic.createJoystick(pos, rad);
+    }
 
     float getGlobalScale(){
         Matrix matrix = new Matrix();
@@ -384,9 +390,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         gameLogic.eFactory.init();
         if (gameLogic.usesJoystick){
-            float rad = getWidth() / 10;
-            CPoint.Screen pos = new CPoint.Screen(getWidth() - rad * 2, getHeight() - rad * 2);
-            gameLogic.createJoystick(pos, rad);
+            createJoystick();
         }
 
         // тред создается последним
@@ -755,7 +759,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
         void drawJoystick(Canvas canvas){
-            if (gameLogic.joystick == null)
+            if (gameLogic.joystick == null || !gameLogic.usesJoystick)
                 return;
             canvas.drawCircle(gameLogic.joystick.mainPos.x, gameLogic.joystick.mainPos.y,
                     gameLogic.joystick.mainRadius, joystickMain);
@@ -980,7 +984,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 canvas = null;
                 if (getTime() - prevDrawTime > redrawPeriod) {
                     prevDrawTime = getTime();
-                    //if (gameLogic.usesJoystick)
                     gameLogic.remoteMove();
                     ((PlayerFinder)buttons.get(0)).remoteAnimation();
                     try {
