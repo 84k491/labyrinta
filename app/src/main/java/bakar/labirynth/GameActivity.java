@@ -46,11 +46,11 @@ public class GameActivity extends Activity{
     // DONE: 4/25/19 end menu button icons
     // DONE: 4/22/19 go-to-menu confirmation
     // DONE: 4/22/19 switching controls @ runtime
+    // DONE: 4/25/19 zooming in center of a screen
 
-    // TODO: 4/25/19 zooming in center of a screen
+    // TODO: 4/20/19 pointer upgrade
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
-    // TODO: 4/20/19 pointer upgrade
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites

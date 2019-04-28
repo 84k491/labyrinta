@@ -218,6 +218,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         return renderThread.need_2_prepare_new_level;
     }
 
+    void moveScreenTo(CPoint.Screen _center){
+
+        CPoint.Screen current_center = new CPoint.Screen(getWidth() / 2, getHeight() / 2);
+        CPoint.Screen offset = new CPoint.Screen(current_center.x - _center.x,
+                current_center.y - _center.y);
+
+        changeOffset(offset);
+    }
     boolean isPlayerInSight(){
         PointF pl = game2screen(gameLogic.playerCoords());
         return  (pl.x > 0 && pl.y > 0 && pl.x < getWidth() && pl.y < getHeight());
@@ -355,11 +363,23 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     void changeScale(float value){
         camera.save();
+
+        CPoint.Game old_center = screen2game(new CPoint.Screen(getWidth() / 2.f,
+                getHeight() / 2.f));
+
         camera.translate(0,0, -value * (cellSize / 60));
         if (getGlobalScale() > max_scale || getGlobalScale() < min_scale)
             camera.restore();
         if (renderThread.fogBmpScale != getGlobalScale())
             renderThread.resizeFogBmp();
+
+        CPoint.Game new_center = screen2game(new CPoint.Screen(getWidth() / 2.f,
+                getHeight() / 2.f));
+
+        PointF offset = new PointF((old_center.x - new_center.x) * getGlobalScale(),
+                (old_center.y - new_center.y) * getGlobalScale());
+
+        changeOffset(offset);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
