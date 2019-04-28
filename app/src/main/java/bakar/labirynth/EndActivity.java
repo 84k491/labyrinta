@@ -84,19 +84,19 @@ public class EndActivity extends Activity implements View.OnClickListener{
         mainLayout.addView(getSpace(), 1);
         mainLayout.addView(getSpace(), 1);
 
-        try{
-            Drawable bg;
-            bg = Drawable.createFromXml(getResources(), getResources().getXml(R.xml.level_select_bg));
-            XmlPullParser parser = getResources().getXml(R.xml.level_select_bg);
-            bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
 
-            findViewById(R.id.bt_menu).setBackground(bg);
-            findViewById(R.id.bt_shop).setBackground(bg);
-            findViewById(R.id.bt_next).setBackground(bg);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
+//        try{
+//            Drawable bg;
+//            bg = Drawable.createFromXml(getResources(), getResources().getXml(R.xml.level_select_bg));
+//            XmlPullParser parser = getResources().getXml(R.xml.level_select_bg);
+//            bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
+//
+//            findViewById(R.id.bt_menu).setBackground(bg);
+//            findViewById(R.id.bt_shop).setBackground(bg);
+//            findViewById(R.id.bt_next).setBackground(bg);
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
 //        ((Button)findViewById(R.id.bt_menu)).setBackgroundResource(R.drawable.menu_button);
 //        ((Button)findViewById(R.id.bt_shop)).setBackgroundResource(R.drawable.bag);
 //        ((Button)findViewById(R.id.bt_next)).setBackgroundResource(R.drawable.play);

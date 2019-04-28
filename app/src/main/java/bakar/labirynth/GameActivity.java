@@ -19,8 +19,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class GameActivity extends Activity{
@@ -45,8 +43,8 @@ public class GameActivity extends Activity{
     // DONE: 4/20/19 endlevel counter
     // DONE: 3/18/19 move up back buttons in menus
     // DONE: 3/18/19 loading screen
+    // DONE: 4/25/19 end menu button icons
 
-    // TODO: 4/25/19 end menu button icons
     // TODO: 4/22/19 switching controls @ runtime
     // TODO: 4/22/19 go-to-menu confirmation
     // TODO: 4/25/19 zooming in center of a screen

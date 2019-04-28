@@ -44,7 +44,7 @@
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Menu" />
+                android:background="@drawable/menu_in_thin_circle" />
 
             <Space
                 android:layout_width="30dp"
@@ -56,7 +56,7 @@
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Shop" />
+                android:background="@drawable/bag_in_thin_circle" />
 
             <Space
                 android:layout_width="30dp"
@@ -68,7 +68,7 @@
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Next" />
+                android:background="@drawable/right_arrow_in_thin_circle" />
 
             <Space
                 android:layout_width="20dp"
