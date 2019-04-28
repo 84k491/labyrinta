@@ -68,6 +68,21 @@ class GameLogic {
         init(_seed, _xsize, _ysize);
     }
 
+    boolean isCoordIsWithinField(CPoint.Game coord){
+        CPoint.Field fc = new CPoint.Field(game2field(coord));
+        boolean[] flags ={
+                fc.x <= 0,
+                fc.x >= field.getxSize() - 1,
+                fc.y <= 0,
+                fc.y >= field.getySize() - 1
+        };
+        for (boolean f : flags){
+            if (f){
+                return false;
+            }
+        }
+        return true;
+    }
     public CPoint.Field game2field(CPoint.Game value){
         CPoint.Field result = new CPoint.Field();
         double x, y;

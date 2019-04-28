@@ -33,27 +33,22 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 credits for video
 
     // STEPS-TO-BETA
-    // DONE: 3/18/19 put icons in shop activity
-    // DONE: 3/18/19 OOM fixes
-    // DONE: 3/18/19 background fix
-    // DONE: 3/18/19 accelerometer movement
-    // DONE: 3/18/19 bigger app icon
-    // DONE: 4/19/19 nicer bonus ranges
-    // DONE: 4/19/19 settings activity
-    // DONE: 4/20/19 endlevel counter
-    // DONE: 3/18/19 move up back buttons in menus
-    // DONE: 3/18/19 loading screen
-    // DONE: 4/25/19 end menu button icons
-    // DONE: 4/22/19 go-to-menu confirmation
-    // DONE: 4/22/19 switching controls @ runtime
-    // DONE: 4/25/19 zooming in center of a screen
-
     // TODO: 4/20/19 pointer upgrade
-    // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites
+
+    //NEW
+    // TODO: 5/1/19 tutorials
+    // TODO: 5/1/19 размеры битмап на белых кнопках
+    // TODO: 5/1/19 Custom switches
+    // TODO: 5/1/19 Акселерометр сделать дефоллтным
+    // TODO: 5/1/19 Убрать черные полосы, оставить стрелку (??)
+    // TODO: 5/1/19 убрать блок девайса по времени
+    // TODO: 5/1/19 затемнять итемы, которые нельзя купить
+    // TODO: 5/1/19 Покупка уровней из меню выбора уровня
+    // TODO: 5/1/19 четверка не влезает в лейбл
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;
