@@ -24,13 +24,13 @@ import java.util.logging.Logger;
 public class GameActivity extends Activity{
 
     //Todo: rename
-    //Todo: сделать выбор положения джойстика и кнопок
     //Todo: заблочить кнопку "назад"
     //Todo: белые кнопки рисуются заново при разворачивании
-    // TODO: 15.05.2018 сделать режим на время
     // TODO: 19.05.2018 rate this app
     // TODO: 4/20/19 плавное движение от акселерометра
     // TODO: 4/20/19 заблочить поворот
+    // TODO: 3/18/19 in-app purchases
+    // TODO: 3/18/19 credits for video
 
     // STEPS-TO-BETA
     // DONE: 3/18/19 put icons in shop activity
@@ -44,16 +44,14 @@ public class GameActivity extends Activity{
     // DONE: 3/18/19 move up back buttons in menus
     // DONE: 3/18/19 loading screen
     // DONE: 4/25/19 end menu button icons
+    // DONE: 4/22/19 go-to-menu confirmation
 
     // TODO: 4/22/19 switching controls @ runtime
-    // TODO: 4/22/19 go-to-menu confirmation
     // TODO: 4/25/19 zooming in center of a screen
     // TODO: 4/23/19 stored gold icon
     // TODO: 12/31/18 вылетает если использовать бонус за пределами лабиринта
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     // TODO: 4/16/19 sounds
-    // TODO: 3/18/19 in-app purchases
-    // TODO: 3/18/19 credits for video
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 4/20/19 pointer upgrade
 
@@ -219,6 +217,10 @@ public class GameActivity extends Activity{
             Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
             setContentView(R.layout.loading_screen);
             showInterstitial();
+        }
+        if (resultCode == "confirm_yes".hashCode()){
+            saveData();
+            finish();
         }
         if (resultCode == "menu".hashCode()){
             saveData();

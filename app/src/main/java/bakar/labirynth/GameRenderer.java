@@ -111,7 +111,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         intent.putExtra("pathfinderAmount", gameLogic.pathfinderAmount);
         intent.putExtra("teleportAmount", gameLogic.teleportAmount);
         intent.putExtra("pointerAmount", gameLogic.pointerAmount);
-        ((Activity)getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
+        ((Activity)getContext()).startActivityForResult(intent, BonusActivity.class.toString().hashCode());
     }
     void startSettingsActivity(){
         Intent intent = new Intent(getContext(), SettingsActivity.class);
@@ -1409,9 +1409,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         void onClick() {
-            ((Activity)getContext()).finish();
-//            Intent intent = new Intent(context, MenuActivity.class);
-//            context.startActivity(intent);
+            //((Activity)getContext()).finish();
+            Intent intent = new Intent(getContext(), ConfirmationActivity.class);
+            ((Activity)getContext()).startActivityForResult(intent,
+                    1);
         }
     }
     class Bonuses extends Button{

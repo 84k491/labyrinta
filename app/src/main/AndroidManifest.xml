@@ -12,12 +12,15 @@
         android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LevelSelectActivity"></activity>
+        <activity
+            android:name=".ConfirmationActivity"
+            android:theme="@style/Theme.IAPTheme"/>
+        <activity android:name=".LevelSelectActivity" />
         <activity android:name=".ShopActivity" />
         <activity android:name=".ResearchActivity" />
         <activity
             android:name=".SettingsActivity"
-            android:theme="@style/Theme.IAPTheme"/>
+            android:theme="@style/Theme.IAPTheme" />
         <activity android:name=".MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +35,6 @@
         <activity
             android:name=".BonusActivity"
             android:theme="@style/Theme.IAPTheme" />
-
     </application>
 
 </manifest>
