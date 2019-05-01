@@ -67,7 +67,7 @@ public class TutorialActivity extends Activity {
                 "You can change controls at settings menu at any time."
         );
         text_map.put(TutorialKey.BeginTutorial_3,
-                "You will earn gold for finishing levels and picking up coins." +
+                "You will earn gold for finishing levels and picking up coins. " +
                 "Gold can be spent in shop, buying bonuses and unlocking new level sizes"
         );
         text_map.put(TutorialKey.PathfinderTutorial,
@@ -96,13 +96,13 @@ public class TutorialActivity extends Activity {
                 R.drawable.gold_pile
         );
         image_map.put(TutorialKey.PathfinderTutorial,
-                R.drawable.pathfinder
+                R.drawable.tutorial_pathfinder
         );
         image_map.put(TutorialKey.PointerTutorial,
-                R.drawable.pointer
+                R.drawable.tutorial_pointer
         );
         image_map.put(TutorialKey.TeleportTutorial,
-                R.drawable.teleport
+                R.drawable.tutorial_teleport
         );
 
     }
@@ -127,7 +127,7 @@ public class TutorialActivity extends Activity {
 
         TextView textView = new TextView(this);
         textView.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                Typeface.createFromAsset(getAssets(),  "fonts/JosefinSans_Regular.ttf")
         );
         textView.setTextSize(20);
 

@@ -20,6 +20,10 @@ class StoredProgress {
 
     static final String goldKey = "gold";
 
+    static final String usesJoystickKey = "uses_joystick";
+    static final String isDebugKey = "is_debug";
+    static final String isMusicOnKey = "isMusicOn";
+
     static StoredProgress getInstance() {
         return ourInstance;
     }
@@ -93,6 +97,26 @@ class StoredProgress {
     }
     int getPointerAmount(){
         return sharedPreferences.getInt(pointerAmountKey, 0);
+    }
+
+    boolean getUsesJoystick(){
+        boolean result = sharedPreferences.getBoolean(usesJoystickKey, false);
+        return result;
+    }
+    boolean getIsBebug(){
+        boolean result = sharedPreferences.getBoolean(isDebugKey, false);
+        return result;
+    }
+
+    boolean switchUsesJoystick(){
+        boolean result = sharedPreferences.getBoolean(usesJoystickKey, false);
+        setValue(usesJoystickKey, !result);
+        return !result;
+    }
+    boolean switchIsBebug(){
+        boolean result = sharedPreferences.getBoolean(isDebugKey, false);
+        setValue(isDebugKey, !result);
+        return !result;
     }
 
     int getGoldAmount(){

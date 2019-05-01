@@ -3,22 +3,40 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.util.Xml;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 
-public class SettingsActivity extends Activity {
+import org.xmlpull.v1.XmlPullParser;
 
-    SharedPreferences sPref;
-    Switch joystick;
-    Switch debug;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+public class SettingsActivity extends Activity implements View.OnClickListener {
+
+    Button joystick;
+    Button debug;
+    Button music;
     ConstraintLayout layout;
+
+    @Override
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.joystick_bt:
+                setState(joystick, StoredProgress.getInstance().switchUsesJoystick());
+                break;
+            case R.id.debug_bt:
+                setState(debug, StoredProgress.getInstance().switchIsBebug());
+                break;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +47,17 @@ public class SettingsActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_settings);
-        joystick = findViewById(R.id.joystick_sw);
-        debug = findViewById(R.id.debug_sw);
+        joystick = findViewById(R.id.joystick_bt);
+        debug = findViewById(R.id.debug_bt);
+        music = findViewById(R.id.music_bt);
 
+        setState(joystick, StoredProgress.getInstance().getUsesJoystick());
+        setState(debug, StoredProgress.getInstance().getIsBebug());
+        setState(music, true);
+
+        joystick.setOnClickListener(this);
+        debug.setOnClickListener(this);
+        music.setOnClickListener(this);
 
         joystick.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
@@ -39,9 +65,23 @@ public class SettingsActivity extends Activity {
         debug.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
-        ((Switch)findViewById(R.id.music_sw)).setTypeface(
+        music.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
+
+        float text_size = 25.f;
+        ((TextView)findViewById(R.id.joystick_tw)).setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
+        ((TextView)findViewById(R.id.joystick_tw)).setTextSize(text_size);
+        ((TextView)findViewById(R.id.music_tw)).setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
+        ((TextView)findViewById(R.id.music_tw)).setTextSize(text_size);
+        ((TextView)findViewById(R.id.debug_tw)).setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
+        ((TextView)findViewById(R.id.debug_tw)).setTextSize(text_size);
 
         findViewById(R.id.settings_imageview).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,26 +102,32 @@ public class SettingsActivity extends Activity {
             }
         });
     }
-    @Override
-    protected void onResume(){
-        super.onResume();
-        loadData();
-    }
-    protected void onPause(){
-        saveData();
-        super.onPause();
-    }
 
-    void saveData() {
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putBoolean("uses_joystick", joystick.isChecked());
-        ed.putBoolean("is_debug", debug.isChecked());
-        ed.apply();
-    }
-    void loadData() {
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        joystick.setChecked(sPref.getBoolean("uses_joystick", true));
-        debug.setChecked(sPref.getBoolean("is_debug", false));
+    void setState(Button bt, boolean is_on){
+
+        int id = is_on
+                ?
+                R.xml.switch_on
+                :
+                R.xml.switch_off;
+
+        String text = is_on
+                ?
+                "On"
+                :
+                "Off";
+        bt.setText(text);
+
+        try{
+            Drawable bg;
+            bg = Drawable.createFromXml(getResources(), getResources().getXml(id));
+            XmlPullParser parser = getResources().getXml(id);
+            bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
+
+            bt.setBackground(bg);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

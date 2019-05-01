@@ -48,10 +48,8 @@ public class GameActivity extends Activity{
     // TODO: 5/1/19 remove centering on player while moving by accelerometer
 
     //NEW
-    // TODO: 5/1/19 tutorials
     // TODO: 5/1/19 размеры битмап на белых кнопках
     // TODO: 5/1/19 Custom switches
-    // TODO: 5/1/19 Акселерометр сделать дефоллтным
     // TODO: 5/1/19 Убрать черные полосы, оставить стрелку (??)
     // TODO: 5/1/19 убрать блок девайса по времени
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
@@ -121,7 +119,7 @@ public class GameActivity extends Activity{
         gameLogic = new GameLogic(null, intent.getLongExtra("seed", 123456789),
                 lvl_size.x, lvl_size.y);
         gameLogic.level_difficulty = difficulty;
-        gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", true);
+        gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", false);
         if (!gameLogic.usesJoystick){
             //tiltController = new TiltController();
             gameLogic.tiltControler = tiltController;

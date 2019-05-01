@@ -95,6 +95,8 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
 
             int color1 = Color.parseColor("#1e508c");
             int color2 = Color.parseColor("#da2b90");
+//            int color1 = Color.parseColor("#0000FF");
+//            int color2 = Color.parseColor("#0000FF");
             LinearGradient shader = new LinearGradient(0, 0, w, h - 70,
                     color1, color2, Shader.TileMode.MIRROR);
             Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);

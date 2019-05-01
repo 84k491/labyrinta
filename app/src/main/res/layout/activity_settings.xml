@@ -46,38 +46,77 @@
         app:layout_constraintStart_toStartOf="@+id/settings_imageview"
         app:layout_constraintTop_toTopOf="@+id/settings_imageview">
 
-        <Switch
-            android:id="@+id/music_sw"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Music"
-            android:textSize="18sp" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/music_tw"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Music" />
+
+            <Button
+                android:id="@+id/music_bt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Off" />
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="20dp" />
 
-        <Switch
-            android:id="@+id/joystick_sw"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Joystick"
-            android:textSize="18sp"
-            tools:layout_editor_absoluteX="116dp"
-            tools:layout_editor_absoluteY="351dp" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/joystick_tw"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Joystick" />
+
+            <Button
+                android:id="@+id/joystick_bt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Off" />
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="20dp" />
 
-        <Switch
-            android:id="@+id/debug_sw"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Debug"
-            android:textSize="18sp"
-            tools:layout_editor_absoluteX="123dp"
-            tools:layout_editor_absoluteY="416dp" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/debug_tw"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Debug" />
+
+            <Button
+                android:id="@+id/debug_bt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Off" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
