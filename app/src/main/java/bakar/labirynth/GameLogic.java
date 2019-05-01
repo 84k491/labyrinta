@@ -153,8 +153,9 @@ class GameLogic {
         ((Activity)gameRenderer.getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
     }
 
-    void startTutorialActivity(){
+    void startTutorialActivity(TutorialKey key){
         Intent intent = new Intent(gameRenderer.getContext(), TutorialActivity.class);
+        intent.putExtra(TutorialKey.class.toString(), String.valueOf(key));
         ((Activity)gameRenderer.getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
     }
 
@@ -214,14 +215,17 @@ class GameLogic {
     void onPointerPickedUp(){
         pointerAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
+        startTutorialActivity(TutorialKey.PointerTutorial);
     }
     void onTeleportPickedUp(){
         teleportAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
+        startTutorialActivity(TutorialKey.TeleportTutorial);
     }
     void onPathfinderPickedUp(){
         pathfinderAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
+        startTutorialActivity(TutorialKey.PathfinderTutorial);
     }
     void onCellChanged(){
         gameRenderer.lightFog(playerCoords());

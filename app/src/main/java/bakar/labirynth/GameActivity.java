@@ -44,6 +44,7 @@ public class GameActivity extends Activity{
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites
+    // TODO: 5/1/19 remove centering on player while moving by accelerometer
 
     //NEW
     // TODO: 5/1/19 tutorials
