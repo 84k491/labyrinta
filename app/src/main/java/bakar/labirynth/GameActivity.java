@@ -21,6 +21,9 @@ import com.google.android.gms.ads.InterstitialAd;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import static bakar.labirynth.TutorialKey.BeginTutorial_1;
+import static bakar.labirynth.TutorialKey.BeginTutorial_2;
+
 public class GameActivity extends Activity{
 
     //Todo: rename
@@ -147,6 +150,10 @@ public class GameActivity extends Activity{
         Logger.getAnonymousLogger().info("GameActivity.init() changing surface to gameRenderer");
         setContentView(gameRenderer);
         Logger.getAnonymousLogger().info("GameActivity.init() end");
+
+        Intent tutorialIntent = new Intent(this, TutorialActivity.class);
+        tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(BeginTutorial_2));
+        startActivity(tutorialIntent);
     }
     void reInit(){
         gameLogic.isInited = false;
@@ -185,6 +192,8 @@ public class GameActivity extends Activity{
             Logger.getAnonymousLogger().info("GameActivity tiltController.registerSensors()");
             tiltController.registerSensors();
         }
+
+
     }
     @Override
     protected void onPause(){

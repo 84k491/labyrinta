@@ -13,8 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".TutorialActivity"
+            android:theme="@style/Theme.IAPTheme" />
+        <activity
             android:name=".ConfirmationActivity"
-            android:theme="@style/Theme.IAPTheme"/>
+            android:theme="@style/Theme.IAPTheme" />
         <activity android:name=".LevelSelectActivity" />
         <activity android:name=".ShopActivity" />
         <activity android:name=".ResearchActivity" />

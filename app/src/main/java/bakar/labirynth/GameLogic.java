@@ -153,6 +153,11 @@ class GameLogic {
         ((Activity)gameRenderer.getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
     }
 
+    void startTutorialActivity(){
+        Intent intent = new Intent(gameRenderer.getContext(), TutorialActivity.class);
+        ((Activity)gameRenderer.getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
+    }
+
     void activatePointer(){
         pointerActive = true;
         pointerAmount--;
