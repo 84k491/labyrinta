@@ -37,6 +37,7 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 заблочить поворот
     // TODO: 3/18/19 in-app purchases
     // TODO: 3/18/19 credits for video
+    // TODO: 5/1/19 randomizer bonus
 
     // STEPS-TO-BETA
     // TODO: 4/20/19 pointer upgrade

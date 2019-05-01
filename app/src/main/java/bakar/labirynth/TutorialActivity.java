@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Space;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -59,32 +60,40 @@ public class TutorialActivity extends Activity {
 
     void setMaps(){
         text_map.put(TutorialKey.BeginTutorial_1,
-                "TutorialKey.BeginTutorial_1"
+                "Hello. The goal for each level is to reach an exit"
                 );
         text_map.put(TutorialKey.BeginTutorial_2,
-                "TutorialKey.BeginTutorial_2"
+                "Tilt your device to move around. \n" +
+                "You can change controls at settings menu at any time."
         );
         text_map.put(TutorialKey.BeginTutorial_3,
-                "TutorialKey.BeginTutorial_3"
+                "You will earn gold for finishing levels and picking up coins." +
+                "Gold can be spent in shop, buying bonuses and unlocking new level sizes"
         );
         text_map.put(TutorialKey.PathfinderTutorial,
-                "TutorialKey.PathfinderTutorial"
+                "You picked up a pathfinder(?) bonus!\n" +
+                "Use it to highlight a path to any point within it's range.\n" +
+                "You can upgrade it, or buy more in a shop."
         );
         text_map.put(TutorialKey.PointerTutorial,
-                "TutorialKey.PointerTutorial"
+                "You picked up a Pointer bonus!\n" +
+                "It's points to exit when used.\n" +
+                "You can buy more in a shop."
         );
         text_map.put(TutorialKey.TeleportTutorial,
-                "TutorialKey.TeleportTutorial"
+                "You picked up a Teleport bonus!\n" +
+                "Use it to teleport yourself to any point within it's range.\n" +
+                "You can upgrade it, or buy more in a shop."
         );
 
         image_map.put(TutorialKey.BeginTutorial_1,
-                R.drawable.floor
+                R.drawable.tutorial_exit
         );
         image_map.put(TutorialKey.BeginTutorial_2,
-                R.drawable.floor
+                R.drawable.phone_tilt
         );
         image_map.put(TutorialKey.BeginTutorial_3,
-                R.drawable.floor
+                R.drawable.gold_pile
         );
         image_map.put(TutorialKey.PathfinderTutorial,
                 R.drawable.pathfinder
@@ -99,6 +108,23 @@ public class TutorialActivity extends Activity {
     }
 
     void setTutorial(TutorialKey key){
+        LinearLayout.LayoutParams lo_params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                50
+        );
+
+        LinearLayout.LayoutParams space_params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                10
+        );
+
+        LinearLayout.LayoutParams image_params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                200,
+                1
+        );
+
         TextView textView = new TextView(this);
         textView.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
@@ -112,7 +138,14 @@ public class TutorialActivity extends Activity {
             imageView.setImageResource(image_map.get(key));
         }
 
-        tutorial_lo.addView(imageView, 0);
+        Space[] spaces = {new Space(this), new Space(this)};
+        LinearLayout image_lo = new LinearLayout(this);
+        image_lo.setOrientation(LinearLayout.HORIZONTAL);
+        image_lo.addView(spaces[0], space_params);
+        image_lo.addView(imageView, image_params);
+        image_lo.addView(spaces[1], space_params);
+
+        tutorial_lo.addView(image_lo, 0);
         tutorial_lo.addView(textView, 0);
     }
 }
