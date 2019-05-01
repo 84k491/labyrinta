@@ -18,11 +18,14 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
 import static bakar.labirynth.TutorialKey.BeginTutorial_1;
 import static bakar.labirynth.TutorialKey.BeginTutorial_2;
+import static bakar.labirynth.TutorialKey.BeginTutorial_3;
 
 public class GameActivity extends Activity{
 
@@ -152,8 +155,8 @@ public class GameActivity extends Activity{
         Logger.getAnonymousLogger().info("GameActivity.init() end");
 
         Intent tutorialIntent = new Intent(this, TutorialActivity.class);
-        tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(BeginTutorial_2));
-        startActivity(tutorialIntent);
+        tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(BeginTutorial_1));
+        startActivityForResult(tutorialIntent, 42);
     }
     void reInit(){
         gameLogic.isInited = false;
@@ -214,9 +217,27 @@ public class GameActivity extends Activity{
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         //TODO переделать. в resultCode должно быть -1. остальное в интент
         Logger.getAnonymousLogger().info("GameActivity.onActivityResult()");
+        if (-1 == resultCode){
+            TutorialKey finishedTutorial = TutorialKey.valueOf
+                    (intent.getStringExtra(TutorialKey.class.toString()));
+
+            Map<TutorialKey, TutorialKey> finishedToNext = new HashMap<>();
+            finishedToNext.put(BeginTutorial_1, BeginTutorial_2);
+            finishedToNext.put(BeginTutorial_2, BeginTutorial_3);
+
+            if (finishedToNext.get(finishedTutorial) != null){
+                Intent tutorialIntent = new Intent(this, TutorialActivity.class);
+                tutorialIntent.putExtra
+                        (TutorialKey.class.toString(),
+                                String.valueOf(finishedToNext.get(finishedTutorial)));
+
+                startActivityForResult(tutorialIntent, 42);
+            }
+        }
+
         if (resultCode == "next".hashCode()){
             Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
             setContentView(R.layout.loading_screen);

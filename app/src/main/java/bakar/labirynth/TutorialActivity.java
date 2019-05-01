@@ -1,6 +1,7 @@
 package bakar.labirynth;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,18 +36,25 @@ public class TutorialActivity extends Activity {
         setContentView(R.layout.activity_tutorial);
         setMaps();
 
+        tutorial_lo = findViewById(R.id.lo_tutorial);
+
+        TutorialKey passedKey = TutorialKey.valueOf(
+                getIntent().getStringExtra(TutorialKey.class.toString()));
+
+        setTutorial(passedKey);
+
         findViewById(R.id.bt_tutorial_ok).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(TutorialActivity.this,
+                        TutorialActivity.class);
+
+                intent.putExtra(TutorialKey.class.toString(), String.valueOf(passedKey));
+
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
-
-        tutorial_lo = findViewById(R.id.lo_tutorial);
-
-        setTutorial(TutorialKey.valueOf(
-                getIntent().getStringExtra(TutorialKey.class.toString())
-        ));
     }
 
     void setMaps(){
@@ -79,13 +87,13 @@ public class TutorialActivity extends Activity {
                 R.drawable.floor
         );
         image_map.put(TutorialKey.PathfinderTutorial,
-                R.drawable.floor
+                R.drawable.pathfinder
         );
         image_map.put(TutorialKey.PointerTutorial,
-                R.drawable.floor
+                R.drawable.pointer
         );
         image_map.put(TutorialKey.TeleportTutorial,
-                R.drawable.floor
+                R.drawable.teleport
         );
 
     }
