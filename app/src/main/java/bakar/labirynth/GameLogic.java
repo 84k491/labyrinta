@@ -252,8 +252,9 @@ class GameLogic {
 
         if (usesJoystick && gameRenderer.isMovingPlayer)
             movePlayerTo(joystick.lastTouch);
-        if (!usesJoystick && remote_move_flag){
+        if (!usesJoystick && remote_move_flag && tiltControler != null){
             CPoint.Game l_playerPt = new CPoint.Game(playerPt.x, playerPt.y);
+            // FIXME: 5/2/19 Вылетит тут, если контроллер не подхватился
             CPoint.Game vel = tiltControler.getCurrentVelocity();
             l_playerPt.offset(vel.x, vel.y);
             movePlayerTo(l_playerPt);
