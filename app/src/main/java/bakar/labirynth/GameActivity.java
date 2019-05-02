@@ -38,20 +38,19 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 in-app purchases
     // TODO: 3/18/19 credits for video
     // TODO: 5/1/19 randomizer bonus
+    // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 4/20/19 pointer upgrade
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
+    // TODO: 5/1/19 remove centering on player while moving by accelerometer
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites
-    // TODO: 5/1/19 remove centering on player while moving by accelerometer
 
     //NEW
+    // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 Убрать черные полосы, оставить стрелку (??)
     // TODO: 5/1/19 убрать блок девайса по времени
-    // TODO: 5/1/19 затемнять итемы, которые нельзя купить
-    // TODO: 5/1/19 Покупка уровней из меню выбора уровня
     // TODO: 5/1/19 четверка не влезает в лейбл
 
     GameRenderer gameRenderer;

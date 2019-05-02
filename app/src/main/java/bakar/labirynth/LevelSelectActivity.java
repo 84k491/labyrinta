@@ -3,11 +3,13 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Xml;
 import android.view.Gravity;
@@ -34,6 +36,31 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     Animation on_click_anim; //todo анимация не успевает показаться
     final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (resultCode == RESULT_OK){
+            if (intent.getStringExtra("result_key").equals("positive")){
+                String dataKey = StoredProgress.levelUpgKey;
+                int level_value = StoredProgress.getInstance().getValue(dataKey);
+                int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                        level_value
+                );
+
+                StoredProgress.getInstance().
+                        setGold(StoredProgress.getInstance().getGoldAmount() - level_cost);
+
+                StoredProgress.getInstance().setValue(dataKey, level_value + 1);
+
+                mainLayout.removeAllViews();
+                fillLayout(level_value + 1);
+                for (NumeratedTextView tv_loop : textViews){
+                    tv_loop.setOnClickListener(this);
+                }
+            }
+        }
+    }
+
     @Override
     public void onClick(View view){
         if (view.getId() == R.id.bt_select_back){
@@ -46,6 +73,24 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         for (NumeratedTextView tv:textViews){
             if (tv.getId() == view.getId()){
                 tv.startAnimation(on_click_anim);
+
+                // при нажатии на "0" происходит покупка следующего размера
+                if (tv.number == 0){
+                    String dataKey = StoredProgress.levelUpgKey;
+                    int level_value = StoredProgress.getInstance().getValue(dataKey);
+                    int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                            level_value
+                    );
+
+                    if (StoredProgress.getInstance().getGoldAmount() >= level_cost){
+
+                        Intent intent = new Intent(this, LevelBuyActivity.class);
+                        intent.putExtra("level_number", level_value + 1);
+                        intent.putExtra("level_cost", level_cost);
+                        startActivityForResult(intent, 42);
+                    }
+                }
+
                 if (tv.number > 0){
                     Intent intent = new Intent(this, LevelSelectActivity.class);
                     intent.putExtra("level_size", tv.number);
@@ -105,7 +150,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                     else
                         hlo.addView(generateTV(-1));
 
-
                     hlo.addView(getSpace());
             }
 
@@ -134,7 +178,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         return space;
     }
     private int getRandomId(){
-        return random.nextInt(); // TODO: 3/9/19 fix this
+        return random.nextInt(); // TODO: 3/9/19 make unique
     }
     NumeratedTextView generateTV(int num){
 
@@ -150,12 +194,20 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 res.setText(String.valueOf(num));
             }
             else{
-                res.setText("0" + String.valueOf(num));
+                res.setText("0" + num);
             }
         }
 
+        int buying_level_number = 1 + StoredProgress.getInstance().getValue(
+                StoredProgress.levelUpgKey);
+
         if (0 == num){
-            res.setText("S");
+            if (buying_level_number > 9){
+                res.setText(String.valueOf(buying_level_number));
+            }
+            else{
+                res.setText("0" + buying_level_number);
+            }
         }
 
         res.setTextSize(40);
@@ -163,11 +215,22 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         res.setTextColor(Color.WHITE);
         res.setGravity(Gravity.CENTER);
 
+        int resource_id = R.xml.level_select_bg;
+        if (num == 0){
+            resource_id = R.xml.level_select_bg_cannot_buy;
+            res.setTextColor(Color.parseColor("#999999"));
+            if (StoredProgress.getInstance().getGoldAmount() >= Economist.getInstance().
+                    price_map.get(StoredProgress.levelUpgKey).apply(buying_level_number - 1)){
+                resource_id = R.xml.level_select_bg_can_buy;
+                res.setTextColor(Color.parseColor("#00fe00"));
+            }
+        }
+
         if (num >= 0){
             try{
                 Drawable bg;
-                bg = Drawable.createFromXml(getResources(), getResources().getXml(R.xml.level_select_bg));
-                XmlPullParser parser = getResources().getXml(R.xml.level_select_bg);
+                bg = Drawable.createFromXml(getResources(), getResources().getXml(resource_id));
+                XmlPullParser parser = getResources().getXml(resource_id);
                 bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
 
                 res.setBackground(bg);
