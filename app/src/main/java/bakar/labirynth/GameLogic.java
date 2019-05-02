@@ -266,7 +266,6 @@ class GameLogic {
             return distance(pointF, gameRenderer.game2screen(playerCoords())) < gameRenderer.playerHitbox;
     }
     void remoteMove(){
-
         if (usesJoystick && gameRenderer.isMovingPlayer)
             movePlayerTo(joystick.lastTouch);
         if (!usesJoystick && remote_move_flag && tiltControler != null){

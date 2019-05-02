@@ -43,7 +43,6 @@ public class GameActivity extends Activity{
     // STEPS-TO-BETA
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     // TODO: 5/1/19 remove centering on player while moving by accelerometer
-    // TODO: 5/2/19 с самого начала не подключается акселерометр
     // TODO: 5/2/19 Останавлявать акселерометр при показе туториала
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
@@ -99,8 +98,9 @@ public class GameActivity extends Activity{
         //getWindow().setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.loading_screen);
 
+        // todo использовать синглтон
         sPref = getSharedPreferences("global", MODE_PRIVATE);
-        boolean usesJoystick = sPref.getBoolean("uses_joystick", true);
+        boolean usesJoystick = sPref.getBoolean("uses_joystick", false);
         if (!usesJoystick){
             tiltController = new TiltController();
         }
