@@ -36,7 +36,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     Animation on_click_anim; //todo анимация не успевает показаться
     final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == RESULT_OK){

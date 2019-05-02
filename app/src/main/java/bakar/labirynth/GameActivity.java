@@ -43,11 +43,15 @@ public class GameActivity extends Activity{
     // STEPS-TO-BETA
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     // TODO: 5/1/19 remove centering on player while moving by accelerometer
+    // TODO: 5/2/19 с самого начала не подключается акселерометр
+    // TODO: 5/2/19 Останавлявать акселерометр при показе туториала
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites
 
     //NEW
+    // TODO: 5/2/19 Подсвечивать кнопку бонусов при первом подбирании
+    // TODO: 5/2/19 подсвечивать кнопку центровки если шарик не в экране
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 Убрать черные полосы, оставить стрелку (??)
     // TODO: 5/1/19 убрать блок девайса по времени
@@ -151,9 +155,13 @@ public class GameActivity extends Activity{
         setContentView(gameRenderer);
         Logger.getAnonymousLogger().info("GameActivity.init() end");
 
-        Intent tutorialIntent = new Intent(this, TutorialActivity.class);
-        tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(BeginTutorial_1));
-        startActivityForResult(tutorialIntent, 42);
+        if (StoredProgress.getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialFirst)){
+            StoredProgress.getInstance().
+                    switchValueBoolean(StoredProgress.isNeedToShowTutorialFirst);
+            Intent tutorialIntent = new Intent(this, TutorialActivity.class);
+            tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(BeginTutorial_1));
+            startActivityForResult(tutorialIntent, 42);
+        }
     }
     void reInit(){
         gameLogic.isInited = false;

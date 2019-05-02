@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static bakar.labirynth.StoredProgress.isNeedToShowTutorialPointer;
 
 /**
  * Created by Bakar on 10.03.2018.
@@ -215,17 +216,33 @@ class GameLogic {
     void onPointerPickedUp(){
         pointerAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
-        startTutorialActivity(TutorialKey.PointerTutorial);
+        if (StoredProgress.getInstance().getValueBoolean(
+                isNeedToShowTutorialPointer)){
+            startTutorialActivity(TutorialKey.PointerTutorial);
+            StoredProgress.getInstance().
+                    switchValueBoolean(StoredProgress.isNeedToShowTutorialPointer);
+        }
     }
     void onTeleportPickedUp(){
         teleportAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
-        startTutorialActivity(TutorialKey.TeleportTutorial);
+        if (StoredProgress.getInstance().getValueBoolean(
+                StoredProgress.isNeedToShowTutorialTeleport)){
+            startTutorialActivity(TutorialKey.TeleportTutorial);
+            StoredProgress.getInstance().
+                    switchValueBoolean(StoredProgress.isNeedToShowTutorialTeleport);
+        }
+
     }
     void onPathfinderPickedUp(){
         pathfinderAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
-        startTutorialActivity(TutorialKey.PathfinderTutorial);
+        if (StoredProgress.getInstance().getValueBoolean(
+                StoredProgress.isNeedToShowTutorialPathfinder)){
+            startTutorialActivity(TutorialKey.PathfinderTutorial);
+            StoredProgress.getInstance().
+                    switchValueBoolean(StoredProgress.isNeedToShowTutorialPathfinder);
+        }
     }
     void onCellChanged(){
         gameRenderer.lightFog(playerCoords());

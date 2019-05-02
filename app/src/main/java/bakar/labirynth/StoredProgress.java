@@ -7,7 +7,7 @@ import static android.content.Context.MODE_PRIVATE;
 class StoredProgress {
     private static final StoredProgress ourInstance = new StoredProgress();
 
-    SharedPreferences sharedPreferences = null;
+    private SharedPreferences sharedPreferences = null;
 
     static final String teleportAmountKey = "teleportAmount";
     static final String pathfinderAmountKey = "pathfinderAmount";
@@ -24,6 +24,11 @@ class StoredProgress {
     static final String isDebugKey = "is_debug";
     static final String isMusicOnKey = "isMusicOn";
 
+    static final String isNeedToShowTutorialFirst = "isNeedToShowTutorialFirst";
+    static final String isNeedToShowTutorialPathfinder = "isNeedToShowTutorialPathfinder";
+    static final String isNeedToShowTutorialPointer = "isNeedToShowTutorialPointer";
+    static final String isNeedToShowTutorialTeleport = "isNeedToShowTutorialTeleport";
+
     static StoredProgress getInstance() {
         return ourInstance;
     }
@@ -37,6 +42,17 @@ class StoredProgress {
         if (0 == getValue(levelUpgKey)){
             setValue(levelUpgKey, 1);
         }
+
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putBoolean(isNeedToShowTutorialFirst,
+                sharedPreferences.getBoolean(isNeedToShowTutorialFirst, true));
+        ed.putBoolean(isNeedToShowTutorialPointer,
+                sharedPreferences.getBoolean(isNeedToShowTutorialPointer, true));
+        ed.putBoolean(isNeedToShowTutorialPathfinder,
+                sharedPreferences.getBoolean(isNeedToShowTutorialPathfinder, true));
+        ed.putBoolean(isNeedToShowTutorialTeleport,
+                sharedPreferences.getBoolean(isNeedToShowTutorialTeleport, true));
+        ed.apply();
     }
 
     void resetAll(){
@@ -77,6 +93,14 @@ class StoredProgress {
     int getValue(String key){
         int result = sharedPreferences.getInt(key, 0);
         return result;
+    }
+    boolean getValueBoolean(String key){
+        boolean result = sharedPreferences.getBoolean(key, false);
+        return result;
+    }
+    boolean switchValueBoolean(String key){
+        setValue(key, !getValueBoolean(key));
+        return getValueBoolean(key);
     }
 
     int getTeleportUpg(){
