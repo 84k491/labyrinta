@@ -43,7 +43,6 @@ public class GameActivity extends Activity{
     // STEPS-TO-BETA
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     // TODO: 5/1/19 remove centering on player while moving by accelerometer
-    // TODO: 5/2/19 Останавлявать акселерометр при показе туториала
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites
@@ -207,7 +206,7 @@ public class GameActivity extends Activity{
     protected void onPause(){
         saveData();
         if (tiltController != null) {
-            Logger.getAnonymousLogger().info("GameActivity tiltController.unregisterSensors()s");
+            Logger.getAnonymousLogger().info("GameActivity tiltController.unregisterSensors()");
             tiltController.unregisterSensors();
         }
         super.onPause();
@@ -475,6 +474,9 @@ public class GameActivity extends Activity{
         void unregisterSensors(){
             sensorManager.unregisterListener(listener);
             registered = false;
+            valuesGravity[0] = 0.f;
+            valuesGravity[1] = 0.f;
+            valuesGravity[2] = 0.f;
         }
 
         CPoint.Game speed_vector = new CPoint.Game(0.f, 0.f);
