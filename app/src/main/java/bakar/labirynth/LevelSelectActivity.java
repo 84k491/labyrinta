@@ -33,6 +33,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     Random random = new Random(274412536);
     LinearLayout mainLayout;
+    TextView gold;
     Animation on_click_anim; //todo анимация не успевает показаться
     final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
 
@@ -56,6 +57,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 for (NumeratedTextView tv_loop : textViews){
                     tv_loop.setOnClickListener(this);
                 }
+                updateGoldLabel();
             }
         }
     }
@@ -123,9 +125,24 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
         findViewById(R.id.bt_select_back).setOnClickListener(this);
 
+        gold = findViewById(R.id.tw_gold_amount_ls);
+        gold.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+        gold.setTextColor(Color.WHITE);
+        updateGoldLabel();
+
+        ((TextView)findViewById(R.id.tw_select_level_size)).setTextColor(Color.WHITE);
+        ((TextView)findViewById(R.id.tw_select_level_size)).
+                setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+
         fillLayout(getIntent().getIntExtra("max_level_allowed", 0));
         for (NumeratedTextView tv : textViews){
             tv.setOnClickListener(this);
+        }
+    }
+
+    void updateGoldLabel(){
+        if (gold != null) {
+            gold.setText(String.valueOf(StoredProgress.getInstance().getGoldAmount()));
         }
     }
 
