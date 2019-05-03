@@ -3,7 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="Menu_button_bg">#96000000</color>
+    <color name="Menu_button_bg">#5A000000</color>
     <color name="transparent">#00000000</color>
     <color name="loading_screen_bg">#2B2B2B</color>
     <color name="white">#FFFFFF</color>

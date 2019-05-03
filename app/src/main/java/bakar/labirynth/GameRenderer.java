@@ -1043,6 +1043,47 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             whoami = name;
         }
 
+        int calcInSampleSize(BitmapFactory.Options options, int w, int h){
+
+            if (
+                    options.outWidth <= w ||
+                            options.outHeight <= h
+            ){
+                return 1;
+            }
+
+            int result = 1;
+
+            while (
+                    options.outWidth / result >= w ||
+                    options.outHeight / result >= h
+            ){
+                result = result * 2;
+            }
+
+            result = result / 2;
+
+            return result;
+        }
+
+        Bitmap getOptimisedBitmapFromResource(int resource_id, int w, int h){
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(context.getResources(), resource_id, options);
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = calcInSampleSize(options, w, h);
+            Bitmap result = BitmapFactory.decodeResource(context.getResources(), resource_id, options);
+
+            result = Bitmap.createScaledBitmap(result,
+                    w,
+                    h,
+                    true);
+
+            return result;
+        }
+
+        abstract void addBitmap(int resource_id);
+
         abstract int size();
 
         abstract Bitmap get(int index);
@@ -1054,6 +1095,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         BitmapList(String name){
             super(name);
+        }
+
+        @Override
+        void addBitmap(int resource_id){
+            final int const_size = Math.round(cellSize * max_scale);
+            // битмапы должны быть квадратными, поэтому один размер
+            list.add(getOptimisedBitmapFromResource(resource_id, const_size, const_size));
         }
 
         @Override
@@ -1086,6 +1134,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         @Override
+        void addBitmap(int resource_id){
+            final int const_size = Math.round(cellSize * max_scale);
+            // битмапы должны быть квадратными, поэтому один размер
+            bitmap = getOptimisedBitmapFromResource(resource_id, const_size, const_size);
+        }
+
+        @Override
         int size(){
             return (bitmap != null)
                     ?
@@ -1115,16 +1170,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             setCoin();
             setExit();
 
-            rescaleAll();
-
             setPathfinder();
             setTeleport();
             setPointer();
-//            setFloor();
-//            setWall();
             setPlayer();
-
-            rescaleAll();
 
             setMenuButton();
             setBonusesButton();
@@ -1137,12 +1186,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             BitmapList list = new BitmapList("Coin");
 
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim1));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim2));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim3));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim4));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim5));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.coin_anim6));
+            list.addBitmap(R.drawable.coin_anim1);
+            list.addBitmap(R.drawable.coin_anim2);
+            list.addBitmap(R.drawable.coin_anim3);
+            list.addBitmap(R.drawable.coin_anim4);
+            list.addBitmap(R.drawable.coin_anim5);
+            list.addBitmap(R.drawable.coin_anim6);
 
             add(list);
         }
@@ -1152,47 +1201,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             BitmapList list = new BitmapList("Exit");
 
-            //exitTextures.clear();
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_00));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_01));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_02));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_03));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_04));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_05));
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_06));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_07));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_08));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_09));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_10));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_11));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_12));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_13));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_14));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_15));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_16));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_17));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_18));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_19));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_20));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_21));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_22));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_23));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_24));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_25));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_26));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_27));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_28));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_29));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_30));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_31));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_32));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_33));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_34));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_35));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_36));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_37));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_38));
-//            exitTextures.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.vortex_frame_39));
+            list.addBitmap(R.drawable.vortex_frame_00);
+            list.addBitmap(R.drawable.vortex_frame_01);
+            list.addBitmap(R.drawable.vortex_frame_02);
+            list.addBitmap(R.drawable.vortex_frame_03);
+            list.addBitmap(R.drawable.vortex_frame_04);
+            list.addBitmap(R.drawable.vortex_frame_05);
+            list.addBitmap(R.drawable.vortex_frame_06);
             add(list);
         }
         void setTeleport(){
@@ -1200,8 +1215,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             BitmapList list = new BitmapList("Teleport");
 
-            //teleportTextures.clear();
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.teleport));
+            list.addBitmap(R.drawable.teleport);
 
             add(list);
         }
@@ -1210,8 +1224,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             BitmapList list = new BitmapList("Pointer");
 
-            //pointerTextures.clear();
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pointer));
+            list.addBitmap(R.drawable.pointer);
             add(list);
         }
         void setPathfinder(){
@@ -1219,7 +1232,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             BitmapList list = new BitmapList("Pathfinder");
 
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.pathfinder));
+            list.addBitmap(R.drawable.pathfinder);
 
             add(list);
         }
@@ -1246,7 +1259,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             BitmapList list = new BitmapList("Player");
 
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.player));
+            // TODO: 5/3/19 OOM here
+            list.addBitmap(R.drawable.player);
 
             add(list);
         }
@@ -1256,7 +1270,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             ButtonBitmap bmp = new ButtonBitmap("MenuButton");
 
-            bmp.bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.menu_button);
+            bmp.addBitmap(R.drawable.menu_button);
 
             add(bmp);
         }
@@ -1265,7 +1279,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             ButtonBitmap bmp = new ButtonBitmap("CenterButton");
 
-            bmp.bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.center_button);
+            bmp.addBitmap(R.drawable.center_button);
 
             add(bmp);
         }
@@ -1274,7 +1288,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             ButtonBitmap bmp = new ButtonBitmap("BonusesButton");
 
-            bmp.bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.bonuses_button);
+            bmp.addBitmap(R.drawable.bonuses_button);
 
             add(bmp);
         }
@@ -1283,7 +1297,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 return;
             ButtonBitmap bmp = new ButtonBitmap("SettingsButton");
 
-            bmp.bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gear_black);
+            bmp.addBitmap(R.drawable.gear_black);
 
             add(bmp);
         }
