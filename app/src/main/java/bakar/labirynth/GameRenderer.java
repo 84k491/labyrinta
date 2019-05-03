@@ -805,6 +805,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 matrix.reset();
                 float bmpSize = bitmaps.getByName(bt.whoami).getWidth();
 
+                float color_brightness = 1.f - Math.abs(.5f - bt.getAnimtionPercent()) * 2.f;
+                int anim_depth = 255;
+
+                button.setColor(Color.argb(120 + Math.round(70 * color_brightness),
+                        255 - Math.round(anim_depth * color_brightness),
+                        255,
+                        255 - Math.round(anim_depth * color_brightness)));
+
                 matrix.preTranslate(bt.pos.x - bmpSize / 2,
                         bt.pos.y - bmpSize / 2);
 
@@ -1403,6 +1411,21 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         CPoint.Screen pos = new CPoint.Screen();
         float rad = 0;
         String whoami;
+
+        boolean lightAnimationEnabled = false;
+        private float maxAnimationState = 100;
+        private float animationState = 0;
+        private float animationStep = 2.f;
+
+        float getAnimtionPercent(){
+            if (!lightAnimationEnabled) return 0.f;
+            animationState += animationStep;
+            if (animationState > maxAnimationState){
+                animationState = 0;
+            }
+
+            return animationState / maxAnimationState;
+        }
 
         Button(){}
         Button(CPoint.Screen position, float radius){

@@ -36,7 +36,7 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 плавное движение от акселерометра
     // TODO: 4/20/19 заблочить поворот
     // TODO: 3/18/19 in-app purchases
-    // TODO: 3/18/19 credits for video
+    // TODO: 3/18/19 gold for video
     // TODO: 5/1/19 randomizer bonus
     // TODO: 4/20/19 pointer upgrade
 
@@ -49,7 +49,6 @@ public class GameActivity extends Activity{
 
     //NEW
     // TODO: 5/2/19 Подсвечивать кнопку бонусов при первом подбирании
-    // TODO: 5/2/19 подсвечивать кнопку центровки если шарик не в экране
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 Убрать черные полосы, оставить стрелку (??)
     // TODO: 5/1/19 убрать блок девайса по времени

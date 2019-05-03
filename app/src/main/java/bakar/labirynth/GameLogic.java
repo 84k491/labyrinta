@@ -212,7 +212,6 @@ class GameLogic {
         int pickedUpCoinCost = Economist.getInstance().getCoinCostRand();
         goldEarnedByCoins += pickedUpCoinCost;
         gameRenderer.addPickUpAnimation(playerCoords(), "+" + String.valueOf(pickedUpCoinCost));
-        startTutorialActivity(TutorialKey.PointerTutorial);
     }
     void onPointerPickedUp(){
         pointerAmount++;
@@ -278,8 +277,14 @@ class GameLogic {
         }
     }
     void movePlayerTo(CPoint.Game pointF){
-        if (!gameRenderer.isPlayerInSight())
-            gameRenderer.buttons.get(0).onClick();
+        if (usesJoystick){
+            gameRenderer.buttons.get(0).lightAnimationEnabled = false;
+            if (!gameRenderer.isPlayerInSight())
+                gameRenderer.buttons.get(0).onClick();
+        }
+        else{
+            gameRenderer.buttons.get(0).lightAnimationEnabled = !gameRenderer.isPlayerInSight();
+        }
 
         CPoint.Game input;
         if (usesJoystick){
