@@ -21,7 +21,8 @@ enum TutorialKey{
     BeginTutorial_3,
     PathfinderTutorial,
     TeleportTutorial,
-    PointerTutorial
+    PointerTutorial,
+    NextLevelBuyTutorial
 }
 
 public class TutorialActivity extends Activity {
@@ -85,6 +86,10 @@ public class TutorialActivity extends Activity {
                 "Use it to teleport yourself to any point within it's range.\n" +
                 "You can upgrade it, or buy more in a shop."
         );
+        text_map.put(TutorialKey.NextLevelBuyTutorial,
+                "It seems you have enough gold to unlock net level size!\n" +
+                "You can unlock it at shop, or at level menu."
+        );
 
         image_map.put(TutorialKey.BeginTutorial_1,
                 R.drawable.tutorial_exit
@@ -103,6 +108,9 @@ public class TutorialActivity extends Activity {
         );
         image_map.put(TutorialKey.TeleportTutorial,
                 R.drawable.tutorial_teleport
+        );
+        image_map.put(TutorialKey.NextLevelBuyTutorial,
+                R.drawable.expand
         );
 
     }

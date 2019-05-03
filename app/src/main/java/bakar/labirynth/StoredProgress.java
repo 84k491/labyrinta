@@ -29,6 +29,7 @@ class StoredProgress {
     static final String isNeedToShowTutorialPointer = "isNeedToShowTutorialPointer";
     static final String isNeedToShowTutorialTeleport = "isNeedToShowTutorialTeleport";
     static final String isNeedToLightBonusButton = "isNeedToLightBonusButton";
+    static final String isNeedToShowTutorialNextLevel = "isNeedToShowTutorialNextLevel";
 
     static StoredProgress getInstance() {
         return ourInstance;
@@ -55,6 +56,8 @@ class StoredProgress {
                 sharedPreferences.getBoolean(isNeedToShowTutorialTeleport, true));
         ed.putBoolean(isNeedToLightBonusButton,
                 sharedPreferences.getBoolean(isNeedToLightBonusButton, true));
+        ed.putBoolean(isNeedToShowTutorialNextLevel,
+                sharedPreferences.getBoolean(isNeedToShowTutorialNextLevel, true));
         ed.apply();
     }
 

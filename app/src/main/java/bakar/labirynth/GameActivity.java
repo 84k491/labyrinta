@@ -26,12 +26,11 @@ import java.util.logging.Logger;
 import static bakar.labirynth.TutorialKey.BeginTutorial_1;
 import static bakar.labirynth.TutorialKey.BeginTutorial_2;
 import static bakar.labirynth.TutorialKey.BeginTutorial_3;
+import static bakar.labirynth.TutorialKey.NextLevelBuyTutorial;
 
 public class GameActivity extends Activity{
 
-    //Todo: rename
     //Todo: заблочить кнопку "назад"
-    //Todo: белые кнопки рисуются заново при разворачивании
     // TODO: 19.05.2018 rate this app
     // TODO: 4/20/19 плавное движение от акселерометра
     // TODO: 4/20/19 заблочить поворот
@@ -43,10 +42,10 @@ public class GameActivity extends Activity{
     // STEPS-TO-BETA
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     // TODO: 4/16/19 sounds
-    // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites
 
     //NEW
+    // TODO: 5/3/19 отображение кол-ва золота в меню выбора уровня
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 Убрать черные полосы, оставить стрелку (??)
     // TODO: 5/1/19 убрать блок девайса по времени
@@ -172,6 +171,21 @@ public class GameActivity extends Activity{
 
         gameRenderer.buttons.get(0).onClick(); // center to player
         ((GameRenderer.PlayerFinder)gameRenderer.buttons.get(0)).instantAnimation();
+
+        if (StoredProgress.getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel)){
+
+            String dataKey = StoredProgress.levelUpgKey;
+            int level_value = StoredProgress.getInstance().getValue(dataKey);
+            int level_cost = Economist.getInstance().price_map.get(dataKey).apply(level_value);
+
+            if (StoredProgress.getInstance().getGoldAmount() >= level_cost){
+                StoredProgress.getInstance().
+                        switchValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel);
+                Intent tutorialIntent = new Intent(this, TutorialActivity.class);
+                tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(NextLevelBuyTutorial));
+                startActivityForResult(tutorialIntent, 42);
+            }
+        }
     }
     @Override
     protected void onRestart(){
