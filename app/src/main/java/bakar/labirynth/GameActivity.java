@@ -40,7 +40,6 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
     // TODO: 4/16/19 sounds
     // TODO: 3/18/19 player, exit, coin sprites
 

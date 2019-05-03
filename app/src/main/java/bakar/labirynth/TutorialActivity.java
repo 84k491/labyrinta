@@ -72,7 +72,7 @@ public class TutorialActivity extends Activity {
                 "Gold can be spent in shop, buying bonuses and unlocking new level sizes"
         );
         text_map.put(TutorialKey.PathfinderTutorial,
-                "You picked up a pathfinder(?) bonus!\n" +
+                "You picked up a Pathfinder bonus!\n" +
                 "Use it to highlight a path to any point within it's range.\n" +
                 "You can upgrade it, or buy more in a shop."
         );

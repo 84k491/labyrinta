@@ -63,7 +63,7 @@
                     android:layout_width="45dp"
                     android:layout_height="31dp"
                     android:layout_weight="1"
-                    android:background="@drawable/coin_anim2"
+                    android:background="@drawable/gold_pile"
                     android:gravity="center_vertical|end"
                     android:textColor="@android:color/background_light"
                     android:textSize="18sp" />

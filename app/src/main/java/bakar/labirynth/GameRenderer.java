@@ -861,12 +861,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(labBitmap, Ematrix, common);
         }
         void drawEntities(Canvas canvas){
-            for (Entity entity : gameLogic.eFactory.entities){ // FIXME: 4/23/19 concurrent mod
+            gameLogic.eFactory.lock();
+            for (Entity entity : gameLogic.eFactory.entities){
                 drawTile(canvas,
                         bitmaps.getByEntity(entity),
                         field2game(entity.pos),
                         entity.isLarge);
             }
+            gameLogic.eFactory.unlock();
         }
         void drawBonusRadius(Canvas canvas){
             PointF pointF = gameLogic.playerCoords();

@@ -673,9 +673,25 @@ class GameLogic {
 
     class EntityFactory{
         // TODO check Glide
+        private boolean isLocked = false;
+
         LinkedList<Entity> entities = new LinkedList<>();
 
         void init(){
+        }
+        void lock(){
+            while (isLocked){
+                try {
+                    Thread.sleep(10);
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+            isLocked = true;
+        }
+        void unlock(){
+            isLocked = false;
         }
 
         CPoint.Field getFreeCell(){
@@ -700,7 +716,9 @@ class GameLogic {
         }
 
         void reset(){
+            eFactory.lock();
             entities.clear();
+            eFactory.unlock();
         }
         void makeExit(CPoint.Field point){
             entities.push(new Exit(point));
@@ -756,19 +774,27 @@ class GameLogic {
 
             if ("Coin".equals(ret.whoami)){
                 onCoinPickedUp();
+                eFactory.lock();
                 entities.remove(ret);
+                eFactory.unlock();
             }
             if ("Teleport".equals(ret.whoami)){
                 onTeleportPickedUp();
+                eFactory.lock();
                 entities.remove(ret);
+                eFactory.unlock();
             }
             if ("Pathfinder".equals(ret.whoami)){
                 onPathfinderPickedUp();
+                eFactory.lock();
                 entities.remove(ret);
+                eFactory.unlock();
             }
             if ("Pointer".equals(ret.whoami)){
                 onPointerPickedUp();
+                eFactory.lock();
                 entities.remove(ret);
+                eFactory.unlock();
             }
 
             return ret;
