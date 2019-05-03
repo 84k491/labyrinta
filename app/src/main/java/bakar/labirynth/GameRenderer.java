@@ -1535,6 +1535,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void onClick() {
             //gameLogic.getPath(gameLogic.playerCoords(), field2game(gameLogic.field.exitPos));
             gameLogic.remote_move_flag = false;
+            lightAnimationEnabled = false;
             startBonusActivity();
             //gameLogic.remote_move_flag = true;
         }

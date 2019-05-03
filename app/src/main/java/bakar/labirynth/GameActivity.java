@@ -42,13 +42,11 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-BETA
     // TODO: 1/27/19 mutex на вектор с предметами (отрисовка и удаление в разных потоках)
-    // TODO: 5/1/19 remove centering on player while moving by accelerometer
     // TODO: 4/16/19 sounds
     // TODO: 4/23/19 stored gold icon
     // TODO: 3/18/19 player, exit, coin sprites
 
     //NEW
-    // TODO: 5/2/19 Подсвечивать кнопку бонусов при первом подбирании
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 Убрать черные полосы, оставить стрелку (??)
     // TODO: 5/1/19 убрать блок девайса по времени

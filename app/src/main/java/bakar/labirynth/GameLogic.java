@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static bakar.labirynth.StoredProgress.isNeedToLightBonusButton;
 import static bakar.labirynth.StoredProgress.isNeedToShowTutorialPointer;
 
 /**
@@ -216,6 +217,13 @@ class GameLogic {
     void onPointerPickedUp(){
         pointerAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
+
+        if (StoredProgress.getInstance().getValueBoolean(
+                isNeedToLightBonusButton)){
+            gameRenderer.buttons.get(1).lightAnimationEnabled = true;
+            StoredProgress.getInstance().
+                    switchValueBoolean(StoredProgress.isNeedToLightBonusButton);
+        }
         if (StoredProgress.getInstance().getValueBoolean(
                 isNeedToShowTutorialPointer)){
             startTutorialActivity(TutorialKey.PointerTutorial);
@@ -226,6 +234,13 @@ class GameLogic {
     void onTeleportPickedUp(){
         teleportAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
+
+        if (StoredProgress.getInstance().getValueBoolean(
+                isNeedToLightBonusButton)){
+            gameRenderer.buttons.get(1).lightAnimationEnabled = true;
+            StoredProgress.getInstance().
+                    switchValueBoolean(StoredProgress.isNeedToLightBonusButton);
+        }
         if (StoredProgress.getInstance().getValueBoolean(
                 StoredProgress.isNeedToShowTutorialTeleport)){
             startTutorialActivity(TutorialKey.TeleportTutorial);
@@ -237,6 +252,13 @@ class GameLogic {
     void onPathfinderPickedUp(){
         pathfinderAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
+
+        if (StoredProgress.getInstance().getValueBoolean(
+                isNeedToLightBonusButton)){
+            gameRenderer.buttons.get(1).lightAnimationEnabled = true;
+            StoredProgress.getInstance().
+                    switchValueBoolean(StoredProgress.isNeedToLightBonusButton);
+        }
         if (StoredProgress.getInstance().getValueBoolean(
                 StoredProgress.isNeedToShowTutorialPathfinder)){
             startTutorialActivity(TutorialKey.PathfinderTutorial);
