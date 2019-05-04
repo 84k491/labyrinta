@@ -74,7 +74,7 @@ public class TutorialActivity extends Activity {
         text_map.put(TutorialKey.PathfinderTutorial,
                 "You picked up a Pathfinder bonus!\n" +
                 "Use it to highlight a path to any point within it's range.\n" +
-                "You can upgrade it, or buy more in a shop."
+                "You can upgrade it, or buy more in the shop."
         );
         text_map.put(TutorialKey.PointerTutorial,
                 "You picked up a Pointer bonus!\n" +
@@ -84,7 +84,7 @@ public class TutorialActivity extends Activity {
         text_map.put(TutorialKey.TeleportTutorial,
                 "You picked up a Teleport bonus!\n" +
                 "Use it to teleport yourself to any point within it's range.\n" +
-                "You can upgrade it, or buy more in a shop."
+                "You can upgrade it, or buy more in the shop."
         );
         text_map.put(TutorialKey.NextLevelBuyTutorial,
                 "It seems you have enough gold to unlock next level size!\n" +
