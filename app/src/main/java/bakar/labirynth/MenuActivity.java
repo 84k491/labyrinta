@@ -113,12 +113,15 @@ public class MenuActivity extends Activity implements OnClickListener {
 
         layout.addView(new Background(this), 0);
         title.setTypeface(Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf"));
+
+        SoundCore.inst().loadSounds(this);
     }
     protected void onRestart(){
         super.onRestart();
     }
     @Override
     protected void onStart(){
+        SoundCore.inst().playBackgroungMusic();
         super.onStart();
     }
     @Override
@@ -136,11 +139,13 @@ public class MenuActivity extends Activity implements OnClickListener {
     }
     @Override
     protected void onStop(){
+        SoundCore.inst().pauseBackgroundMusic();
         super.onStop();
     }
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        SoundCore.inst().releaseMP();
     }
 
     void saveData() {

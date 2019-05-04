@@ -207,17 +207,19 @@ class GameLogic {
         finded_path = null;
         pointerActive = false;
 
+        SoundCore.inst().playSound(Sounds.levelFinished);
         startEndActivity();
     }
     void onCoinPickedUp(){
         int pickedUpCoinCost = Economist.getInstance().getCoinCostRand();
         goldEarnedByCoins += pickedUpCoinCost;
         gameRenderer.addPickUpAnimation(playerCoords(), "+" + String.valueOf(pickedUpCoinCost));
+        SoundCore.inst().playSound(Sounds.coinPickedUp);
     }
     void onPointerPickedUp(){
         pointerAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
-
+        SoundCore.inst().playSound(Sounds.bonusPickedUp);
         if (StoredProgress.getInstance().getValueBoolean(
                 isNeedToLightBonusButton)){
             gameRenderer.buttons.get(1).lightAnimationEnabled = true;
@@ -234,7 +236,7 @@ class GameLogic {
     void onTeleportPickedUp(){
         teleportAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
-
+        SoundCore.inst().playSound(Sounds.bonusPickedUp);
         if (StoredProgress.getInstance().getValueBoolean(
                 isNeedToLightBonusButton)){
             gameRenderer.buttons.get(1).lightAnimationEnabled = true;
@@ -252,7 +254,7 @@ class GameLogic {
     void onPathfinderPickedUp(){
         pathfinderAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
-
+        SoundCore.inst().playSound(Sounds.bonusPickedUp);
         if (StoredProgress.getInstance().getValueBoolean(
                 isNeedToLightBonusButton)){
             gameRenderer.buttons.get(1).lightAnimationEnabled = true;

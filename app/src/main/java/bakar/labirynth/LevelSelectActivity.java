@@ -104,6 +104,12 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     }
 
     @Override
+    protected void onStart(){
+        SoundCore.inst().playBackgroungMusic();
+        super.onStart();
+    }
+
+    @Override
     protected void onResume(){
         super.onResume();
     }
@@ -138,6 +144,12 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         for (NumeratedTextView tv : textViews){
             tv.setOnClickListener(this);
         }
+    }
+
+    @Override
+    protected void onStop(){
+        SoundCore.inst().pauseBackgroundMusic();
+        super.onStop();
     }
 
     void updateGoldLabel(){
