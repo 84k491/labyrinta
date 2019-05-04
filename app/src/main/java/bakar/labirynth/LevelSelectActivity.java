@@ -153,6 +153,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
         mainLayout.addView(getSpace());
         mainLayout.addView(getSpace());
+        mainLayout.addView(getSpace());
         for (int i = 0; i < row_amount; ++i){
             LinearLayout hlo = generateHorLayout();
             mainLayout.addView(hlo);
@@ -173,6 +174,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 mainLayout.addView(getSpace());
             }
         }
+        mainLayout.addView(getSpace());
     }
 
     class NumeratedTextView extends AppCompatTextView{
