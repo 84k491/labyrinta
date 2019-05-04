@@ -87,7 +87,7 @@ public class TutorialActivity extends Activity {
                 "You can upgrade it, or buy more in a shop."
         );
         text_map.put(TutorialKey.NextLevelBuyTutorial,
-                "It seems you have enough gold to unlock net level size!\n" +
+                "It seems you have enough gold to unlock next level size!\n" +
                 "You can unlock it at shop, or at level menu."
         );
 

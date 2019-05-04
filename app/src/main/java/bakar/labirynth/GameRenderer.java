@@ -1,6 +1,7 @@
 package bakar.labirynth;
 
 import android.app.Activity;import android.app.ActivityManager;
+import android.arch.core.util.Function;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -63,6 +64,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     float bigSquareScale = 2.f - smallSquareScale;
 
     final float cellSize = 10; // gameCoords side
+
+    ///// это костыль. позволяет сделать уменьшенную бмп уровня, не затрагивая остальное ///
+    final float labBitmapcellSize = 4;
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     final Camera camera = new Camera();
     public float playerHitbox = 0; // screenCoord // in surfaceCreated();
 
@@ -171,7 +177,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private RectF pt2rect(CPoint.Game pt){
-        return pt2RectScaled(pt, 1.0f);
+        return pt2RectScaled(pt, 1.0f, cellSize);
     }
     private RectF pt2rect(CPoint.Screen pt){
         RectF rect = new RectF();
@@ -186,22 +192,22 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         return rect;
     }
-    private RectF pt2RectScaled(CPoint.Game pt, float scale){
+    private RectF pt2RectScaled(CPoint.Game pt, float scale, float _cellSize){
         RectF rect = new RectF();
 
-        rect.set(-scale * cellSize / 2,
-                -scale * cellSize / 2,
-                scale * cellSize / 2,
-                scale * cellSize / 2);
+        rect.set(-scale * _cellSize / 2,
+                -scale * _cellSize / 2,
+                scale * _cellSize / 2,
+                scale * _cellSize / 2);
         rect.offset(pt.x, pt.y);
 
         return rect;
     }
-    private RectF pt2rect(CPoint.Game pt1, CPoint.Game pt2, float scale){
-        float left = Math.min(pt1.x, pt2.x) - (scale * cellSize) / 2;
-        float right = Math.max(pt1.x, pt2.x) + (scale * cellSize) / 2;
-        float top = Math.min(pt1.y, pt2.y) - (scale * cellSize) / 2;
-        float bot = Math.max(pt1.y, pt2.y) + (scale * cellSize) / 2;
+    private RectF pt2rect(CPoint.Game pt1, CPoint.Game pt2, float scale, float _cellSize){
+        float left = Math.min(pt1.x, pt2.x) - (scale * _cellSize) / 2;
+        float right = Math.max(pt1.x, pt2.x) + (scale * _cellSize) / 2;
+        float top = Math.min(pt1.y, pt2.y) - (scale * _cellSize) / 2;
+        float bot = Math.max(pt1.y, pt2.y) + (scale * _cellSize) / 2;
 
         RectF res = new RectF(left, top, right, bot);
         return res;
@@ -606,11 +612,18 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         void updateLabyrinthBmp(){
             // рисуется в игровых координатах, при отрисовке умножается на матрицу
-            labBitmap = Bitmap.createBitmap(Math.round(gameLogic.field.getxSize() * cellSize),
-                    Math.round(gameLogic.field.getySize() * cellSize), Bitmap.Config.ARGB_8888);
+            labBitmap = Bitmap.createBitmap(Math.round(gameLogic.field.getxSize() * labBitmapcellSize),
+                    Math.round(gameLogic.field.getySize() * labBitmapcellSize), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(labBitmap);
 
-            //CPoint.Game rightBot = new CPoint.Game(labBitmap.getWidth(), labBitmap.getHeight());
+            Function<CPoint.Field, CPoint.Game> f2g_f =
+                    (CPoint.Field fp) -> {
+                        CPoint.Game result = new CPoint.Game();
+                        result.set(fp.x * labBitmapcellSize + labBitmapcellSize / 2,
+                                fp.y * labBitmapcellSize + labBitmapcellSize / 2);
+                        return result;
+                    };
+
             canvas.drawRect(0,
                     0,
                     labBitmap.getWidth(),
@@ -620,17 +633,18 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             Path poly = new Path();
             for (int x = 0; x < gameLogic.field.getxSize(); ++x){
                 for (int y = 0; y < gameLogic.field.getySize(); ++y){
-                    CPoint.Game rectScreenPt = field2game(new CPoint.Field(x, y));
+                    CPoint.Game rectScreenPt = f2g_f.apply(new CPoint.Field(x, y));
                     if (!gameLogic.field.get(x, y)){
-                        poly.addRect(pt2RectScaled(rectScreenPt, smallSquareScale), CW);
+                        poly.addRect(pt2RectScaled(rectScreenPt, smallSquareScale, labBitmapcellSize), CW);
 
                         for (Direction dir:Direction.values()){
                             CPoint.Field another = gameLogic.field.ptAt(new CPoint.Field(x,y), dir);
                             if (!gameLogic.field.get(another)){
                                 poly.addRect(pt2rect(
                                         rectScreenPt,
-                                        field2game(another),
-                                        smallSquareScale),
+                                        f2g_f.apply(another),
+                                        smallSquareScale,
+                                        labBitmapcellSize),
                                         CW);
                             }
                         }
@@ -643,10 +657,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             CPoint.Game botRight = new CPoint.Game(labBitmap.getWidth(),labBitmap.getHeight());
             CPoint.Game botLeft = new CPoint.Game(0,labBitmap.getHeight());
 
-            poly.addRect(pt2rect(topLeft, topRight, smallSquareScale), CW);
-            poly.addRect(pt2rect(topLeft, botLeft, smallSquareScale), CW);
-            poly.addRect(pt2rect(botRight, botLeft, smallSquareScale), CW);
-            poly.addRect(pt2rect(botRight, topRight, smallSquareScale), CW);
+            poly.addRect(pt2rect(topLeft, topRight, smallSquareScale, labBitmapcellSize), CW);
+            poly.addRect(pt2rect(topLeft, botLeft, smallSquareScale, labBitmapcellSize), CW);
+            poly.addRect(pt2rect(botRight, botLeft, smallSquareScale, labBitmapcellSize), CW);
+            poly.addRect(pt2rect(botRight, topRight, smallSquareScale, labBitmapcellSize), CW);
             canvas.drawPath(poly, wall);
         }
 
@@ -854,11 +868,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawLabyrinth(Canvas canvas){
             if (labBitmap == null)
                 updateLabyrinthBmp();
-//            PointF game00 = game2screen(new PointF(0, 0));
-//            Matrix matrix = new Matrix();
-//            matrix.postScale(1/globalScale, 1/globalScale);
-//            matrix.postTranslate(game00.x, game00.y);
-            canvas.drawBitmap(labBitmap, Ematrix, common);
+            Matrix matrix = new Matrix();
+            matrix.postScale(cellSize / labBitmapcellSize, cellSize / labBitmapcellSize);
+            canvas.drawBitmap(labBitmap, matrix, common);
         }
         void drawEntities(Canvas canvas){
             gameLogic.eFactory.lock();
@@ -906,7 +918,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             Path poly = new Path();
             for (int i = 0; i < gameLogic.finded_path.size() - 1; i++)
-                poly.addRect(pt2rect(gameLogic.finded_path.get(i), gameLogic.finded_path.get(i + 1), 1.f), CW);
+                poly.addRect(pt2rect(gameLogic.finded_path.get(i), gameLogic.finded_path.get(i + 1), 1.f, cellSize), CW);
 
             canvas.drawPath(poly, path);
         }
