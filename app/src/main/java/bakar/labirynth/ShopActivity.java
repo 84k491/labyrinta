@@ -434,11 +434,16 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         @Override
         void onTrigger(){
             if (StoredProgress.getInstance().getGoldAmount() >= getCost()){
+                SoundCore.inst().playSound(Sounds.correct);
                 removeGold(getCost());
                 incrementValue();
                 updateCostText();
                 updateLabelText();
                 updateGoldLabel();
+            }
+            else
+            {
+                SoundCore.inst().playSound(Sounds.incorrect);
             }
         }
         @Override
@@ -532,6 +537,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
         @Override
         void onTrigger() {
+            SoundCore.inst().playSound(Sounds.correct);
             StoredProgress.getInstance().setGold(StoredProgress.getInstance().getGoldAmount() + gold);
         }
     }

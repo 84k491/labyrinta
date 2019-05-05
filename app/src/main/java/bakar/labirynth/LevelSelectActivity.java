@@ -43,6 +43,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == RESULT_OK){
             if (intent.getStringExtra("result_key").equals("positive")){
+                SoundCore.inst().playSound(Sounds.correct);
                 String dataKey = StoredProgress.levelUpgKey;
                 int level_value = StoredProgress.getInstance().getValue(dataKey);
                 int level_cost = Economist.getInstance().price_map.get(dataKey).apply(

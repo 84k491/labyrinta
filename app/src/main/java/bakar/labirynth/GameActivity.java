@@ -44,13 +44,11 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 level initial globalScale
     // TODO: 5/5/19 bonus_pu sound
     // TODO: 5/5/19 currency on a same line with cost
-    // TODO: 5/5/19 dialogue margins
-    // TODO: 5/5/19 dialogue buttons margins
     // TODO: 5/5/19 main menu title position
     // TODO: 5/5/19 main menu buttons position
-    // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 lower resolution gui
     // TODO: 5/5/19 check sound settings @ reboot
+    // TODO: 3/18/19 player, exit, coin sprites
 
     //after beta
     // TODO: 5/5/19 max level gz tutorial

@@ -14,7 +14,9 @@ import java.util.logging.Logger;
 enum Sounds{
     coinPickedUp,
     bonusPickedUp,
-    levelFinished
+    levelFinished,
+    correct,
+    incorrect
 }
 
 public final class SoundCore {
@@ -40,6 +42,8 @@ public final class SoundCore {
         resource_id_map.put(Sounds.coinPickedUp, R.raw.coin_pu);
         resource_id_map.put(Sounds.bonusPickedUp, R.raw.bonus_pu);
         resource_id_map.put(Sounds.levelFinished, R.raw.level_finished);
+        resource_id_map.put(Sounds.correct, R.raw.correct);
+        resource_id_map.put(Sounds.incorrect, R.raw.incorrect);
     }
 
     void loadSounds(Context context){
