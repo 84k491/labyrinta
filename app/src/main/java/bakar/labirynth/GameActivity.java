@@ -31,7 +31,6 @@ import static bakar.labirynth.TutorialKey.NextLevelBuyTutorial;
 
 public class GameActivity extends Activity{
 
-    //Todo: заблочить кнопку "назад"
     // TODO: 19.05.2018 rate this app
     // TODO: 4/20/19 плавное движение от акселерометра
     // TODO: 4/20/19 заблочить поворот
@@ -41,9 +40,10 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 5/5/19 sound volume optimization
+    //Todo: заблочить кнопку "назад"
+    // TODO: 5/5/19 level initial globalScale
+    // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/5/19 bonus_pu sound
-    // TODO: 5/5/19 level select menu gold counter needs to be wider
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/5/19 dialogue margins
     // TODO: 5/5/19 dialogue buttons margins
@@ -51,6 +51,7 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 main menu buttons position
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 lower resolution gui
+    // TODO: 5/5/19 check sound settings @ reboot
 
     //NEW
     // TODO: 5/5/19 max level gz tutorial

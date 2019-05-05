@@ -45,6 +45,7 @@ public final class SoundCore {
     void loadSounds(Context context){
         mediaPlayer = MediaPlayer.create(context, R.raw.background);
         mediaPlayer.setLooping(true);
+        mediaPlayer.setVolume(.8f, .8f);
 
         for (Sounds sound : Sounds.values()){
             sound_id_map.put(sound,

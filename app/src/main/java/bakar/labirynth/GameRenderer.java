@@ -371,7 +371,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         CPoint.Game old_center = screen2game(new CPoint.Screen(getWidth() / 2.f,
                 getHeight() / 2.f));
 
-        camera.translate(0,0, -value * (cellSize / 60));
+        camera.translate(0,0, -value * (cellSize / 40));
         if (getGlobalScale() > max_scale || getGlobalScale() < min_scale)
             camera.restore();
         if (renderThread.fogBmpScale != getGlobalScale())
