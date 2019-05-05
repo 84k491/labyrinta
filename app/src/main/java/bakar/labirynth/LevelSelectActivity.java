@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Xml;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TableLayout;
@@ -175,7 +177,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                     hlo.addView(generateTV(++iter));
                 else
                     if (iter++ == lvl_amount){
-                        NumeratedTextView tw = generateTV(0);
+//                        NumeratedTextView tw = generateTV(0);
+                        ConstraintLayout tw = generateBuyingTV();
                         if (tw != null) {
                             hlo.addView(tw);
                         }
@@ -258,11 +261,11 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         int resource_id = R.xml.level_select_bg;
         if (num == 0){
             resource_id = R.xml.level_select_bg_cannot_buy;
-            res.setTextColor(Color.parseColor("#999999"));
+            res.setTextColor(Color.parseColor("#555555"));
             if (StoredProgress.getInstance().getGoldAmount() >= Economist.getInstance().
                     price_map.get(StoredProgress.levelUpgKey).apply(buying_level_number - 1)){
                 resource_id = R.xml.level_select_bg_can_buy;
-                res.setTextColor(Color.parseColor("#00fe00"));
+                res.setTextColor(Color.parseColor("#005500"));
             }
         }
 
@@ -283,14 +286,118 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         res.setId(getRandomId());
         return res;
     }
-    LinearLayout generateHorLayout(){
+
+    ConstraintLayout generateBuyingTV(){
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                200,
+                200,
+                1
+        );
+
+        NumeratedTextView bgTextView = generateTV(0);
+
+        if (null == bgTextView){
+            return null;
+        }
+
+        ConstraintLayout constraintLayout = new ConstraintLayout(LevelSelectActivity.this);
+        //constraintLayout.setBackgroundColor(Color.GRAY);
+        constraintLayout.setLayoutParams(params);
+        constraintLayout.setId(getRandomId());
+//        constraintLayout.setMaxHeight(layoutHeight);
+//        constraintLayout.setMaxWidth(layoutHeight);
+
+        LinearLayout costLabel = generateCostLabel();
+        costLabel.setId(getRandomId());
+//        costLabel.setBackgroundColor(Color.GREEN);
+
+        constraintLayout.addView(bgTextView);
+        constraintLayout.addView(costLabel);
+
+        ConstraintSet set = new ConstraintSet();
+        set.clone(constraintLayout);
+
+        set.centerHorizontally(bgTextView.getId(), ConstraintSet.PARENT_ID);
+        set.centerVertically(bgTextView.getId(), ConstraintSet.PARENT_ID);
+
+        set.constrainWidth(bgTextView.getId(), 200);
+        set.constrainHeight(bgTextView.getId(), 200);
+
+        set.centerHorizontally(costLabel.getId(), ConstraintSet.PARENT_ID);
+        set.centerVertically(costLabel.getId(), ConstraintSet.PARENT_ID);
+
+        set.constrainWidth(costLabel.getId(), 200);
+        set.constrainHeight(costLabel.getId(), 50);
+
+        set.applyTo(constraintLayout);
+
+        return constraintLayout;
+    }
+
+    LinearLayout generateHorLayout(){
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT,
+//                1
+//        );
+        LinearLayout lo = new LinearLayout(this);
+        lo.setOrientation(LinearLayout.HORIZONTAL);
+        return lo;
+    }
+
+    LinearLayout generateCostLabel(){
+        LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                3
+        );
+        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(
+                30,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                5
+        );
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1
+        );
+        LinearLayout.LayoutParams loParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 1
         );
-        LinearLayout lo = new LinearLayout(this);
-        lo.setOrientation(LinearLayout.HORIZONTAL);
-        return lo;
+
+        LinearLayout wraping_lo = generateHorLayout();
+
+        LinearLayout inner_lo = generateHorLayout();
+
+        ImageView currencyIcon = new ImageView(LevelSelectActivity.this);
+        currencyIcon.setImageResource(R.drawable.coin_anim1);
+
+        TextView costLabel = new TextView(this);
+
+        String dataKey = StoredProgress.levelUpgKey;
+        int level_value = StoredProgress.getInstance().getValue(dataKey);
+        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                level_value
+        );
+        costLabel.setText(String.valueOf(level_cost));
+        //costLabel.setText(String.valueOf("32332"));
+        costLabel.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+        costLabel.setTextColor(Color.WHITE);
+        costLabel.setGravity(Gravity.FILL_VERTICAL);
+
+//        currencyIcon.setBackgroundColor(Color.GREEN);
+//        costLabel.setBackgroundColor(Color.RED);
+
+        inner_lo.addView(currencyIcon, iconParams);
+        inner_lo.addView(costLabel, labelParams);
+
+        Space[] spaces = {new Space(this), new Space(this)};
+        wraping_lo.addView(spaces[0], spaceParams);
+        wraping_lo.addView(inner_lo, loParams);
+        wraping_lo.addView(spaces[1], spaceParams);
+
+        return wraping_lo;
     }
 }

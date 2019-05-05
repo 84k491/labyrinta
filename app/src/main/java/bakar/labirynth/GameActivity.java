@@ -41,7 +41,6 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-BETA
     // TODO: 5/5/19 подписывать цену уровня в меню выбора уровня
-    // TODO: 5/4/19 ограничить максимальный левел апгрейдов
     // TODO: 5/5/19 settings menu switches + sfx switch
     // TODO: 5/5/19 bonus_pu sound
     // TODO: 5/5/19 sound volume optimization
@@ -49,9 +48,10 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/5/19 dialogue margins
     // TODO: 5/5/19 dialogue buttons margins
-    // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 main menu title position
     // TODO: 5/5/19 main menu buttons position
+    // TODO: 3/18/19 player, exit, coin sprites
+    // TODO: 5/5/19 lower resolution gui
 
     //NEW
     // TODO: 5/5/19 max level gz tutorial
