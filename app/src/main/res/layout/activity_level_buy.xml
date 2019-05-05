@@ -21,13 +21,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tw_level_buy_title"
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Are you sure you want to buy level size N?"
-            android:textSize="24sp" />
+            android:layout_height="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="20" />
+
+            <TextView
+                android:id="@+id/tw_level_buy_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Are you sure you want to buy level size N?"
+                android:textSize="24sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="20" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -106,6 +127,10 @@
                 android:layout_height="10dp"
                 android:layout_weight="10" />
         </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
     </LinearLayout>
 

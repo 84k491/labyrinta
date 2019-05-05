@@ -42,7 +42,6 @@ public class GameActivity extends Activity{
     // STEPS-TO-BETA
     //Todo: заблочить кнопку "назад"
     // TODO: 5/5/19 level initial globalScale
-    // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/5/19 bonus_pu sound
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/5/19 dialogue margins
@@ -53,8 +52,9 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 lower resolution gui
     // TODO: 5/5/19 check sound settings @ reboot
 
-    //NEW
+    //after beta
     // TODO: 5/5/19 max level gz tutorial
+    // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 убрать блок девайса по времени
     // TODO: 5/1/19 четверка не влезает в лейбл

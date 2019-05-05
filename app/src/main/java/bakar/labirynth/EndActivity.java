@@ -70,20 +70,19 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
         mainLayout = findViewById(R.id.end_layout);
 
-        mainLayout.addView(getSpace(), 2);
-        mainLayout.addView(getSpace(), 2);
+//        mainLayout.addView(getSpace(), 3);
+        mainLayout.addView(getSpace(), 3);
 
-        mainLayout.addView(getSpace(), 1);
-        mainLayout.addView(getChangingTextWithIcon(EndMenuItems.goldTotal), 1);
-        mainLayout.addView(getSpace(), 1);
-        mainLayout.addView(getChangingTextWithIcon(EndMenuItems.levelFinished), 1);
+        mainLayout.addView(getSpace(), 2);
+        mainLayout.addView(getChangingTextWithIcon(EndMenuItems.goldTotal), 2);
+        mainLayout.addView(getSpace(), 2);
+        mainLayout.addView(getChangingTextWithIcon(EndMenuItems.levelFinished), 2);
         if (goldEarnedByCoins != 0){
-            mainLayout.addView(getSpace(), 1);
-            mainLayout.addView(getChangingTextWithIcon(EndMenuItems.coinsPicked), 1);
+            mainLayout.addView(getSpace(), 2);
+            mainLayout.addView(getChangingTextWithIcon(EndMenuItems.coinsPicked), 2);
         }
-        mainLayout.addView(getSpace(), 1);
-        mainLayout.addView(getSpace(), 1);
-
+        mainLayout.addView(getSpace(), 2);
+        mainLayout.addView(getSpace(), 2);
 
 //        try{
 //            Drawable bg;

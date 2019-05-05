@@ -20,6 +20,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -28,7 +32,7 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="10" />
+                android:layout_weight="20" />
 
             <LinearLayout
                 android:id="@+id/lo_tutorial"
@@ -40,27 +44,45 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="10" />
+                android:layout_weight="20" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <Space
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="20" />
-
-            <Button
-                android:id="@+id/bt_tutorial_ok"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
                 android:layout_weight="1"
-                android:background="@drawable/tick_in_thin_circle" />
+                android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20" />
+
+                <Button
+                    android:id="@+id/bt_tutorial_ok"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/tick_in_thin_circle" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="40" />
+
         </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
