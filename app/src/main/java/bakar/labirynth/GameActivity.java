@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import static bakar.labirynth.StoredProgress.getInstance;
 import static bakar.labirynth.TutorialKey.BeginTutorial_1;
 import static bakar.labirynth.TutorialKey.BeginTutorial_2;
 import static bakar.labirynth.TutorialKey.BeginTutorial_3;
@@ -40,11 +41,9 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 5/5/19 подписывать цену уровня в меню выбора уровня
-    // TODO: 5/5/19 settings menu switches + sfx switch
-    // TODO: 5/5/19 bonus_pu sound
     // TODO: 5/5/19 sound volume optimization
-    // TODO: 5/5/19 menu gold counter needs to be wider
+    // TODO: 5/5/19 bonus_pu sound
+    // TODO: 5/5/19 level select menu gold counter needs to be wider
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/5/19 dialogue margins
     // TODO: 5/5/19 dialogue buttons margins
@@ -158,8 +157,8 @@ public class GameActivity extends Activity{
         setContentView(gameRenderer);
         Logger.getAnonymousLogger().info("GameActivity.init() end");
 
-        if (StoredProgress.getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialFirst)){
-            StoredProgress.getInstance().
+        if (getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialFirst)){
+            getInstance().
                     switchValueBoolean(StoredProgress.isNeedToShowTutorialFirst);
             Intent tutorialIntent = new Intent(this, TutorialActivity.class);
             tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(BeginTutorial_1));
@@ -180,14 +179,14 @@ public class GameActivity extends Activity{
         gameRenderer.buttons.get(0).onClick(); // center to player
         ((GameRenderer.PlayerFinder)gameRenderer.buttons.get(0)).instantAnimation();
 
-        if (StoredProgress.getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel)){
+        if (getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel)){
 
             String dataKey = StoredProgress.levelUpgKey;
-            int level_value = StoredProgress.getInstance().getValue(dataKey);
+            int level_value = getInstance().getValue(dataKey);
             int level_cost = Economist.getInstance().price_map.get(dataKey).apply(level_value);
 
-            if (StoredProgress.getInstance().getGoldAmount() >= level_cost){
-                StoredProgress.getInstance().
+            if (getInstance().getGoldAmount() >= level_cost){
+                getInstance().
                         switchValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel);
                 Intent tutorialIntent = new Intent(this, TutorialActivity.class);
                 tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(NextLevelBuyTutorial));
@@ -315,7 +314,7 @@ public class GameActivity extends Activity{
 
     void updateSettings(){
         sPref = getSharedPreferences("global", MODE_PRIVATE);
-        gameLogic.usesJoystick  = sPref.getBoolean("uses_joystick", true);
+        gameLogic.usesJoystick = StoredProgress.getInstance().getUsesJoystick();
         if (!gameLogic.usesJoystick){
             if (null == tiltController){
                 tiltController = new TiltController();

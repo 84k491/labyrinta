@@ -2,11 +2,13 @@ package bakar.labirynth;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.util.Xml;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,8 +24,12 @@ import java.util.function.Function;
 public class SettingsActivity extends Activity implements View.OnClickListener {
 
     Button joystick;
-    Button debug;
+    Button sounds;
     Button music;
+
+    TextView joystick_TextView;
+    TextView sounds_TextView;
+    TextView music_TextView;
     ConstraintLayout layout;
 
     @Override
@@ -32,8 +38,20 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
             case R.id.joystick_bt:
                 setState(joystick, StoredProgress.getInstance().switchUsesJoystick());
                 break;
-            case R.id.debug_bt:
-                setState(debug, StoredProgress.getInstance().switchIsBebug());
+            case R.id.sounds_bt:
+                SoundCore.inst().doPlaySounds = !SoundCore.inst().doPlaySounds;
+                setState(sounds, SoundCore.inst().doPlaySounds);
+                break;
+            case R.id.music_bt:
+                SoundCore.inst().doPlayMusic = !SoundCore.inst().doPlayMusic;
+                setState(music, SoundCore.inst().doPlayMusic);
+
+                if (SoundCore.inst().doPlayMusic){
+                    SoundCore.inst().playBackgroungMusicForced();
+                }
+                else{
+                    SoundCore.inst().pauseBackgroundMusicForced();
+                }
                 break;
         }
     }
@@ -48,21 +66,33 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
 
         setContentView(R.layout.activity_settings);
         joystick = findViewById(R.id.joystick_bt);
-        debug = findViewById(R.id.debug_bt);
+        sounds = findViewById(R.id.sounds_bt);
         music = findViewById(R.id.music_bt);
 
         setState(joystick, StoredProgress.getInstance().getUsesJoystick());
-        setState(debug, StoredProgress.getInstance().getIsBebug());
-        setState(music, true);
+        setState(sounds, SoundCore.inst().doPlaySounds);
+        setState(music, SoundCore.inst().doPlayMusic);
 
         joystick.setOnClickListener(this);
-        debug.setOnClickListener(this);
+        sounds.setOnClickListener(this);
         music.setOnClickListener(this);
+
+        joystick.setGravity(Gravity.FILL_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        sounds.setGravity(Gravity.FILL_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        music.setGravity(Gravity.FILL_VERTICAL | Gravity.CENTER_HORIZONTAL);
+
+        joystick.setTextSize(25.f);
+        sounds.setTextSize(25.f);
+        music.setTextSize(25.f);
+
+        joystick.setTextColor(Color.WHITE);
+        sounds.setTextColor(Color.WHITE);
+        music.setTextColor(Color.WHITE);
 
         joystick.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
-        debug.setTypeface(
+        sounds.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
         music.setTypeface(
@@ -70,18 +100,34 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
         );
 
         float text_size = 25.f;
-        ((TextView)findViewById(R.id.joystick_tw)).setTypeface(
+
+        joystick_TextView = ((TextView)findViewById(R.id.joystick_tw));
+        music_TextView = ((TextView)findViewById(R.id.music_tw));
+        sounds_TextView = ((TextView)findViewById(R.id.sounds_tw));
+
+        joystick_TextView.setGravity(Gravity.FILL_VERTICAL | Gravity.START);
+        sounds_TextView.setGravity(Gravity.FILL_VERTICAL | Gravity.START);
+        music_TextView.setGravity(Gravity.FILL_VERTICAL | Gravity.START);
+
+//        joystick_TextView.setBackgroundColor(Color.GREEN);
+//        music_TextView.setBackgroundColor(Color.GREEN);
+//        sounds_TextView.setBackgroundColor(Color.GREEN);
+
+        joystick_TextView.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
-        ((TextView)findViewById(R.id.joystick_tw)).setTextSize(text_size);
-        ((TextView)findViewById(R.id.music_tw)).setTypeface(
+        joystick_TextView.setTextSize(text_size);
+
+        music_TextView.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
-        ((TextView)findViewById(R.id.music_tw)).setTextSize(text_size);
-        ((TextView)findViewById(R.id.debug_tw)).setTypeface(
+        music_TextView.setTextSize(text_size);
+
+        sounds_TextView.setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
-        ((TextView)findViewById(R.id.debug_tw)).setTextSize(text_size);
+        sounds_TextView.setTextSize(text_size);
+
 
         findViewById(R.id.settings_imageview).setOnClickListener(new View.OnClickListener() {
             @Override

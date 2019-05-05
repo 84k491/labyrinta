@@ -22,6 +22,9 @@ public final class SoundCore {
     private SoundPool soundPool;
     private MediaPlayer mediaPlayer;
 
+    boolean doPlayMusic = true;
+    boolean doPlaySounds = true;
+
     private int started_activities_amount = 0;
 
     private Map<Sounds, Integer> resource_id_map = new HashMap<>();
@@ -51,6 +54,11 @@ public final class SoundCore {
     }
 
     void playSound(Sounds sound){
+
+        if (!doPlaySounds){
+            return;
+        }
+
         soundPool.play(sound_id_map.get(sound),
                 1,
                 1,
@@ -58,14 +66,28 @@ public final class SoundCore {
                 0,
                 1.f);
     }
+
     void playBackgroungMusic(){
         started_activities_amount++;
-        mediaPlayer.start();
+        if (doPlayMusic){
+            mediaPlayer.start();
+        }
     }
 
     void pauseBackgroundMusic(){
         started_activities_amount--;
-        if (0 == started_activities_amount && mediaPlayer.isPlaying()){
+        if (0 >= started_activities_amount && mediaPlayer.isPlaying()){
+            started_activities_amount = 0;
+            mediaPlayer.pause();
+        }
+    }
+
+    void playBackgroungMusicForced(){
+        mediaPlayer.start();
+    }
+
+    void pauseBackgroundMusicForced(){
+        if (mediaPlayer.isPlaying()){
             mediaPlayer.pause();
         }
     }
