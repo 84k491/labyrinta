@@ -60,13 +60,11 @@ public final class SoundCore {
     }
     void playBackgroungMusic(){
         started_activities_amount++;
-        Logger.getAnonymousLogger().info("###Sound### (start) started_activities_amount = " + started_activities_amount);
         mediaPlayer.start();
     }
 
     void pauseBackgroundMusic(){
         started_activities_amount--;
-        Logger.getAnonymousLogger().info("###Sound### (stop) started_activities_amount = " + started_activities_amount);
         if (0 == started_activities_amount && mediaPlayer.isPlaying()){
             mediaPlayer.pause();
         }

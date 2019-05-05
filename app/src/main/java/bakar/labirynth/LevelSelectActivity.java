@@ -174,10 +174,15 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 if (iter < lvl_amount)
                     hlo.addView(generateTV(++iter));
                 else
-                    if (iter++ == lvl_amount)
-                        hlo.addView(generateTV(0));
-                    else
+                    if (iter++ == lvl_amount){
+                        NumeratedTextView tw = generateTV(0);
+                        if (tw != null) {
+                            hlo.addView(tw);
+                        }
+                    }
+                    else{
                         hlo.addView(generateTV(-1));
+                    }
 
                     hlo.addView(getSpace());
             }
@@ -217,6 +222,14 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 200,
                 1
         );
+
+        int buying_level_number = 1 + StoredProgress.getInstance().getValue(
+                StoredProgress.levelUpgKey);
+
+        if (buying_level_number > Economist.maxLevel && 0 == num){
+            num = -1;
+        }
+
         NumeratedTextView res = new NumeratedTextView(this, num);
 
         if (num > 0){
@@ -227,9 +240,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 res.setText("0" + num);
             }
         }
-
-        int buying_level_number = 1 + StoredProgress.getInstance().getValue(
-                StoredProgress.levelUpgKey);
 
         if (0 == num){
             if (buying_level_number > 9){

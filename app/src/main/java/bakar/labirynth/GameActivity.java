@@ -40,12 +40,21 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 4/16/19 sounds
-    // TODO: 5/4/19 убрать из магазина бонусы, которые еще недоступны
-    // TODO: 5/4/19 ограничить максимальный левел
+    // TODO: 5/5/19 подписывать цену уровня в меню выбора уровня
+    // TODO: 5/4/19 ограничить максимальный левел апгрейдов
+    // TODO: 5/5/19 settings menu switches + sfx switch
+    // TODO: 5/5/19 bonus_pu sound
+    // TODO: 5/5/19 sound volume optimization
+    // TODO: 5/5/19 menu gold counter needs to be wider
+    // TODO: 5/5/19 currency on a same line with cost
+    // TODO: 5/5/19 dialogue margins
+    // TODO: 5/5/19 dialogue buttons margins
     // TODO: 3/18/19 player, exit, coin sprites
+    // TODO: 5/5/19 main menu title position
+    // TODO: 5/5/19 main menu buttons position
 
     //NEW
+    // TODO: 5/5/19 max level gz tutorial
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 убрать блок девайса по времени
     // TODO: 5/1/19 четверка не влезает в лейбл

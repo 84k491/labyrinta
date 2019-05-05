@@ -30,6 +30,12 @@ import java.util.Random;
 
 public class ShopActivity extends Activity implements View.OnClickListener {
 
+    // static //
+    int s_level_upg = 0;
+    int s_teleport_upg = 0;
+    int s_pathfinder_upg = 0;
+    ////////////
+
     LinearLayout layout;
     ArrayList<ShopItem> items = new ArrayList<>();
     Random random = new Random(6654345);
@@ -69,27 +75,16 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 BitmapFactory.decodeResource(getResources(), R.drawable.coin_anim1));
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
-        layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
-        ((ConstraintLayout)findViewById(R.id.cl_shop_act))
-                .addView(new Background(this), 0);
-
         gold = (TextView)findViewById(R.id.tw_gold_amount_shop);
         gold.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
         gold.setTextColor(Color.WHITE);
         updateGoldLabel();
 
-        setItems();
+        layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
+        ((ConstraintLayout)findViewById(R.id.cl_shop_act))
+                .addView(new Background(this), 0);
 
-        layout.addView(getSpace());
-        layout.addView(getSpace());
-        layout.addView(getSpace());
-
-        for (ShopItem item : items){
-            //item.resetValue();
-            layout.addView(item.spacesDecorator(item.getMainLayout()));
-            layout.addView(getSpace());
-            item.getMainLayout().setOnClickListener(this);
-        }
+        rebuildLayout();
 
         //layout.addView(getSpace());
 
@@ -118,6 +113,59 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         items.clear();
     }
 
+    boolean checkIfNeedToRebuild(){
+        int loc_level_upg = StoredProgress.getInstance().getValue(
+                StoredProgress.levelUpgKey);
+        int loc_teleport_upg = StoredProgress.getInstance().getValue(
+                StoredProgress.teleportUpgKey);
+        int loc_pathfinder_upg = StoredProgress.getInstance().getValue(
+                StoredProgress.pathfinderUpgKey);
+
+        if (loc_level_upg != s_level_upg){
+            s_level_upg = loc_level_upg;
+            if (loc_level_upg >= Economist.maxLevel){
+                return true;
+            }
+        }
+
+        if (loc_pathfinder_upg != s_pathfinder_upg){
+            s_pathfinder_upg = loc_pathfinder_upg;
+            if (loc_pathfinder_upg >= Economist.maxUpgPathfinder){
+                return true;
+            }
+        }
+
+        if (loc_teleport_upg != s_teleport_upg){
+            s_teleport_upg = loc_teleport_upg;
+            if (loc_teleport_upg >= Economist.maxUpgTeleport){
+                return true;
+            }
+        }
+
+        return false;
+    }
+    void rebuildLayout(){
+        if (null == layout){
+            return;
+        }
+
+        layout.removeAllViews();
+        items.clear();
+
+        setItems();
+
+        layout.addView(getSpace());
+        layout.addView(getSpace());
+        layout.addView(getSpace());
+
+        for (ShopItem item : items){
+            //item.resetValue();
+            layout.addView(item.spacesDecorator(item.getMainLayout()));
+            layout.addView(getSpace());
+            item.getMainLayout().setOnClickListener(this);
+        }
+    }
+
     @Override
     public void onClick(View view){
         if (view.getId() == R.id.bt_shop_back){
@@ -130,7 +178,12 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 item.getMainLayout().startAnimation(on_click_anim);
                 item.onTrigger();
                 updateGoldLabel();
+                break;
             }
+        }
+
+        if (checkIfNeedToRebuild()){
+            rebuildLayout();
         }
     }
 
@@ -145,13 +198,37 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     void setItems(){
-        items.add(new UpgrageItem(StoredProgress.getInstance().levelUpgKey));
-        items.add(new BonusBuyItem(StoredProgress.getInstance().teleportAmountKey));
-        items.add(new BonusBuyItem(StoredProgress.getInstance().pathfinderAmountKey));
-        items.add(new BonusBuyItem(StoredProgress.getInstance().pointerAmountKey));
-        items.add(new UpgrageItem(StoredProgress.getInstance().teleportUpgKey));
-        items.add(new UpgrageItem(StoredProgress.getInstance().pathfinderUpgKey));
-        items.add(new UpgrageItem(StoredProgress.getInstance().pointerUpgKey));
+        if (StoredProgress.getInstance().getValue(
+                StoredProgress.levelUpgKey
+        ) < Economist.maxLevel){
+            items.add(new UpgrageItem(StoredProgress.levelUpgKey));
+        }
+
+        if (!StoredProgress.getInstance().getValueBoolean(
+                StoredProgress.isNeedToShowTutorialTeleport
+        ) ){
+            if (StoredProgress.getInstance().getValue(
+                    StoredProgress.teleportUpgKey) < Economist.maxUpgTeleport){
+                items.add(new UpgrageItem(StoredProgress.teleportUpgKey));
+            }
+            items.add(new BonusBuyItem(StoredProgress.teleportAmountKey));
+        }
+
+        if (!StoredProgress.getInstance().getValueBoolean(
+                StoredProgress.isNeedToShowTutorialPathfinder
+        ) ){
+            if (StoredProgress.getInstance().getValue(
+                    StoredProgress.pathfinderUpgKey)  < Economist.maxUpgPathfinder){
+                items.add(new UpgrageItem(StoredProgress.pathfinderUpgKey));
+            }
+            items.add(new BonusBuyItem(StoredProgress.pathfinderAmountKey));
+        }
+        if (!StoredProgress.getInstance().getValueBoolean(
+                StoredProgress.isNeedToShowTutorialPointer
+        ) ){
+            items.add(new BonusBuyItem(StoredProgress.pointerAmountKey));
+            //items.add(new UpgrageItem(StoredProgress.getInstance().pointerUpgKey));
+        }
         items.add(new GoldBuyItem(3, 100));
         items.add(new GoldBuyItem(5,300));
         items.add(new GoldBuyItem(10,1000));
@@ -208,7 +285,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             result.setLayoutParams(layoutParams);
             result.addView(space1);
-            result.addView(getMainLayout());
+            result.addView(centerLO);
             result.addView(space2);
 
             return result;

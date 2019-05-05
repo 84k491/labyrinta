@@ -12,6 +12,10 @@ public class Economist {
 
     private final float coinCostAvg;
 
+    static final int maxLevel = 50;
+    static final int maxUpgPathfinder = 20;
+    static final int maxUpgTeleport = 10;
+
     private final Random random;
 
     private final float nextLevelHypotIncrementation = (float)(5.f * Math.sqrt(2));
