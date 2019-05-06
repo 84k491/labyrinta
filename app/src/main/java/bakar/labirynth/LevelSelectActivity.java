@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.constraint.ConstraintSet;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Xml;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -38,6 +40,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     TextView gold;
     Animation on_click_anim; //todo анимация не успевает показаться
     final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
+
+    int itemSizePx = 0;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -122,6 +126,12 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        itemSizePx = size.x / (1080 / 170);
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -175,7 +185,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
             hlo.addView(getSpace());
             for (int k = 0; k < row_volume; ++k){
                 if (iter < lvl_amount)
-                    hlo.addView(generateTV(++iter));
+                    hlo.addView(constraintLayoutWrap(generateTV(++iter)));
                 else
                     if (iter++ == lvl_amount){
 //                        NumeratedTextView tw = generateTV(0);
@@ -185,7 +195,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                         }
                     }
                     else{
-                        hlo.addView(generateTV(-1));
+                        hlo.addView(constraintLayoutWrap(generateTV(-1)));
                     }
 
                     hlo.addView(getSpace());
@@ -222,8 +232,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     NumeratedTextView generateTV(int num){
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                200,
-                200,
+                itemSizePx,
+                itemSizePx,
                 1
         );
 
@@ -288,10 +298,39 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         return res;
     }
 
+    ConstraintLayout constraintLayoutWrap(NumeratedTextView tv){
+        // этот метод помогает сохранить квадратный размер вне зависимости от разрешения
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                itemSizePx,
+                itemSizePx,
+                1
+        );
+
+        ConstraintLayout constraintLayout = new ConstraintLayout(LevelSelectActivity.this);
+        constraintLayout.setLayoutParams(params);
+        constraintLayout.setId(getRandomId());
+
+        constraintLayout.addView(tv);
+
+        ConstraintSet set = new ConstraintSet();
+        set.clone(constraintLayout);
+
+        set.centerHorizontally(tv.getId(), ConstraintSet.PARENT_ID);
+        set.centerVertically(tv.getId(), ConstraintSet.PARENT_ID);
+
+        set.constrainWidth(tv.getId(), itemSizePx);
+        set.constrainHeight(tv.getId(), itemSizePx);
+
+        set.applyTo(constraintLayout);
+
+        return constraintLayout;
+    }
+
     ConstraintLayout generateBuyingTV(){
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                200,
-                200,
+                itemSizePx,
+                itemSizePx,
                 1
         );
 
@@ -302,15 +341,11 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         }
 
         ConstraintLayout constraintLayout = new ConstraintLayout(LevelSelectActivity.this);
-        //constraintLayout.setBackgroundColor(Color.GRAY);
         constraintLayout.setLayoutParams(params);
         constraintLayout.setId(getRandomId());
-//        constraintLayout.setMaxHeight(layoutHeight);
-//        constraintLayout.setMaxWidth(layoutHeight);
 
         LinearLayout costLabel = generateCostLabel();
         costLabel.setId(getRandomId());
-//        costLabel.setBackgroundColor(Color.GREEN);
 
         constraintLayout.addView(bgTextView);
         constraintLayout.addView(costLabel);
@@ -321,14 +356,14 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         set.centerHorizontally(bgTextView.getId(), ConstraintSet.PARENT_ID);
         set.centerVertically(bgTextView.getId(), ConstraintSet.PARENT_ID);
 
-        set.constrainWidth(bgTextView.getId(), 200);
-        set.constrainHeight(bgTextView.getId(), 200);
+        set.constrainWidth(bgTextView.getId(), itemSizePx);
+        set.constrainHeight(bgTextView.getId(), itemSizePx);
 
         set.centerHorizontally(costLabel.getId(), ConstraintSet.PARENT_ID);
         set.centerVertically(costLabel.getId(), ConstraintSet.PARENT_ID);
 
-        set.constrainWidth(costLabel.getId(), 200);
-        set.constrainHeight(costLabel.getId(), 50);
+        set.constrainWidth(costLabel.getId(), itemSizePx);
+        set.constrainHeight(costLabel.getId(), itemSizePx / 4);
 
         set.applyTo(constraintLayout);
 

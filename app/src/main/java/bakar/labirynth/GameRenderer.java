@@ -392,7 +392,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Logger.getAnonymousLogger().info("GameRenderer.surfaceCreated() begin");
-        min_scale = .9f * getWidth() / (gameLogic.field.getxSize() * cellSize);
+        min_scale = .6f * getWidth() / (gameLogic.field.getxSize() * cellSize);
         max_scale = 6;
         while (getGlobalScale() < min_scale)
             camera.translate(0,0,10);
