@@ -46,7 +46,7 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/5/19 main menu title position
     // TODO: 5/5/19 main menu buttons position
-    // TODO: 5/5/19 lower resolution gui
+    // TODO: 5/5/19 any resolution gui
     // TODO: 5/5/19 check sound settings @ reboot
     // TODO: 3/18/19 player, exit, coin sprites
 

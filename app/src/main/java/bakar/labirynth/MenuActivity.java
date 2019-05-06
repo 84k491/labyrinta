@@ -3,15 +3,19 @@ package bakar.labirynth;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -24,7 +28,11 @@ public class MenuActivity extends Activity implements OnClickListener {
 
     boolean justLoadedState;
 
-    //Background background = new Background(this);
+    private TranslateAnimation keep_offset_anim;
+    private AlphaAnimation keep_inv_anim;
+    private TranslateAnimation title_move_anim;
+    private AlphaAnimation appear_anim;
+
     SharedPreferences sPref;
     ConstraintLayout layout;
     Button start;
@@ -58,7 +66,7 @@ public class MenuActivity extends Activity implements OnClickListener {
 
     void startLevelSelectActivity(){
         Intent intent = new Intent(this, LevelSelectActivity.class);
-        intent.putExtra("max_level_allowed", sPref.getInt("level_upg", 1));
+        intent.putExtra("max_level_allowed", sPref.getInt("level_upg", 1)); //fixme
         startActivityForResult(intent, 1);
     }
     void startGameActivity(int level_size){
@@ -128,13 +136,13 @@ public class MenuActivity extends Activity implements OnClickListener {
     protected void onResume(){
         super.onResume();
         loadData();
-        //System.gc();
-        if (justLoadedState)
+        if (justLoadedState){
+            setAnimations();
             startWelcomingAnimations();
+        }
     }
     @Override
     protected void onPause(){
-        saveData();
         super.onPause();
     }
     @Override
@@ -148,32 +156,52 @@ public class MenuActivity extends Activity implements OnClickListener {
         SoundCore.inst().releaseMP();
     }
 
-    void saveData() {
-//        sPref = getSharedPreferences("global", MODE_PRIVATE);
-//        SharedPreferences.Editor ed = sPref.edit();
-//        ed.commit(); //ed.apply();
-    }
     void loadData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
     }
-    void startWelcomingAnimations(){
-        Animation move_anim = AnimationUtils.loadAnimation(this, R.anim.keep_title_offset);
-        Animation inv_anim = AnimationUtils.loadAnimation(this, R.anim.keep_invisible);
-        title.startAnimation(move_anim);
 
-        start.startAnimation(inv_anim);
-        shop.startAnimation(inv_anim);
-        settings.startAnimation(inv_anim);
+    void setAnimations(){
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height_center = size.y / 4; // TODO: 5/6/19 узнать почему 4 а не 2
+
+        keep_offset_anim = new TranslateAnimation(
+                title.getX(),
+                title.getX(),
+                height_center,
+                height_center);
+        keep_offset_anim.setDuration(10000);
+        keep_offset_anim.setRepeatCount(1000);
+
+        keep_inv_anim = new AlphaAnimation(0.f,0.f);
+        keep_inv_anim.setDuration(10000);
+        keep_inv_anim.setRepeatCount(1000);
+
+        title_move_anim = new TranslateAnimation(
+                title.getX(),
+                title.getX(),
+                height_center,
+                title.getY());
+        title_move_anim.setDuration(2000);
+
+        appear_anim = new AlphaAnimation(0.0f, 1.0f);
+        appear_anim.setDuration(3000);
+        appear_anim.setStartOffset(700);
+    }
+
+    void startWelcomingAnimations(){
+        title.startAnimation(keep_offset_anim);
+
+        start.startAnimation(keep_inv_anim);
+        shop.startAnimation(keep_inv_anim);
+        settings.startAnimation(keep_inv_anim);
     }
     void startOnTouchAnimations(){
-        Animation move_anim = AnimationUtils.loadAnimation(this, R.anim.title_move);
-        Animation inv_anim = new AlphaAnimation(0.0f, 1.0f);
-        inv_anim.setDuration(3000);
-        inv_anim.setStartOffset(700);
-        title.startAnimation(move_anim);
+        title.startAnimation(title_move_anim);
 
-        start.startAnimation(inv_anim);
-        shop.startAnimation(inv_anim);
-        settings.startAnimation(inv_anim);
+        start.startAnimation(appear_anim);
+        shop.startAnimation(appear_anim);
+        settings.startAnimation(appear_anim);
     }
 }
