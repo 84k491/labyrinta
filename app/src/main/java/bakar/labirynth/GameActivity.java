@@ -33,7 +33,6 @@ public class GameActivity extends Activity{
 
     // TODO: 19.05.2018 rate this app
     // TODO: 4/20/19 плавное движение от акселерометра
-    // TODO: 4/20/19 заблочить поворот
     // TODO: 3/18/19 in-app purchases
     // TODO: 3/18/19 gold for video
     // TODO: 5/1/19 randomizer bonus
