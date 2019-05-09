@@ -40,8 +40,6 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 5/5/19 main menu buttons position
-    //Todo: заблочить кнопку "назад"
     // TODO: 5/5/19 bonus_pu sound
     // TODO: 5/8/19 white icons
     // TODO: 3/18/19 player, exit, coin sprites
@@ -191,6 +189,12 @@ public class GameActivity extends Activity{
                 startActivityForResult(tutorialIntent, 42);
             }
         }
+    }
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(this, ConfirmationActivity.class);
+        startActivityForResult(intent,
+                1);
     }
     @Override
     protected void onRestart(){

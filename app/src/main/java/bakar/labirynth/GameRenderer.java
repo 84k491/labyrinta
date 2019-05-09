@@ -1545,7 +1545,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         void onClick() {
-            //((Activity)getContext()).finish();
             Intent intent = new Intent(getContext(), ConfirmationActivity.class);
             ((Activity)getContext()).startActivityForResult(intent,
                     1);
