@@ -40,8 +40,6 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-BETA
     // TODO: 5/5/19 bonus_pu sound
-    // TODO: 5/10/19 Switch size in settings menu
-    // TODO: 5/10/19 shop icon @ end activity
     // TODO: 5/10/19 level up icon
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 check sound settings @ reboot
@@ -301,6 +299,14 @@ public class GameActivity extends Activity{
         if (resultCode == "settings_finished".hashCode()){
             updateSettings();
         }
+        if (resultCode == "result_shop".hashCode()){
+            saveData();
+            Intent intent1 = new Intent(this, GameActivity.class);
+            intent1.putExtra("startShop", true);
+            setResult(RESULT_OK, intent1);
+            finish();
+        }
+
     }
 
     void saveData() {

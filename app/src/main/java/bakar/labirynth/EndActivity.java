@@ -28,6 +28,8 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
     Button next;
     Button menu;
+    Button shop;
+
     LinearLayout mainLayout;
     SharedPreferences sPref;
     int startGoldAmount;
@@ -59,6 +61,10 @@ public class EndActivity extends Activity implements View.OnClickListener{
         next.setOnClickListener(this);
         menu = findViewById(R.id.bt_menu);
         menu.setOnClickListener(this);
+
+        shop = findViewById(R.id.bt_shop);
+        shop.setOnClickListener(this);
+
         //gold = findViewById(R.id.gold);
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         startGoldAmount = sPref.getInt("gold", 0);
@@ -189,6 +195,9 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 break;
             case R.id.bt_menu:
                 setResult("menu".hashCode());
+                break;
+            case R.id.bt_shop:
+                setResult("result_shop".hashCode());
                 break;
         }
         finish();

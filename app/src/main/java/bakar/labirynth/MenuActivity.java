@@ -74,7 +74,7 @@ public class MenuActivity extends Activity implements OnClickListener {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("seed", seed);
         intent.putExtra("level_size", level_size);
-        startActivity(intent);
+        startActivityForResult(intent, this.toString().hashCode());
     }
     void startSettingsActivity(){
         Intent intent = new Intent(this, SettingsActivity.class);
@@ -91,8 +91,14 @@ public class MenuActivity extends Activity implements OnClickListener {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK)
-            startGameActivity(data.getIntExtra("level_size", 1));
+        if (resultCode == RESULT_OK){
+            if (data.getBooleanExtra("startShop", false)){
+                startShopActivity();
+            }
+            else{
+                startGameActivity(data.getIntExtra("level_size", 1));
+            }
+        }
     }
 
     @Override
