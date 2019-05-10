@@ -41,6 +41,9 @@ public class GameActivity extends Activity{
     // STEPS-TO-BETA
     // TODO: 5/5/19 bonus_pu sound
     // TODO: 5/8/19 white icons
+    // TODO: 5/10/19 Switch size in settings menu
+    // TODO: 5/10/19 shop icon @ end activity
+    // TODO: 5/10/19 level up icon
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 check sound settings @ reboot
     // TODO: 5/5/19 check any resolution gui

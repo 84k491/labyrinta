@@ -95,37 +95,37 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Space
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="10dp"
-                android:layout_weight="10" />
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/bt_level_buy_no"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:background="@drawable/cross_in_thin_circle" />
 
             <Space
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="10dp"
-                android:layout_weight="10" />
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/bt_level_buy_yes"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:background="@drawable/tick_in_thin_circle" />
 
             <Space
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="10dp"
-                android:layout_weight="10" />
+                android:layout_weight="1" />
         </LinearLayout>
 
         <Space
