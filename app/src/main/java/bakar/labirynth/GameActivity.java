@@ -40,7 +40,6 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-BETA
     // TODO: 5/5/19 bonus_pu sound
-    // TODO: 5/8/19 white icons
     // TODO: 5/10/19 Switch size in settings menu
     // TODO: 5/10/19 shop icon @ end activity
     // TODO: 5/10/19 level up icon
@@ -269,7 +268,12 @@ public class GameActivity extends Activity{
         if (resultCode == "next".hashCode()){
             Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
             setContentView(R.layout.loading_screen);
-            showInterstitial();
+            if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
+                showInterstitial();
+            }
+            else{
+                goToNextLevel();
+            }
         }
         if (resultCode == "confirm_yes".hashCode()){
             saveData();

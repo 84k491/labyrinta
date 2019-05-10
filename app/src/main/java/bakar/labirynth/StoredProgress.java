@@ -22,7 +22,7 @@ class StoredProgress {
 
     static final String usesJoystickKey = "uses_joystick";
     static final String isDebugKey = "is_debug";
-    static final String isMusicOnKey = "isMusicOn";
+    static final String isMusicOnKey = "isMusicOn"; // FIXME: 5/10/19 use this
 
     static final String isNeedToShowTutorialFirst = "isNeedToShowTutorialFirst";
     static final String isNeedToShowTutorialPathfinder = "isNeedToShowTutorialPathfinder";
