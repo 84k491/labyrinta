@@ -1,9 +1,11 @@
 package bakar.labirynth;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class ConfirmationActivity extends Activity implements View.OnClickListener{
 
@@ -14,6 +16,9 @@ public class ConfirmationActivity extends Activity implements View.OnClickListen
 
         ((Button)findViewById(R.id.bt_confirm_no)).setOnClickListener(this);
         ((Button)findViewById(R.id.bt_confirm_yes)).setOnClickListener(this);
+
+        ((TextView)findViewById(R.id.tw_confirm_title)).setTypeface(
+                Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
     }
 
     @Override

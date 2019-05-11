@@ -2,6 +2,7 @@ package bakar.labirynth;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,7 +29,13 @@ public class LevelBuyActivity extends Activity implements View.OnClickListener {
                 "Are you sure you want to buy level size " + level_number + "?"
         );
 
+        ((TextView)findViewById(R.id.tw_level_buy_title)).setTypeface(
+                Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+
         ((TextView)findViewById(R.id.tw_level_cost)).setText(String.valueOf(level_cost));
+        ((TextView)findViewById(R.id.tw_level_cost)).setTypeface(
+                Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+
     }
 
     @Override
