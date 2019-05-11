@@ -201,7 +201,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         if (StoredProgress.getInstance().getValue(
                 StoredProgress.levelUpgKey
         ) < Economist.maxLevel){
-            items.add(new UpgrageItem(StoredProgress.levelUpgKey));
+            items.add(new LevelUpItem(StoredProgress.levelUpgKey));
         }
 
         if (!StoredProgress.getInstance().getValueBoolean(
@@ -247,7 +247,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         int costIconResource = R.drawable.coin_anim1;
         ImageView costIcon = null;
         int mainIconResource = -1;
-        ImageView mainIcon = null;
+        View mainIcon = null;
         float iconSizeCoef = .7f;
         TextView label_tw = null; // TODO: 3/27/19 rename
         TextView cost_tw = null;
@@ -514,6 +514,58 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         @Override
         ConstraintLayout getFinalIconLayout(){
             return addUpdArrowToLayout(addAmountToLayout(getMainIconLayout()));
+        }
+    }
+    class LevelUpItem extends UpgrageItem{
+        LevelUpItem(String dataKey){
+            super(dataKey);
+        }
+
+        @Override
+        ConstraintLayout getMainIconLayout(){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1
+            );
+
+            ConstraintLayout constraintLayout = new ConstraintLayout(ShopActivity.this);
+            //constraintLayout.setBackgroundColor(Color.GRAY);
+            constraintLayout.setLayoutParams(params);
+            constraintLayout.setId(getRandomId());
+            constraintLayout.setMaxHeight(layoutHeight);
+            constraintLayout.setMaxWidth(layoutHeight);
+
+            mainIcon = new TextView(ShopActivity.this);
+            mainIcon.setId(getRandomId());
+            ((TextView)mainIcon).setTextColor(Color.WHITE);
+            updateLabelText();
+            ((TextView)mainIcon).setTextSize(20.f);
+            ((TextView)mainIcon).setTypeface(
+                    Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            ((TextView)mainIcon).setGravity(Gravity.CENTER);
+            constraintLayout.addView(mainIcon);
+
+            ConstraintSet set = new ConstraintSet();
+            set.clone(constraintLayout);
+
+            set.centerHorizontally(mainIcon.getId(), ConstraintSet.PARENT_ID);
+            set.centerVertically(mainIcon.getId(), ConstraintSet.PARENT_ID);
+
+            set.constrainWidth(mainIcon.getId(), Math.round(layoutHeight * iconSizeCoef));
+            set.constrainHeight(mainIcon.getId(), Math.round(layoutHeight * iconSizeCoef));
+
+            set.applyTo(constraintLayout);
+            return constraintLayout;
+        }
+        @Override
+        void updateLabelText(){
+            //label_tw.setText(String.valueOf(getValue() + 1));
+            ((TextView)mainIcon).setText("Level size\n" + (getValue() + 1));
+        }
+        @Override
+        ConstraintLayout getFinalIconLayout(){
+            return getMainIconLayout();
         }
     }
     class GoldBuyItem extends ShopItem{
