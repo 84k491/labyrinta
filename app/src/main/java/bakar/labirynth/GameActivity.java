@@ -39,10 +39,10 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 5/5/19 bonus_pu sound
     // TODO: 5/10/19 level up icon
+    // TODO: 5/10/19 Fonts
+    // TODO: 5/10/19 rename
     // TODO: 3/18/19 player, exit, coin sprites
-    // TODO: 5/5/19 check sound settings @ reboot
     // TODO: 5/5/19 check any resolution gui
 
     //after beta

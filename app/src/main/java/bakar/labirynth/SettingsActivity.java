@@ -40,10 +40,17 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.sounds_bt:
                 SoundCore.inst().doPlaySounds = !SoundCore.inst().doPlaySounds;
+                SoundCore.inst().doPlayMusic = !SoundCore.inst().doPlayMusic;
+                StoredProgress.getInstance().setValue("isSoundsOn",
+                        !StoredProgress.getInstance().getValueBoolean("isSoundsOn")
+                );
                 setState(sounds, SoundCore.inst().doPlaySounds);
                 break;
             case R.id.music_bt:
                 SoundCore.inst().doPlayMusic = !SoundCore.inst().doPlayMusic;
+                StoredProgress.getInstance().setValue("isMusicOn",
+                        !StoredProgress.getInstance().getValueBoolean("isMusicOn")
+                );
                 setState(music, SoundCore.inst().doPlayMusic);
 
                 if (SoundCore.inst().doPlayMusic){

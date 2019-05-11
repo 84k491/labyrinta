@@ -44,6 +44,9 @@ public final class SoundCore {
         resource_id_map.put(Sounds.levelFinished, R.raw.level_finished);
         resource_id_map.put(Sounds.correct, R.raw.correct);
         resource_id_map.put(Sounds.incorrect, R.raw.incorrect);
+
+        doPlayMusic = StoredProgress.getInstance().getValueBoolean("isMusicOn");
+        doPlaySounds = StoredProgress.getInstance().getValueBoolean("isSoundsOn");
     }
 
     void loadSounds(Context context){

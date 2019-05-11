@@ -22,7 +22,8 @@ class StoredProgress {
 
     static final String usesJoystickKey = "uses_joystick";
     static final String isDebugKey = "is_debug";
-    static final String isMusicOnKey = "isMusicOn"; // FIXME: 5/10/19 use this
+    static final String isMusicOnKey = "isMusicOn";
+    static final String isSoundsOnKey = "isSoundsOn";
 
     static final String isNeedToShowTutorialFirst = "isNeedToShowTutorialFirst";
     static final String isNeedToShowTutorialPathfinder = "isNeedToShowTutorialPathfinder";
@@ -58,6 +59,12 @@ class StoredProgress {
                 sharedPreferences.getBoolean(isNeedToLightBonusButton, true));
         ed.putBoolean(isNeedToShowTutorialNextLevel,
                 sharedPreferences.getBoolean(isNeedToShowTutorialNextLevel, true));
+
+        ed.putBoolean(isMusicOnKey,
+                sharedPreferences.getBoolean(isMusicOnKey, true));
+        ed.putBoolean(isSoundsOnKey,
+                sharedPreferences.getBoolean(isSoundsOnKey, true));
+
         ed.apply();
     }
 
@@ -133,7 +140,7 @@ class StoredProgress {
         boolean result = sharedPreferences.getBoolean(usesJoystickKey, false);
         return result;
     }
-    boolean getIsBebug(){
+    boolean getIsDebug(){
         boolean result = sharedPreferences.getBoolean(isDebugKey, false);
         return result;
     }
@@ -143,7 +150,7 @@ class StoredProgress {
         setValue(usesJoystickKey, !result);
         return !result;
     }
-    boolean switchIsBebug(){
+    boolean switchIsDebug(){
         boolean result = sharedPreferences.getBoolean(isDebugKey, false);
         setValue(isDebugKey, !result);
         return !result;
