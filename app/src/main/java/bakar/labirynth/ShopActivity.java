@@ -229,9 +229,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             items.add(new BonusBuyItem(StoredProgress.pointerAmountKey));
             //items.add(new UpgrageItem(StoredProgress.getInstance().pointerUpgKey));
         }
-        items.add(new GoldBuyItem(3, 100));
-        items.add(new GoldBuyItem(5,300));
-        items.add(new GoldBuyItem(10,1000));
+//        items.add(new GoldBuyItem(3, 100));
+//        items.add(new GoldBuyItem(5,300));
+//        items.add(new GoldBuyItem(10,1000));
     }
     Space getSpace(){
         Space space = new Space(ShopActivity.this);

@@ -18,7 +18,7 @@
         android:layout_marginBottom="64dp"
         android:alpha="255"
         android:gravity="center|fill_horizontal"
-        android:text="L a b y r i n t h"
+        android:text="L a b y r i n t a"
         android:textColor="@android:color/background_light"
         android:textSize="36sp"
         android:textStyle="normal"
