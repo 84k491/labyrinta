@@ -138,8 +138,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.activity_level_select);
 
         mainLayout = findViewById(R.id.ll_level_select);
-        ((ConstraintLayout)findViewById(R.id.lsa_constraint_lo))
-                .addView(new Background(this), 0);
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         findViewById(R.id.bt_select_back).setOnClickListener(this);
@@ -227,7 +225,13 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         return space;
     }
     private int getRandomId(){
-        return random.nextInt(); // TODO: 3/9/19 make unique
+        int id = random.nextInt();
+        if (findViewById(id) != null){
+            return getRandomId();
+        }
+        else{
+            return id;
+        }
     }
     NumeratedTextView generateTV(int num){
 

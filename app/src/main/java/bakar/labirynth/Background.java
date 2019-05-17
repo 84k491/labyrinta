@@ -14,9 +14,11 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,18 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
 
     public Background(Context _context){
         super(_context);
+        getHolder().addCallback(this);
+        getHolder().setFormat(PixelFormat.RGBA_8888);
+    }
+
+    public Background(Context _context, AttributeSet set, int defStyle){
+        super(_context, set, defStyle);
+        getHolder().addCallback(this);
+        getHolder().setFormat(PixelFormat.RGBA_8888);
+    }
+
+    public Background(Context _context, AttributeSet set){
+        super(_context, set);
         getHolder().addCallback(this);
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }

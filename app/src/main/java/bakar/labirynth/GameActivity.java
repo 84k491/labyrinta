@@ -50,6 +50,7 @@ public class GameActivity extends Activity{
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 убрать блок девайса по времени
     // TODO: 5/1/19 четверка не влезает в лейбл
+    // TODO: 5/14/19 отклик на кнопки 
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;

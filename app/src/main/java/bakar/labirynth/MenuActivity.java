@@ -125,7 +125,6 @@ public class MenuActivity extends Activity implements OnClickListener {
         shop = findViewById(R.id.shop_bt);
         shop.setOnClickListener(this);
 
-        layout.addView(new Background(this), 0);
         title.setTypeface(Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf"));
 
         SoundCore.inst().loadSounds(this);

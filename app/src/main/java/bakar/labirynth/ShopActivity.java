@@ -81,12 +81,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         updateGoldLabel();
 
         layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
-        ((ConstraintLayout)findViewById(R.id.cl_shop_act))
-                .addView(new Background(this), 0);
 
         rebuildLayout();
-
-        //layout.addView(getSpace());
 
         findViewById(R.id.bt_shop_back).setOnClickListener(this);
     }
