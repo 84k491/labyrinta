@@ -33,6 +33,8 @@ public class MenuActivity extends Activity implements OnClickListener {
     private TranslateAnimation title_move_anim;
     private AlphaAnimation appear_anim;
 
+    private int touched_view_id;
+
     SharedPreferences sPref;
     ConstraintLayout layout;
     Button start;
@@ -40,15 +42,11 @@ public class MenuActivity extends Activity implements OnClickListener {
     Button shop;
     TextView title;
 
-    @Override
-    public void onClick(View view) {
-        if (justLoadedState){
-            justLoadedState = false;
-            startOnTouchAnimations();
-        }
-        else
-        {
-            switch (view.getId()){
+    Animation on_click_anim;
+    Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+            switch (touched_view_id){
                 case R.id.start:
                     //startGameActivity();
                     startLevelSelectActivity();
@@ -60,6 +58,30 @@ public class MenuActivity extends Activity implements OnClickListener {
                     startShopActivity();
                     break;
                 default: break;
+            }
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {}
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {}
+    };
+
+    @Override
+    public void onClick(View view) {
+        touched_view_id = view.getId();
+
+        if (justLoadedState){
+            justLoadedState = false;
+            startOnTouchAnimations();
+        }
+        else
+        {
+            if (touched_view_id == R.id.start ||
+                touched_view_id == R.id.settings_bt ||
+                touched_view_id == R.id.shop_bt){
+                view.startAnimation(on_click_anim);
             }
         }
     }
@@ -126,6 +148,9 @@ public class MenuActivity extends Activity implements OnClickListener {
         shop.setOnClickListener(this);
 
         title.setTypeface(Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf"));
+
+        on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_menu_button_tap);
+        on_click_anim.setAnimationListener(animationListener);
 
         SoundCore.inst().loadSounds(this);
     }

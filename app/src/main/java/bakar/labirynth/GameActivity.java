@@ -39,7 +39,8 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
-    // TODO: 5/10/19 rename
+    // TODO: 5/18/19 Название съезжает если выйти домой в самом начале
+    // TODO: 5/18/19 переодпределить кнопку назад в диалоге
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 check any resolution gui
 

@@ -38,8 +38,52 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     Random random = new Random(274412536);
     LinearLayout mainLayout;
     TextView gold;
-    Animation on_click_anim; //todo анимация не успевает показаться
+    Animation on_click_anim;
     final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
+
+    private int touched_view_id;
+
+    Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+            for (NumeratedTextView tv:textViews){
+                if (tv.getId() == touched_view_id){
+                    tv.startAnimation(on_click_anim);
+
+                    // при нажатии на "0" происходит покупка следующего размера
+                    if (tv.number == 0){
+                        String dataKey = StoredProgress.levelUpgKey;
+                        int level_value = StoredProgress.getInstance().getValue(dataKey);
+                        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                                level_value
+                        );
+
+                        if (StoredProgress.getInstance().getGoldAmount() >= level_cost){
+
+                            Intent intent = new Intent(LevelSelectActivity.this, LevelBuyActivity.class);
+                            intent.putExtra("level_number", level_value + 1);
+                            intent.putExtra("level_cost", level_cost);
+                            startActivityForResult(intent, 42);
+                        }
+                    }
+
+                    if (tv.number > 0){
+                        Intent intent = new Intent(LevelSelectActivity.this, LevelSelectActivity.class);
+                        intent.putExtra("level_size", tv.number);
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {}
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {}
+    };
 
     int itemSizePx = 0;
 
@@ -71,6 +115,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     @Override
     public void onClick(View view){
+        touched_view_id = view.getId();
+
         if (view.getId() == R.id.bt_select_back){
             Intent intent = new Intent(this, LevelSelectActivity.class);
             intent.putExtra("level_size", -1);
@@ -78,34 +124,9 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
             finish();
         }
 
-        for (NumeratedTextView tv:textViews){
+        for (NumeratedTextView tv : textViews){
             if (tv.getId() == view.getId()){
-                tv.startAnimation(on_click_anim);
-
-                // при нажатии на "0" происходит покупка следующего размера
-                if (tv.number == 0){
-                    String dataKey = StoredProgress.levelUpgKey;
-                    int level_value = StoredProgress.getInstance().getValue(dataKey);
-                    int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                            level_value
-                    );
-
-                    if (StoredProgress.getInstance().getGoldAmount() >= level_cost){
-
-                        Intent intent = new Intent(this, LevelBuyActivity.class);
-                        intent.putExtra("level_number", level_value + 1);
-                        intent.putExtra("level_cost", level_cost);
-                        startActivityForResult(intent, 42);
-                    }
-                }
-
-                if (tv.number > 0){
-                    Intent intent = new Intent(this, LevelSelectActivity.class);
-                    intent.putExtra("level_size", tv.number);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
-                break;
+                view.startAnimation(on_click_anim);
             }
         }
     }
@@ -138,7 +159,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.activity_level_select);
 
         mainLayout = findViewById(R.id.ll_level_select);
-        on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         findViewById(R.id.bt_select_back).setOnClickListener(this);
 
@@ -155,6 +175,9 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         for (NumeratedTextView tv : textViews){
             tv.setOnClickListener(this);
         }
+
+        on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_menu_button_tap);
+        on_click_anim.setAnimationListener(animationListener);
     }
 
     @Override
