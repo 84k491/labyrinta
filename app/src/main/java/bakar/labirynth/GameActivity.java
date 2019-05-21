@@ -39,8 +39,9 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-BETA
+    // TODO: 5/19/19 не работает кнопка "магазин" в endMenu
     // TODO: 5/18/19 Название съезжает если выйти домой в самом начале
-    // TODO: 5/18/19 переодпределить кнопку назад в диалоге
+    // TODO: 5/19/19 low res pointer sprite
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 check any resolution gui
 
@@ -50,8 +51,7 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 убрать блок девайса по времени
-    // TODO: 5/1/19 четверка не влезает в лейбл
-    // TODO: 5/14/19 отклик на кнопки 
+    // TODO: 5/14/19 отклик на кнопки
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;

@@ -78,8 +78,8 @@ public class TutorialActivity extends Activity {
         );
         text_map.put(TutorialKey.PointerTutorial,
                 "You picked up a Pointer bonus!\n" +
-                "It's points to exit when used.\n" +
-                "You can buy more in a shop."
+                "It points to exit when used.\n" +
+                "You can buy more in the shop."
         );
         text_map.put(TutorialKey.TeleportTutorial,
                 "You picked up a Teleport bonus!\n" +

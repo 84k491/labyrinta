@@ -47,7 +47,8 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
     @Override
     public void onBackPressed(){
-        //doNothing()
+        setResult("menu".hashCode());
+        finish();
     }
 
     @Override

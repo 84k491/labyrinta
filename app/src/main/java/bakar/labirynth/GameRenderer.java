@@ -1251,20 +1251,20 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void setFloor(){
             if (null != getListByName("Floor"))
                 return;
-            BitmapList list = new BitmapList("Floor");
-
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.floor));
-
-            add(list);
+//            BitmapList list = new BitmapList("Floor");
+//
+//            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.floor));
+//
+//            add(list);
         }
         void setWall(){
             if (null != getListByName("Wall"))
                 return;
-            BitmapList list = new BitmapList("Wall");
-
-            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.wall));
-
-            add(list);
+//            BitmapList list = new BitmapList("Wall");
+//
+//            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.wall));
+//
+//            add(list);
         }
         void setPlayer(){
             if (null != getListByName("Player"))

@@ -48,7 +48,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     void setIdMap(){
         id_map = new HashMap<>();
 
-        id_map.put(StoredProgress.levelUpgKey, R.drawable.level_up);
+        id_map.put(StoredProgress.levelUpgKey, R.drawable.green_arrow);
 
         id_map.put(StoredProgress.teleportAmountKey, R.drawable.teleport);
         id_map.put(StoredProgress.teleportUpgKey, R.drawable.teleport);
