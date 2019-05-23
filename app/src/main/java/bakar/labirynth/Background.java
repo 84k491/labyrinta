@@ -75,6 +75,13 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
         private SurfaceHolder surfaceHolder;
         Random random;
 
+        private long prevDrawTime = 0;
+        private long redrawPeriod = 70; // milliS // microS
+
+        private long getTime(){
+            return System.nanoTime() / 1_000_000;
+        }
+
         RenderThread(){
             random = new Random(System.currentTimeMillis());
 
@@ -169,22 +176,33 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
             boolean isCanvasLocked = false;
 
             while (running) {
-                try {
-                    if (!isCanvasLocked){
-                        canvas = surfaceHolder.lockCanvas();
-                        isCanvasLocked = true;
-                        if (canvas == null){
-                            isCanvasLocked = false;
-                            continue;
+                if (getTime() - prevDrawTime > redrawPeriod) {
+                    prevDrawTime = getTime();
+                    try {
+                        if (!isCanvasLocked){
+                            canvas = surfaceHolder.lockCanvas();
+                            isCanvasLocked = true;
+                            if (canvas == null){
+                                isCanvasLocked = false;
+                                continue;
+                            }
+                            synchronized (surfaceHolder){
+                                onDraw(canvas);
+                            }
                         }
-                        synchronized (surfaceHolder){
-                            onDraw(canvas);
+                    } finally {
+                        if (canvas != null) {
+                            surfaceHolder.unlockCanvasAndPost(canvas);
+                            isCanvasLocked = false;
                         }
                     }
-                } finally {
-                    if (canvas != null) {
-                        surfaceHolder.unlockCanvasAndPost(canvas);
-                        isCanvasLocked = false;
+                }
+                else{
+                    try {
+                        Thread.sleep(1);
+                    }
+                    catch (InterruptedException e){
+                        e.printStackTrace();
                     }
                 }
             }

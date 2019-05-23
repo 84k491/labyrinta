@@ -50,7 +50,7 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
-    // TODO: 5/1/19 убрать блок девайса по времени
+    // TODO: 5/1/19 убрать блок девайса по времени surfaceHolder setKeepScreenOn()
     // TODO: 5/14/19 отклик на кнопки
 
     GameRenderer gameRenderer;
