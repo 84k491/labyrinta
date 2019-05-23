@@ -166,15 +166,25 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
         @Override
         public void run() {
             Canvas canvas = new Canvas();
+            boolean isCanvasLocked = false;
+
             while (running) {
                 try {
-                    canvas = surfaceHolder.lockCanvas(null);
-                    if (canvas == null)
-                        continue;
-                    onDraw(canvas);
+                    if (!isCanvasLocked){
+                        canvas = surfaceHolder.lockCanvas();
+                        isCanvasLocked = true;
+                        if (canvas == null){
+                            isCanvasLocked = false;
+                            continue;
+                        }
+                        synchronized (surfaceHolder){
+                            onDraw(canvas);
+                        }
+                    }
                 } finally {
                     if (canvas != null) {
                         surfaceHolder.unlockCanvasAndPost(canvas);
+                        isCanvasLocked = false;
                     }
                 }
             }
