@@ -23,10 +23,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class Background extends SurfaceView implements SurfaceHolder.Callback{
 
-    RenderThread renderThread;
+    BgRenderThread renderThread;
     private RenderScript rs = RenderScript.create(getContext());
 
     public Background(Context _context){
@@ -48,16 +49,20 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Logger.getAnonymousLogger().info("Background surfaceChanged()");
+    }
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        renderThread = new RenderThread();
+        Logger.getAnonymousLogger().info("Background surfaceCreated()");
+        renderThread = new BgRenderThread();
         renderThread.setHolder(getHolder());
         renderThread.setRunning(true);
         renderThread.start();
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        Logger.getAnonymousLogger().info("Background surfaceDestroyed()");
         boolean retry = true;
         renderThread.setRunning(false);
         while (retry) {
@@ -69,20 +74,21 @@ public class Background extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    class RenderThread extends Thread{
+    class BgRenderThread extends Thread{
 
         boolean running = false;
         private SurfaceHolder surfaceHolder;
         Random random;
 
         private long prevDrawTime = 0;
-        private long redrawPeriod = 70; // milliS // microS
+        private long redrawPeriod = 30; // milliS // microS
 
         private long getTime(){
             return System.nanoTime() / 1_000_000;
         }
 
-        RenderThread(){
+        BgRenderThread(){
+            Logger.getAnonymousLogger().info("BGRenderThread ctor");
             random = new Random(System.currentTimeMillis());
 
             BgResources.inst().dotPaint.setColor(Color.argb(255,255,255,255));

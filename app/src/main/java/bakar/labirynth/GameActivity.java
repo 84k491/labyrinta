@@ -171,8 +171,7 @@ public class GameActivity extends Activity{
 
         gameRenderer.prepareNewLevel();
 
-        gameRenderer.buttons.get(0).onClick(); // center to player
-        ((GameRenderer.PlayerFinder)gameRenderer.buttons.get(0)).instantAnimation();
+        gameRenderer.centerCameraTo(new CPoint.Game(0,0));
 
         if (getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel)){
 

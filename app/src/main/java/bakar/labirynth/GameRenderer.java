@@ -14,6 +14,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -263,6 +264,41 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         return new PointF(values[2], values[5]);
     }
 
+    void centerCameraTo(CPoint.Game pt){
+        CPoint.Game old_center = screen2game(new CPoint.Screen(getWidth() / 2.f,
+                getHeight() / 2.f));
+
+        PointF offset = new PointF((pt.x - old_center.x) * getGlobalScale(),
+                (pt.y - old_center.y) * getGlobalScale());
+
+        changeOffset(offset);
+    }
+    void centerCameraBetweenPlayerExit(){
+        PointF ofset = new PointF();
+        ofset.x = gameLogic.exitCoords().x;
+        ofset.y = gameLogic.exitCoords().y;
+        ofset.x -= gameLogic.playerCoords().x;
+        ofset.y -= gameLogic.playerCoords().y;
+
+        CPoint.Game result = new CPoint.Game();
+        result.x = gameLogic.playerCoords().x + ofset.x / 2.f;
+        result.y = gameLogic.playerCoords().y + ofset.y / 2.f;
+
+        centerCameraTo(result);
+    }
+
+    boolean isPlayerAndExitAtScreen(){
+        PointF ofseted_exit = new PointF();
+        ofseted_exit.x = gameLogic.exitCoords().x;
+        ofseted_exit.y = gameLogic.exitCoords().y;
+        ofseted_exit.x -= gameLogic.playerCoords().x;
+        ofseted_exit.y -= gameLogic.playerCoords().y;
+        ofseted_exit.x = Math.abs(ofseted_exit.x);
+        ofseted_exit.y = Math.abs(ofseted_exit.y);
+
+        return ofseted_exit.x < getWidth() && ofseted_exit.y < getHeight();
+    }
+
     // Converters /////////////////////////////////////////////////////////////////////////////////
     public CPoint.Game screen2game(CPoint.Screen value){
         CPoint.Game result = new CPoint.Game();
@@ -388,7 +424,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Logger.getAnonymousLogger().info("GameRenderer.surfaceChanged()");
+    }
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Logger.getAnonymousLogger().info("GameRenderer.surfaceCreated() begin");
@@ -402,8 +440,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             CPoint.Screen pos1 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 2);
             buttons.add(new PlayerFinder(pos1, rad1));
         }
-        buttons.get(0).onClick();
-        ((PlayerFinder)buttons.get(0)).instantAnimation(); //Button.class.getClasses()
+
+
+        if (isPlayerAndExitAtScreen()){
+            centerCameraBetweenPlayerExit();
+        }
+        else{
+            centerCameraTo(gameLogic.playerCoords());
+        }
 
         if (buttons.size() < 2) {
             CPoint.Screen pos2 = new CPoint.Screen(rad1 * 2, getHeight() - rad1 * 5);
@@ -442,16 +486,17 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         renderThread.is_waiting_4_surface = true;
-        Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed()");
-//        boolean retry = true;
-//        renderThread.setRunning(false);
-//        while (retry) {
-//            try {
-//                renderThread.join();
-//                retry = false;
-//            } catch (InterruptedException e) {
-//            }
-//        }
+        Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() begin");
+        boolean retry = true;
+        renderThread.setRunning(false);
+        while (retry) {
+            try {
+                renderThread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+            }
+        }
+        Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() end");
     }
 
     private class RenderThread extends Thread{
@@ -1042,6 +1087,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                         if (canvas != null) {
                             surfaceHolder.unlockCanvasAndPost(canvas);
                         }
+                    }
+                }
+                else{
+                    try {
+                        Thread.sleep(1);
+                    }
+                    catch (InterruptedException e){
+                        e.printStackTrace();
                     }
                 }
             }
