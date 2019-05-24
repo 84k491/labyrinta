@@ -25,53 +25,55 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class Background extends SurfaceView implements SurfaceHolder.Callback{
+public class Background extends SurfaceView{
 
     BgRenderThread renderThread;
+    SurfaceHolder.Callback callback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            Logger.getAnonymousLogger().info("Background surfaceChanged()");
+        }
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            Logger.getAnonymousLogger().info("Background surfaceCreated()");
+            renderThread = new BgRenderThread();
+            renderThread.setHolder(getHolder());
+            renderThread.setRunning(true);
+            renderThread.start();
+        }
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            Logger.getAnonymousLogger().info("Background surfaceDestroyed()");
+            boolean retry = true;
+            renderThread.setRunning(false);
+            while (retry) {
+                try {
+                    renderThread.join();
+                    retry = false;
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    };
+
     private RenderScript rs = RenderScript.create(getContext());
 
     public Background(Context _context){
         super(_context);
-        getHolder().addCallback(this);
+        getHolder().addCallback(callback);
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }
 
     public Background(Context _context, AttributeSet set, int defStyle){
         super(_context, set, defStyle);
-        getHolder().addCallback(this);
+        getHolder().addCallback(callback);
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }
 
     public Background(Context _context, AttributeSet set){
         super(_context, set);
-        getHolder().addCallback(this);
+        getHolder().addCallback(callback);
         getHolder().setFormat(PixelFormat.RGBA_8888);
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Logger.getAnonymousLogger().info("Background surfaceChanged()");
-    }
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        Logger.getAnonymousLogger().info("Background surfaceCreated()");
-        renderThread = new BgRenderThread();
-        renderThread.setHolder(getHolder());
-        renderThread.setRunning(true);
-        renderThread.start();
-    }
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        Logger.getAnonymousLogger().info("Background surfaceDestroyed()");
-        boolean retry = true;
-        renderThread.setRunning(false);
-        while (retry) {
-            try {
-                renderThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-            }
-        }
     }
 
     class BgRenderThread extends Thread{
