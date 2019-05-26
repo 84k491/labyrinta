@@ -487,15 +487,15 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceDestroyed(SurfaceHolder holder) {
         renderThread.is_waiting_4_surface = true;
         Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() begin");
-        boolean retry = true;
-        renderThread.setRunning(false);
-        while (retry) {
-            try {
-                renderThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-            }
-        }
+//        boolean retry = true;
+//        renderThread.setRunning(false);
+//        while (retry) {
+//            try {
+//                renderThread.join();
+//                retry = false;
+//            } catch (InterruptedException e) {
+//            }
+//        }
         Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() end");
     }
 

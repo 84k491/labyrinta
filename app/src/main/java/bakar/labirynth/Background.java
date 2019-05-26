@@ -60,18 +60,21 @@ public class Background extends SurfaceView{
 
     public Background(Context _context){
         super(_context);
+        setZOrderOnTop(true);
         getHolder().addCallback(callback);
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }
 
     public Background(Context _context, AttributeSet set, int defStyle){
         super(_context, set, defStyle);
+        setZOrderOnTop(true);
         getHolder().addCallback(callback);
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }
 
     public Background(Context _context, AttributeSet set){
         super(_context, set);
+        setZOrderOnTop(true);
         getHolder().addCallback(callback);
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }
@@ -144,7 +147,8 @@ public class Background extends SurfaceView{
             BgResources.inst().backgroundBitmap = blured;
         }
         void drawBackground(Canvas canvas){
-            canvas.drawBitmap(BgResources.inst().backgroundBitmap, BgResources.inst().bgScaleMatrix, BgResources.inst().common);
+            canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);
+            //canvas.drawBitmap(BgResources.inst().backgroundBitmap, BgResources.inst().bgScaleMatrix, BgResources.inst().common);
         }
         void drawDotBitmap(Canvas canvas, Bitmap bmp, CPoint.Screen pos){
             BgResources.inst().translate_matrix.reset();
