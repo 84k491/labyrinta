@@ -28,6 +28,7 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.AttributeSet;
 import android.util.Pair;
 import android.util.Range;
 import android.view.MotionEvent;
@@ -89,20 +90,48 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     ArrayList<Button> buttons = new ArrayList<>();
     ArrayList<PickUpAnimation> pickUpAnimations = new ArrayList<>();
 
-    public GameRenderer(Context _context, GameLogic _gameLogic) {
+    public GameRenderer(Context _context) {
         super(_context);
-        Logger.getAnonymousLogger().info("GameRenderer.ctor begin");
+        Logger.getAnonymousLogger().info("GameRenderer.ctor 1p begin");
+        setZOrderOnTop(true);
         context = _context;
         camera.setLocation(0,0,10);
         camera.save();
         getHolder().addCallback(this);
         getHolder().setFormat(PixelFormat.RGBA_8888);
 
-        gameLogic = _gameLogic;
+        renderThread = new RenderThread();
+        renderThread.start();
+        Logger.getAnonymousLogger().info("GameRenderer.ctor 1p end");
+    }
+
+    public GameRenderer(Context _context, AttributeSet set, int defStyle){
+        super(_context, set, defStyle);
+        Logger.getAnonymousLogger().info("GameRenderer.ctor 3p begin");
+        setZOrderOnTop(true);
+        context = _context;
+        camera.setLocation(0,0,10);
+        camera.save();
+        getHolder().addCallback(this);
+        getHolder().setFormat(PixelFormat.RGBA_8888);
 
         renderThread = new RenderThread();
         renderThread.start();
-        Logger.getAnonymousLogger().info("GameRenderer.ctor end");
+        Logger.getAnonymousLogger().info("GameRenderer.ctor 3p end");
+    }
+    public GameRenderer(Context _context, AttributeSet set){
+        super(_context, set);
+        Logger.getAnonymousLogger().info("GameRenderer.ctor 2p begin");
+        setZOrderOnTop(true);
+        context = _context;
+        camera.setLocation(0,0,10);
+        camera.save();
+        getHolder().addCallback(this);
+        getHolder().setFormat(PixelFormat.RGBA_8888);
+
+        renderThread = new RenderThread();
+        renderThread.start();
+        Logger.getAnonymousLogger().info("GameRenderer.ctor 2p end");
     }
     void addPickUpAnimation(CPoint.Game pointF, String text){
         pickUpAnimations.add(new PickUpAnimation(pointF, text));
@@ -977,9 +1006,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(fogBitmap, Ematrix, fog);
         }
         void drawBackground(Canvas canvas){
-            canvas.drawBitmap(BgResources.inst().backgroundBitmap,
-                    BgResources.inst().bgScaleMatrix,
-                    common);
+//            canvas.drawBitmap(BgResources.inst().backgroundBitmap,
+//                    BgResources.inst().bgScaleMatrix,
+//                    common);
+            canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);
 //            canvas.drawRect(0, 0, getWidth(), getHeight(), common);
         }
 
@@ -993,9 +1023,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawBackground(canvas);
             profiler.stop("BG");
 
-            profiler.start("Dots");
-            drawDots(canvas);
-            profiler.stop("Dots");
+//            profiler.start("Dots");
+//            drawDots(canvas);
+//            profiler.stop("Dots");
 
             // отрисовка игровых объектов в игровых координатах
             camera.applyToCanvas(canvas);

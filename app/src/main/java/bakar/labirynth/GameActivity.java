@@ -58,7 +58,7 @@ public class GameActivity extends Activity{
     CustomTouchListener touchListener;
     SharedPreferences sPref;
     TiltController tiltController;
-    ConstraintLayout mainLayout;
+    ConstraintLayout gameLayout;
     private InterstitialAd mInterstitialAd;
 
     Point difficultyToActualSize(int lvl_difficulty){
@@ -90,9 +90,11 @@ public class GameActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState){
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        Logger.getAnonymousLogger().info("GameActivity.onCreate()");
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().setFormat(PixelFormat.RGBA_8888);
+        Logger.getAnonymousLogger().info("GameActivity.onCreate() setContentView(R.layout.loading_screen)");
         setContentView(R.layout.loading_screen);
 
         // todo использовать синглтон
@@ -102,12 +104,10 @@ public class GameActivity extends Activity{
             tiltController = new TiltController();
         }
 
-        Logger.getAnonymousLogger().info("GameActivity.onCreate()");
     }
 
     void init(){
         Logger.getAnonymousLogger().info("GameActivity.init() begin");
-        mainLayout = new ConstraintLayout(this);
 
         Intent intent = getIntent();
         sPref = getSharedPreferences("global", MODE_PRIVATE);
@@ -123,9 +123,8 @@ public class GameActivity extends Activity{
             gameLogic.tiltControler = tiltController;
         }
 
-        gameRenderer = new GameRenderer(this, gameLogic);
+        gameRenderer = new GameRenderer(this);
         gameRenderer.setGameLogic(gameLogic);
-        gameRenderer.isDebug = sPref.getBoolean("is_debug",false);
         gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
 
         touchListener = new CustomTouchListener();
@@ -148,8 +147,11 @@ public class GameActivity extends Activity{
             }
         }
 
-        Logger.getAnonymousLogger().info("GameActivity.init() changing surface to gameRenderer");
-        setContentView(gameRenderer);
+        Logger.getAnonymousLogger().info("GameActivity.init() changing surface to game_layout");
+        setContentView(R.layout.game_layout);
+        gameLayout = ((ConstraintLayout)findViewById(R.id.cl_game));
+        gameLayout.addView(gameRenderer);
+//        setContentView(gameRenderer);
         Logger.getAnonymousLogger().info("GameActivity.init() end");
 
         if (getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialFirst)){
@@ -264,7 +266,9 @@ public class GameActivity extends Activity{
 
         if (resultCode == "next".hashCode()){
             Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
+            gameLayout.removeView(gameRenderer);
             setContentView(R.layout.loading_screen);
+            gameLayout = null;
             if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
                 showInterstitial();
             }
@@ -348,8 +352,6 @@ public class GameActivity extends Activity{
     void goToNextLevel(){
         Logger.getAnonymousLogger().info("GameActivity.goToNextLevel() start");
 
-//        Logger.getAnonymousLogger().info("GameActivity setting loading screen");
-//        setContentView(R.layout.loading_screen);
         Loader loader = new Loader(false);
         loader.start();
         loader.is_running = true;
@@ -365,8 +367,11 @@ public class GameActivity extends Activity{
             }
         }
 
-        Logger.getAnonymousLogger().info("GameActivity setContentView(gameRenderer);");
-        setContentView(gameRenderer);
+        Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.game_layout);");
+        setContentView(R.layout.game_layout);
+        gameLayout = ((ConstraintLayout)findViewById(R.id.cl_game));
+        gameLayout.addView(gameRenderer);
+        //setContentView(gameRenderer);
         mInterstitialAd = newInterstitialAd();
         loadInterstitial();
 
