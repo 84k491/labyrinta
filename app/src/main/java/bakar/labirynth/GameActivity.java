@@ -38,14 +38,15 @@ public class GameActivity extends Activity{
     // TODO: 5/1/19 randomizer bonus
     // TODO: 4/20/19 pointer upgrade
 
-    // STEPS-TO-BETA
+    // STEPS-TO-RELEASE
     // TODO: 5/19/19 не работает кнопка "магазин" в endMenu
     // TODO: 5/18/19 Название съезжает если выйти домой в самом начале
+    // TODO: 5/28/19 пофиксить цетровку в начале уровня
     // TODO: 5/19/19 low res pointer sprite
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 check any resolution gui
 
-    //after beta
+    //after release
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 5/5/19 doubleclick zoom
@@ -313,6 +314,7 @@ public class GameActivity extends Activity{
     }
 
     void saveData() {
+        if (null == gameLogic) return;
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         //ed.putFloat("global_scale", gameRenderer.globalScale);

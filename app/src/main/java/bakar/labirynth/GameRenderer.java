@@ -65,7 +65,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     float smallSquareScale = 0.5f;
     float bigSquareScale = 2.f - smallSquareScale;
 
-    final float cellSize = 10; // gameCoords side
+    static final float cellSize = 10; // gameCoords side
 
     ///// это костыль. позволяет сделать уменьшенную бмп уровня, не затрагивая остальное ///
     final float labBitmapcellSize = 4;
@@ -471,7 +471,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
 
-        if (isPlayerAndExitAtScreen()){
+        if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) < 4){
             centerCameraBetweenPlayerExit();
         }
         else{
@@ -567,6 +567,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         AnimationBitmaps bitmaps = new AnimationBitmaps();
 
+        float exit_start_angle = 0;
+
         //Todo: перенести Paint в ресурсы цвета
         private Paint common = new Paint();
         private Paint floor = new Paint();
@@ -585,16 +587,18 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private Paint enlighten = new Paint();
         private Paint puanim = new Paint();
         private Paint bonusRadius = new Paint();
+        private ExitDrawer exitDrawer = new ExitDrawer();
 
         RenderThread(){
             Logger.getAnonymousLogger().info("RenderThread.ctor begin");
             floor.setColor(Color.argb(120,30, 30, 30));
             wall.setColor(Color.argb(240,230, 230, 230));
-            node.setStrokeWidth(1);
-            node.setColor(Color.rgb(0, 255, 0));
+            node.setColor(Color.rgb(56, 255, 24));
+            node.setStrokeWidth(.5f);
             node.setStyle(Paint.Style.STROKE);
             player.setColor(Color.rgb(255, 0, 255));
-            hitbox.setColor(Color.argb(120, 255, 0, 0));
+            hitbox.setColor(Color.RED);
+            hitbox.setStyle(Paint.Style.FILL);
             trace.setColor(Color.YELLOW);
             text.setColor(Color.GRAY);
             text.setStrokeWidth(8);
@@ -602,7 +606,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             text.setTextSize(70);
             joystickMain.setColor(Color.argb(120, 240, 240, 240));
             joystickCurrent.setColor(Color.rgb(230, 255, 255));
-            exit.setColor(Color.RED);
+            exit.setColor(Color.rgb(40, 170, 40));
+            exit.setStrokeWidth(1.f);
+            exit.setStyle(Paint.Style.STROKE);
             button.setColor(Color.argb(120, 255, 255, 255));
             path.setColor(Color.argb(120, 10, 255, 10));
             fog.setColor(Color.rgb(20, 20, 30));
@@ -686,6 +692,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         void updateLabyrinthBmp(){
             // рисуется в игровых координатах, при отрисовке умножается на матрицу
+            while(gameLogic == null ||gameLogic.field == null){
+                try {
+                    sleep(1);
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
             labBitmap = Bitmap.createBitmap(Math.round(gameLogic.field.getxSize() * labBitmapcellSize),
                     Math.round(gameLogic.field.getySize() * labBitmapcellSize), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(labBitmap);
@@ -949,6 +963,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawEntities(Canvas canvas){
             gameLogic.eFactory.lock();
             for (Entity entity : gameLogic.eFactory.entities){
+                if (entity.whoami.equals("Exit")){
+                    continue;
+                }
                 drawTile(canvas,
                         bitmaps.getByEntity(entity),
                         field2game(entity.pos),
@@ -1012,6 +1029,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);
 //            canvas.drawRect(0, 0, getWidth(), getHeight(), common);
         }
+        void drawExit(Canvas canvas){
+            exitDrawer.draw(canvas);
+        }
 
         void onDraw(Canvas canvas){
             if (!gameLogic.isInited) return;
@@ -1047,6 +1067,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawPlayer(canvas);
             drawPointer(canvas);
             drawPickedUpAnimation(canvas);
+            drawExit(canvas);
 
             drawDebug(canvas);
 
@@ -1515,6 +1536,178 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         float getPercents(int i){
             return elements.get(i).percent;
+        }
+    }
+
+    class ExitDrawer{
+        Paint exit_paint = new Paint();
+        final Random ed_random = new Random(System.currentTimeMillis());
+        final ArrayList<Sector> sectors = new ArrayList<>();
+
+        int colors[] = {
+                Color.parseColor("#a101a6"),
+                Color.parseColor("#ff5900"),
+                Color.parseColor("#a3f400"),
+                Color.parseColor("#01b6be"),
+                Color.parseColor("#df007e"),
+        };
+
+        ExitDrawer(){
+            exit_paint.setColor(Color.RED);
+            exit_paint.setStyle(Paint.Style.FILL);
+
+
+            setRandomSectors();
+        }
+
+        void setRandomSectors(){
+            sectors.clear();
+            for (int color : colors){
+                // todo remove radius from ctor
+                sectors.add(new Sector(1.f, 80.f, color));
+            }
+        }
+
+        void drawGradientDot(Canvas canvas, CPoint.Game pt){
+            final float radius = cellSize * 1.2f;
+            final RadialGradient gradient = new RadialGradient(pt.x,
+                    pt.y,
+                    radius,
+                    Color.argb(40, 255, 255, 240),
+                    Color.argb(0, 255, 255, 100),
+                    Shader.TileMode.MIRROR);
+
+            exit_paint.setShader(gradient);
+            canvas.drawCircle(pt.x, pt.y, radius, exit_paint);
+        }
+
+        private PointF rotatePoint(PointF pt, double deg, PointF center){
+            PointF result = new PointF();
+            result.x = (float)(center.x + (pt.x - center.x) * Math.cos(Math.PI * deg / 180) -
+                    (pt.y - center.y) * Math.sin(Math.PI * deg / 180));
+            result.y = (float)(center.y + (pt.y - center.y) * Math.cos(Math.PI * deg / 180) +
+                    (pt.x - center.x) * Math.sin(Math.PI * deg / 180));
+
+            return result;
+        }
+
+        void drawSector(Canvas canvas,
+                        CPoint.Game center,
+                        double width_deg,
+                        double direction_deg,
+                        double rad_bot_gc,
+                        Paint _paint_light,
+                        Paint _paint_dark){
+            final int steps_amount = 40;
+            final float angle_delta_deg = (float)width_deg / steps_amount;
+            final float height = cellSize / 3;
+
+            final float start_angle_deg = (float)(direction_deg - width_deg / 2);
+
+            PointF lt = new PointF();
+            lt.x = center.x;
+            lt.y = center.y + (float)rad_bot_gc + height;
+
+            PointF lb = new PointF();
+            lb.x = center.x;
+            lb.y = center.y + (float)rad_bot_gc;
+
+            PointF rt = rotatePoint(lt, width_deg, center);
+            PointF rb = rotatePoint(lb, width_deg, center);
+
+            Path sector = new Path();
+            sector.reset();
+            sector.moveTo(lb.x, lb.y);
+            sector.lineTo(lt.x, lt.y);
+
+            for (int i = 0; i < steps_amount; ++i){
+                PointF cpt = rotatePoint(lt, angle_delta_deg, center);
+                sector.lineTo(cpt.x, cpt.y);
+                lt.x = cpt.x;
+                lt.y = cpt.y;
+            }
+
+            sector.lineTo(rb.x, rb.y);
+
+            for (int i = 0; i < steps_amount; ++i){
+                PointF cpt = rotatePoint(rb, -angle_delta_deg, center);
+                sector.lineTo(cpt.x, cpt.y);
+                rb.x = cpt.x;
+                rb.y = cpt.y;
+            }
+
+            sector.close();
+
+            canvas.rotate(start_angle_deg, center.x, center.y);
+            canvas.drawPath(sector, _paint_light);
+            canvas.drawPath(sector, _paint_dark);
+            canvas.rotate(-start_angle_deg, center.x, center.y);
+        }
+
+        void draw(Canvas canvas){
+            drawGradientDot(canvas, gameLogic.exitCoords());
+
+            for (Sector s : sectors){
+                s.draw(canvas);
+            }
+
+        }
+
+        class Sector{
+            private static final float max_radial_speed = 2.8f;
+            private static final float min_radial_speed = 1.4f;
+
+            private static final float max_radius = cellSize * 1.2f;
+            private static final float min_radius = cellSize / 3;
+
+            float radial_speed_deg;
+            float radius_gc;
+            float width_deg;
+            float direction_deg;
+            final Paint sector_paint_fill = new Paint();
+            final Paint sector_paint_stroke = new Paint();
+
+            Sector(float _radius, float _width_deg, int _color){
+
+                radius_gc = getRandonRadius();
+                direction_deg = ed_random.nextFloat() * 360;
+                width_deg = _width_deg;
+
+                sector_paint_fill.setStyle(Paint.Style.FILL);
+                sector_paint_stroke.setStyle(Paint.Style.STROKE);
+                sector_paint_stroke.setStrokeWidth(.5f);
+                sector_paint_fill.setColor(_color);
+                float[] hsv = {0,0,0};
+                Color.colorToHSV(_color, hsv);
+                hsv[2] -= .3f;
+                sector_paint_stroke.setColor(Color.HSVToColor(hsv));
+
+                radial_speed_deg = getRandomRadialSpeed();
+            }
+
+            void draw(Canvas canvas){
+                drawSector(canvas,
+                        gameLogic.exitCoords(),
+                        width_deg,
+                        direction_deg,
+                        radius_gc,
+                        sector_paint_fill,
+                        sector_paint_stroke);
+
+                direction_deg += radial_speed_deg;
+            }
+            float getRandonRadius(){
+                return ed_random.nextFloat() *
+                        (max_radius - min_radius) + min_radius;
+            }
+            float getRandomRadialSpeed(){
+                float result = ed_random.nextFloat() *
+                        (max_radial_speed - min_radial_speed) + min_radial_speed;
+                if (ed_random.nextBoolean()){
+                    result = -result;
+                }
+                return result;
+            }
         }
     }
 

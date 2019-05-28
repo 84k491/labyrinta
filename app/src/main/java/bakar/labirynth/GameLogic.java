@@ -65,7 +65,7 @@ class GameLogic {
         Logger.getAnonymousLogger().info("GameLogic.ctor");
         if (gameRenderer_ != null) {
             gameRenderer = gameRenderer_;
-            cellSize = gameRenderer.cellSize;
+            cellSize = GameRenderer.cellSize;
         }
         init(_seed, _xsize, _ysize);
     }
