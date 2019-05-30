@@ -1139,6 +1139,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                             surfaceHolder.unlockCanvasAndPost(canvas);
                         }
                     }
+//                    try {
+//                        Thread.sleep(1);
+//                    }
+//                    catch (InterruptedException e){
+//                        e.printStackTrace();
+//                    }
                 }
                 else{
                     try {

@@ -13,14 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LevelBuyActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.IAPTheme" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".TutorialActivity"
             android:theme="@style/Theme.IAPTheme" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".ConfirmationActivity"
             android:theme="@style/Theme.IAPTheme" />
         <activity android:name=".LevelSelectActivity"
@@ -30,7 +27,6 @@
         <activity android:name=".ResearchActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:screenOrientation="portrait"
             android:name=".SettingsActivity"
             android:theme="@style/Theme.IAPTheme" />
         <activity android:name=".MenuActivity"
@@ -45,11 +41,9 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".EndActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.IAPTheme" />
         <activity
             android:name=".BonusActivity"
-            android:screenOrientation="portrait"
 
             android:theme="@style/Theme.IAPTheme" />
     </application>

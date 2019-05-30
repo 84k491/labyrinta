@@ -2,9 +2,11 @@ package bakar.labirynth;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Xml;
 import android.view.View;
@@ -54,6 +56,9 @@ public class EndActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         setContentView(R.layout.activity_end);
 
         setMap();
