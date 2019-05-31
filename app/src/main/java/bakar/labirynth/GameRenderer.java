@@ -1547,8 +1547,10 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     class ExitDrawer{
         Paint exit_paint = new Paint();
+        Paint line_paint = new Paint();
         final Random ed_random = new Random(System.currentTimeMillis());
         final ArrayList<Sector> sectors = new ArrayList<>();
+        final ArrayList<Line> lines = new ArrayList<>();
 
         int colors[] = {
                 Color.parseColor("#a101a6"),
@@ -1561,16 +1563,19 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         ExitDrawer(){
             exit_paint.setColor(Color.RED);
             exit_paint.setStyle(Paint.Style.FILL);
+            line_paint.setColor(Color.argb(180, 120, 150, 180));
 
-
-            setRandomSectors();
+            setRandomObjects();
         }
 
-        void setRandomSectors(){
+        void setRandomObjects(){
             sectors.clear();
             for (int color : colors){
                 // todo remove radius from ctor
                 sectors.add(new Sector(1.f, 80.f, color));
+            }
+            for (int i = 0; i < 20; ++i){
+                lines.add(new Line());
             }
         }
 
@@ -1653,10 +1658,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void draw(Canvas canvas){
             drawGradientDot(canvas, gameLogic.exitCoords());
 
+            for (Line l : lines){
+                l.draw(canvas);
+            }
             for (Sector s : sectors){
                 s.draw(canvas);
             }
-
         }
 
         class Sector{
@@ -1713,6 +1720,81 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     result = -result;
                 }
                 return result;
+            }
+        }
+
+        class Line{
+            final Random random = new Random();
+
+            private static final float max_length_px = cellSize;
+            private static final float min_length_px = cellSize / 4;
+
+            private static final float max_radius_px = cellSize * 3.f;
+            private static final float min_radius_px = cellSize * 1.2f;
+
+            float angle_deg;
+            float length;
+            float speed = 0.4f;
+            float radius;
+            //float iteration;
+
+            float upper_lim;
+            float lower_lim;
+
+            Line(){
+                reInit();
+            }
+            void reInit(){
+                angle_deg = random.nextFloat() * 360.f;
+                length = random.nextFloat() * (max_length_px - min_length_px) + min_length_px;
+                radius = random.nextFloat() * (max_radius_px - min_radius_px) + min_radius_px;
+
+                upper_lim = radius;
+                lower_lim = upper_lim;
+            }
+
+            private CPoint.Game getMovedExitPoint(float radius, float _angle_deg){
+                PointF result = gameLogic.exitCoords();
+                result.y += radius;
+                result = rotatePoint(result, _angle_deg, gameLogic.exitCoords());
+
+                return new CPoint.Game(result.x, result.y);
+            }
+
+            CPoint.Game getUpperPoint(){
+                return  getMovedExitPoint(upper_lim, angle_deg);
+            }
+            CPoint.Game getLowerPoint(){
+                return  getMovedExitPoint(lower_lim, angle_deg);
+            }
+
+            void draw(Canvas canvas){
+                CPoint.Game upper_pt = getUpperPoint();
+                CPoint.Game lower_pt = getLowerPoint();
+
+                canvas.drawLine(upper_pt.x, upper_pt.y, lower_pt.x, lower_pt.y, line_paint);
+
+                moveLine();
+            }
+            void moveLine(){
+                CPoint.Game exit = gameLogic.exitCoords();
+                CPoint.Game upper_pt = getUpperPoint();
+                CPoint.Game lower_pt = getLowerPoint();
+
+                if (GameLogic.distance(upper_pt, lower_pt) > length){
+                    upper_lim -= speed;
+                }
+                if (GameLogic.distance(lower_pt, exit) > speed * 4) {
+                    lower_lim -= speed;
+                }
+                else{
+                    if (GameLogic.distance(upper_pt, lower_pt) < length){
+                        upper_lim -= speed;
+                    }
+                }
+                if (GameLogic.distance(upper_pt, exit) <= speed * 4) {
+                    reInit();
+                }
             }
         }
     }

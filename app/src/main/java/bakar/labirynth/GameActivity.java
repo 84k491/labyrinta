@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -46,6 +47,8 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/29/19 не выключается музыка
     // TODO: 5/5/19 check any resolution gui
+    // TODO: 5/31/19 make fine
+    // TODO: 5/31/19 убрать цену на 50м левле
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
@@ -477,11 +480,14 @@ public class GameActivity extends Activity{
             public void onSensorChanged(SensorEvent event) {
                 switch (event.sensor.getType()) {
                     case Sensor.TYPE_ACCELEROMETER:
+//                        for (int i = 0; i < 3; i++) {
+//                            valuesAccel[i] = event.values[i];
+//                            valuesAccelGravity[i] = (float) (0.1 * event.values[i] + 0.9 * valuesAccelGravity[i]);
+//                            valuesAccelMotion[i] = event.values[i]
+//                                    - valuesAccelGravity[i];
+//                        }
                         for (int i = 0; i < 3; i++) {
-                            valuesAccel[i] = event.values[i];
-                            valuesAccelGravity[i] = (float) (0.1 * event.values[i] + 0.9 * valuesAccelGravity[i]);
-                            valuesAccelMotion[i] = event.values[i]
-                                    - valuesAccelGravity[i];
+                            valuesGravity[i] = event.values[i];
                         }
                         break;
                     case Sensor.TYPE_GRAVITY:
@@ -495,19 +501,22 @@ public class GameActivity extends Activity{
 
         TiltController(){
             sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-            sensorAccel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorLinAccel = sensorManager
-                    .getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
             sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+            if (null == sensorGravity){
+                Logger.getAnonymousLogger().info("No Sensor.TYPE_GRAVITY!! Using Sensor.TYPE_ACCELEROMETER");
+                sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            }
         }
 
         void registerSensors(){
             int period = SensorManager.SENSOR_DELAY_GAME;
-            sensorManager.registerListener(listener, sensorAccel,
-                    period);
-            sensorManager.registerListener(listener, sensorLinAccel,
-                    period);
-            sensorManager.registerListener(listener, sensorGravity,
+            boolean result = false;
+//            result = sensorManager.registerListener(listener, sensorAccel,
+//                    period);
+//            result = sensorManager.registerListener(listener, sensorLinAccel,
+//                    period);
+            result = sensorManager.registerListener(listener, sensorGravity,
                     period);
 
             registered = true;
