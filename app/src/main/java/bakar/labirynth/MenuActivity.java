@@ -23,6 +23,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MenuActivity extends Activity implements OnClickListener {
 
@@ -72,17 +74,17 @@ public class MenuActivity extends Activity implements OnClickListener {
     public void onClick(View view) {
         touched_view_id = view.getId();
 
-        if (justLoadedState){
-            justLoadedState = false;
-            startOnTouchAnimations();
-        }
-        else
-        {
-            if (touched_view_id == R.id.start ||
+//        if (justLoadedState){
+//            justLoadedState = false;
+//            startOnTouchAnimations();
+//        }
+//        else
+//        {
+//        }
+        if (touched_view_id == R.id.start ||
                 touched_view_id == R.id.settings_bt ||
                 touched_view_id == R.id.shop_bt){
-                view.startAnimation(on_click_anim);
-            }
+            view.startAnimation(on_click_anim);
         }
     }
 
@@ -167,8 +169,24 @@ public class MenuActivity extends Activity implements OnClickListener {
         super.onResume();
         loadData();
         if (justLoadedState){
+            justLoadedState = false;
             setAnimations();
             startWelcomingAnimations();
+
+            Timer timer = new Timer();
+            timer.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MenuActivity.this.startOnTimerAnimations();
+                                }
+                            });
+                        }
+                    }, 500
+            );
         }
     }
     @Override
@@ -227,7 +245,7 @@ public class MenuActivity extends Activity implements OnClickListener {
         shop.startAnimation(keep_inv_anim);
         settings.startAnimation(keep_inv_anim);
     }
-    void startOnTouchAnimations(){
+    void startOnTimerAnimations(){
         title.startAnimation(title_move_anim);
 
         start.startAnimation(appear_anim);
