@@ -72,12 +72,13 @@
                 android:layout_height="38dp"
                 android:layout_weight="1" />
 
-            <Button
-                android:id="@+id/bt_shop"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_end_level_next"
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/bag_in_thin_circle" />
+                android:layout_weight="1">
+
+            </android.support.constraint.ConstraintLayout>
 
             <Space
                 android:layout_width="35dp"

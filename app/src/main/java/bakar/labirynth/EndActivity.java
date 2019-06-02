@@ -1,14 +1,19 @@
 package bakar.labirynth;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.util.Xml;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,6 +24,7 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.HashMap;
+import java.util.Random;
 
 enum EndMenuItems{
     goldTotal,
@@ -30,13 +36,16 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
     Button next;
     Button menu;
-    Button shop;
+    ConstraintLayout next_level_buy;
 
     LinearLayout mainLayout;
-    SharedPreferences sPref;
     int startGoldAmount;
     int goldEarnedByCoins;
     int goldEarnedByLevel;
+
+    Random random = new Random(24931875);
+
+    int itemSizePx = 170; // TODO: 6/2/19 make dependent of screen
 
     final HashMap<EndMenuItems, Integer> imageMap = new HashMap<>();
     final HashMap<EndMenuItems, TextView> textViewMap = new HashMap<>();
@@ -47,10 +56,181 @@ public class EndActivity extends Activity implements View.OnClickListener{
         imageMap.put(EndMenuItems.goldTotal, R.drawable.gold_pile);
     }
 
+    void startConfirmationActivity(){
+        Intent intent = new Intent(this, LevelBuyActivity.class);
+        intent.putExtra("level_number", 22 + 1);
+        intent.putExtra("level_cost", 1234);
+        startActivityForResult(intent, 42);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (resultCode == RESULT_OK){
+            if (intent.getStringExtra("result_key").equals("positive")){
+                SoundCore.inst().playSound(Sounds.correct);
+                String dataKey = StoredProgress.levelUpgKey;
+                int level_value = StoredProgress.getInstance().getValue(dataKey);
+                int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                        level_value
+                );
+
+                StoredProgress.getInstance().
+                        setGold(StoredProgress.getInstance().getGoldAmount() - level_cost);
+
+                StoredProgress.getInstance().setValue(dataKey, level_value + 1);
+
+                next_level_buy.removeAllViews();
+                makeNextLevelSizeButton();
+
+                textViewMap.get(EndMenuItems.goldTotal).setText(
+                        String.valueOf(StoredProgress.getInstance().getGoldAmount())
+                );
+            }
+        }
+    }
+
     @Override
     public void onBackPressed(){
         setResult("menu".hashCode());
         finish();
+    }
+
+    private int getRandomId(){
+        int id = random.nextInt();
+        if (findViewById(id) != null){
+            return getRandomId();
+        }
+        else{
+            return id;
+        }
+    }
+
+    LinearLayout generateCostLabel(){
+        LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                3
+        );
+        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(
+                30,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                5
+        );
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1
+        );
+        LinearLayout.LayoutParams loParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1
+        );
+
+        LinearLayout wraping_lo = new LinearLayout(this);
+        wraping_lo.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout inner_lo = new LinearLayout(this);
+        inner_lo.setOrientation(LinearLayout.HORIZONTAL);
+
+        ImageView currencyIcon = new ImageView(this);
+        currencyIcon.setImageResource(R.drawable.coin_anim1);
+
+        TextView costLabel = new TextView(this);
+
+        String dataKey = StoredProgress.levelUpgKey;
+        int level_value = StoredProgress.getInstance().getValue(dataKey);
+        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                level_value
+        );
+        costLabel.setText(String.valueOf(level_cost));
+        costLabel.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+        costLabel.setTextColor(Color.WHITE);
+        costLabel.setGravity(Gravity.FILL_VERTICAL);
+
+        inner_lo.addView(currencyIcon, iconParams);
+        inner_lo.addView(costLabel, labelParams);
+
+        Space[] spaces = {new Space(this), new Space(this)};
+        wraping_lo.addView(spaces[0], spaceParams);
+        wraping_lo.addView(inner_lo, loParams);
+        wraping_lo.addView(spaces[1], spaceParams);
+
+        return wraping_lo;
+    }
+
+    void makeNextLevelSizeButton(){
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                itemSizePx,
+                itemSizePx,
+                1
+        );
+
+        TextView bgTextView = new TextView(this);
+
+        int buying_level_number = 1 + StoredProgress.getInstance().getValue(
+                StoredProgress.levelUpgKey);
+
+        bgTextView.setText(String.valueOf(buying_level_number));
+        bgTextView.setTypeface(
+                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+        );
+        bgTextView.setTextSize(40);
+        bgTextView.setLayoutParams(params);
+        bgTextView.setGravity(Gravity.CENTER);
+
+        int resource_id = R.xml.level_select_bg_cannot_buy;
+        bgTextView.setTextColor(Color.parseColor("#999999"));
+
+        int cost = Economist.getInstance().
+                price_map.get(StoredProgress.levelUpgKey).apply(buying_level_number - 1);
+        int stored_gold = StoredProgress.getInstance().getGoldAmount() +
+                goldEarnedByCoins + goldEarnedByLevel;
+
+        if (stored_gold >= cost){
+            resource_id = R.xml.level_select_bg_can_buy;
+            bgTextView.setTextColor(Color.parseColor("#009900"));
+        }
+
+        try{
+            Drawable bg;
+            bg = Drawable.createFromXml(getResources(), getResources().getXml(resource_id));
+            XmlPullParser parser = getResources().getXml(resource_id);
+            bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
+            bgTextView.setBackground(bg);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        ConstraintLayout constraintLayout = findViewById(R.id.cl_end_level_next);
+        constraintLayout.setLayoutParams(params);
+        //constraintLayout.setId(getRandomId());
+
+        LinearLayout costLabel = generateCostLabel();
+
+        costLabel.setId(getRandomId());
+
+        constraintLayout.addView(bgTextView);
+        constraintLayout.addView(costLabel);
+
+        ConstraintSet set = new ConstraintSet();
+        set.clone(constraintLayout);
+
+        set.centerHorizontally(bgTextView.getId(), ConstraintSet.PARENT_ID);
+        set.centerVertically(bgTextView.getId(), ConstraintSet.PARENT_ID);
+
+        set.constrainWidth(bgTextView.getId(), itemSizePx);
+        set.constrainHeight(bgTextView.getId(), itemSizePx);
+
+        set.centerHorizontally(costLabel.getId(), ConstraintSet.PARENT_ID);
+        set.centerVertically(costLabel.getId(), ConstraintSet.PARENT_ID);
+
+        set.constrainWidth(costLabel.getId(), itemSizePx);
+        set.constrainHeight(costLabel.getId(), itemSizePx / 4);
+
+        set.applyTo(constraintLayout);
+
+        //return constraintLayout;
     }
 
     @Override
@@ -62,32 +242,27 @@ public class EndActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.activity_end);
 
         setMap();
+        startGoldAmount = StoredProgress.getInstance().getGoldAmount();
+        goldEarnedByCoins = getIntent().getIntExtra("goldEarnedByCoins", 0);
+        goldEarnedByLevel = getIntent().getIntExtra("goldEarnedByLevel", 0);
 
         next = findViewById(R.id.bt_next);
         next.setOnClickListener(this);
         menu = findViewById(R.id.bt_menu);
         menu.setOnClickListener(this);
 
-        shop = findViewById(R.id.bt_shop);
-        shop.setOnClickListener(this);
+        next_level_buy = findViewById(R.id.cl_end_level_next);
+        makeNextLevelSizeButton();
+        next_level_buy.setOnClickListener(this);
 
-        //gold = findViewById(R.id.gold);
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        startGoldAmount = sPref.getInt("gold", 0);
-        goldEarnedByCoins = getIntent().getIntExtra("goldEarnedByCoins", 0);
-        goldEarnedByLevel = getIntent().getIntExtra("goldEarnedByLevel", 0);
         ((TextView)findViewById(R.id.tw_nice)).setTypeface(
                 Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
         );
 
-        //gold.setText(String.valueOf(startGoldAmount));
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putInt("gold", startGoldAmount + goldEarnedByCoins + goldEarnedByLevel);
-        ed.apply();
+        StoredProgress.getInstance().setGold(startGoldAmount + goldEarnedByCoins + goldEarnedByLevel);
 
         mainLayout = findViewById(R.id.end_layout);
 
-//        mainLayout.addView(getSpace(), 3);
         mainLayout.addView(getSpace(), 3);
 
         mainLayout.addView(getSpace(), 2);
@@ -117,6 +292,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
 //        ((Button)findViewById(R.id.bt_shop)).setBackgroundResource(R.drawable.bag);
 //        ((Button)findViewById(R.id.bt_next)).setBackgroundResource(R.drawable.play);
 
+        new TextChanger().start();
     }
 
     LinearLayout getChangingTextWithIcon(EndMenuItems item){
@@ -190,7 +366,6 @@ public class EndActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onResume(){
         super.onResume();
-        new TextChanger().start();
     }
 
     @Override
@@ -198,15 +373,18 @@ public class EndActivity extends Activity implements View.OnClickListener{
         switch (view.getId()){
             case R.id.bt_next:
                 setResult("next".hashCode());
+                finish();
                 break;
             case R.id.bt_menu:
                 setResult("menu".hashCode());
+                finish();
                 break;
-            case R.id.bt_shop:
-                setResult("result_shop".hashCode());
+            case R.id.cl_end_level_next:
+                //setResult("result_shop".hashCode());
+                startConfirmationActivity();
                 break;
         }
-        finish();
+        //
     }
 
     class TextChanger extends Thread{

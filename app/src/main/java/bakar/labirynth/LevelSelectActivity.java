@@ -398,11 +398,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     }
 
     LinearLayout generateHorLayout(){
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT,
-//                1
-//        );
         LinearLayout lo = new LinearLayout(this);
         lo.setOrientation(LinearLayout.HORIZONTAL);
         return lo;
@@ -445,13 +440,9 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 level_value
         );
         costLabel.setText(String.valueOf(level_cost));
-        //costLabel.setText(String.valueOf("32332"));
         costLabel.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
         costLabel.setTextColor(Color.WHITE);
         costLabel.setGravity(Gravity.FILL_VERTICAL);
-
-//        currencyIcon.setBackgroundColor(Color.GREEN);
-//        costLabel.setBackgroundColor(Color.RED);
 
         inner_lo.addView(currencyIcon, iconParams);
         inner_lo.addView(costLabel, labelParams);

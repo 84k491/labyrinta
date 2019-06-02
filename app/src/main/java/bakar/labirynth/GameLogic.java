@@ -53,13 +53,13 @@ class GameLogic {
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
     EntityFactory eFactory = new EntityFactory();
-    int goldEarnedByCoins = 0;
-    int goldEarnedByLevel = 0;
+    private int goldEarnedByCoins = 0;
+    private int goldEarnedByLevel = 0;
 
     CPoint.Game debugTouchGameCoord = new CPoint.Game(0, 0);
 
     Queue<CPoint.Field> traces = new LinkedList<>();
-    int tracesSize = 10;
+    private int tracesSize = 10;
 
     GameLogic(GameRenderer gameRenderer_, long _seed, int _xsize, int _ysize){
         Logger.getAnonymousLogger().info("GameLogic.ctor");
