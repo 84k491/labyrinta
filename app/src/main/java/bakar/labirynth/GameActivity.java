@@ -45,7 +45,6 @@ public class GameActivity extends Activity{
     // TODO: 5/28/19 пофиксить цетровку в начале уровня
     // TODO: 5/19/19 low res pointer sprite
     // TODO: 3/18/19 player, exit, coin sprites
-    // TODO: 5/29/19 не выключается музыка
     // TODO: 5/5/19 check any resolution gui
     // TODO: 5/31/19 rm start animation
     // TODO: 5/31/19 убрать цену на 50м левле

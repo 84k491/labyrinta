@@ -42,7 +42,6 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.sounds_bt:
                 SoundCore.inst().doPlaySounds = !SoundCore.inst().doPlaySounds;
-                SoundCore.inst().doPlayMusic = !SoundCore.inst().doPlayMusic;
                 StoredProgress.getInstance().setValue("isSoundsOn",
                         !StoredProgress.getInstance().getValueBoolean("isSoundsOn")
                 );
