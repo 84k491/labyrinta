@@ -47,7 +47,7 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/29/19 не выключается музыка
     // TODO: 5/5/19 check any resolution gui
-    // TODO: 5/31/19 make fine
+    // TODO: 5/31/19 rm start animation
     // TODO: 5/31/19 убрать цену на 50м левле
 
     //after release
@@ -68,7 +68,6 @@ public class GameActivity extends Activity{
 
     Point difficultyToActualSize(int lvl_difficulty){
         // от сложности должна зависеть диагональ прямоугольника
-
         float hypot = Economist.getInstance().getLevelHypotByUpg(lvl_difficulty);
 
         float square_side = Economist.getInstance().getSquareSide(hypot);
@@ -252,40 +251,58 @@ public class GameActivity extends Activity{
         //TODO переделать. в resultCode должно быть -1. остальное в интент
         Logger.getAnonymousLogger().info("GameActivity.onActivityResult()");
         if (-1 == resultCode){
-            TutorialKey finishedTutorial = TutorialKey.valueOf
-                    (intent.getStringExtra(TutorialKey.class.toString()));
+            if (TutorialKey.class.toString().equals(intent.getStringExtra("what_from"))){
+                TutorialKey finishedTutorial = TutorialKey.valueOf
+                        (intent.getStringExtra(TutorialKey.class.toString()));
 
-            Map<TutorialKey, TutorialKey> finishedToNext = new HashMap<>();
-            finishedToNext.put(BeginTutorial_1, BeginTutorial_2);
-            finishedToNext.put(BeginTutorial_2, BeginTutorial_3);
+                Map<TutorialKey, TutorialKey> finishedToNext = new HashMap<>();
+                finishedToNext.put(BeginTutorial_1, BeginTutorial_2);
+                finishedToNext.put(BeginTutorial_2, BeginTutorial_3);
 
-            if (finishedToNext.get(finishedTutorial) != null){
-                Intent tutorialIntent = new Intent(this, TutorialActivity.class);
-                tutorialIntent.putExtra
-                        (TutorialKey.class.toString(),
-                                String.valueOf(finishedToNext.get(finishedTutorial)));
+                if (finishedToNext.get(finishedTutorial) != null){
+                    Intent tutorialIntent = new Intent(this, TutorialActivity.class);
+                    tutorialIntent.putExtra
+                            (TutorialKey.class.toString(),
+                                    String.valueOf(finishedToNext.get(finishedTutorial)));
 
-                startActivityForResult(tutorialIntent, 42);
+                    startActivityForResult(tutorialIntent, 42);
+                }
             }
-        }
 
-        if (resultCode == "next".hashCode()){
-            Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
-            gameLayout.removeView(gameRenderer);
-            setContentView(R.layout.loading_screen);
-            gameLayout = null;
-            if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
-                showInterstitial();
+            if (EndActivity.class.toString().equals(intent.getStringExtra("what_from"))) {
+                if (intent.getStringExtra("result").equals("next")){
+                    Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
+                    gameLayout.removeView(gameRenderer);
+                    setContentView(R.layout.loading_screen);
+                    gameLayout = null;
+                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
+                        showInterstitial();
+                    }
+                    else{
+                        goToNextLevel();
+                    }
+                }
+                if (intent.getStringExtra("result").equals("menu")){
+                    saveData();
+                    finish();
+                }
+                if (intent.getStringExtra("result").equals("load_max_level")){
+                    Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
+                    gameLogic.level_difficulty = StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey);
+                    gameLayout.removeView(gameRenderer);
+                    setContentView(R.layout.loading_screen);
+                    gameLayout = null;
+                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
+                        showInterstitial();
+                    }
+                    else{
+                        goToNextLevel();
+                    }
+                }
             }
-            else{
-                goToNextLevel();
-            }
+
         }
         if (resultCode == "confirm_yes".hashCode()){
-            saveData();
-            finish();
-        }
-        if (resultCode == "menu".hashCode()){
             saveData();
             finish();
         }

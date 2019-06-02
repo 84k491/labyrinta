@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.util.Xml;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -43,9 +45,11 @@ public class EndActivity extends Activity implements View.OnClickListener{
     int goldEarnedByCoins;
     int goldEarnedByLevel;
 
+    boolean loadMaxLevelOnResult = false;
+
     Random random = new Random(24931875);
 
-    int itemSizePx = 170; // TODO: 6/2/19 make dependent of screen
+    int itemSizePx = 0;
 
     final HashMap<EndMenuItems, Integer> imageMap = new HashMap<>();
     final HashMap<EndMenuItems, TextView> textViewMap = new HashMap<>();
@@ -241,6 +245,12 @@ public class EndActivity extends Activity implements View.OnClickListener{
         }
         setContentView(R.layout.activity_end);
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        itemSizePx = size.x / (1080 / 170);
+
         setMap();
         startGoldAmount = StoredProgress.getInstance().getGoldAmount();
         goldEarnedByCoins = getIntent().getIntExtra("goldEarnedByCoins", 0);
@@ -372,11 +382,27 @@ public class EndActivity extends Activity implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.bt_next:
-                setResult("next".hashCode());
+                Intent intent = new Intent(EndActivity.this,
+                        GameActivity.class);
+                intent.putExtra("what_from", EndActivity.class.toString());
+
+                if (loadMaxLevelOnResult){
+                    intent.putExtra("result", "next");
+                }
+                else{
+                    intent.putExtra("result", "load_max_level");
+                }
+
+                setResult(RESULT_OK, intent);
+
                 finish();
                 break;
             case R.id.bt_menu:
-                setResult("menu".hashCode());
+                Intent intent1 = new Intent(EndActivity.this,
+                        GameActivity.class);
+                intent1.putExtra("what_from", EndActivity.class.toString());
+                intent1.putExtra("result", "menu");
+                setResult(RESULT_OK, intent1);
                 finish();
                 break;
             case R.id.cl_end_level_next:

@@ -57,6 +57,7 @@ public class TutorialActivity extends Activity {
                         TutorialActivity.class);
 
                 intent.putExtra(TutorialKey.class.toString(), String.valueOf(passedKey));
+                intent.putExtra("what_from", TutorialKey.class.toString());
 
                 setResult(RESULT_OK, intent);
                 finish();
