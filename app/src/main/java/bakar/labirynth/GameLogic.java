@@ -310,6 +310,20 @@ class GameLogic {
             gameRenderer.buttons.get(0).lightAnimationEnabled = !gameRenderer.isPlayerInSight();
         }
 
+        float exit_distance = distance(exitCoords(), playerCoords());
+        if (exit_distance < cellSize * 3){
+            Line line = new Line(playerCoords(), exitCoords());
+            PointF additional_movement = line.normalizedVector();
+
+            float coef = (cellSize * 3) / exit_distance;
+
+            additional_movement.x *= coef;
+            additional_movement.y *= coef;
+
+            pointF.x += additional_movement.x;
+            pointF.y += additional_movement.y;
+        }
+
         CPoint.Game input;
         if (usesJoystick){
             CPoint.Game offsetp = joystick.getPlayerOffsetOnMove(pointF);

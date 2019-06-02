@@ -1724,8 +1724,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         class Line{
-            final Random random = new Random();
-
             private static final float max_length_px = cellSize;
             private static final float min_length_px = cellSize / 4;
 
@@ -1745,9 +1743,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 reInit();
             }
             void reInit(){
-                angle_deg = random.nextFloat() * 360.f;
-                length = random.nextFloat() * (max_length_px - min_length_px) + min_length_px;
-                radius = random.nextFloat() * (max_radius_px - min_radius_px) + min_radius_px;
+                angle_deg = ed_random.nextFloat() * 360.f;
+                length = ed_random.nextFloat() * (max_length_px - min_length_px) + min_length_px;
+                radius = ed_random.nextFloat() * (max_radius_px - min_radius_px) + min_radius_px;
 
                 upper_lim = radius;
                 lower_lim = upper_lim;
