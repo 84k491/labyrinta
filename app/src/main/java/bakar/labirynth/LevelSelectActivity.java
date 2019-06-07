@@ -210,7 +210,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 else
                     if (iter++ == lvl_amount){
 //                        NumeratedTextView tw = generateTV(0);
-                        ConstraintLayout tw = generateBuyingTV();
+                        ConstraintLayout tw = null;
+                        tw = generateBuyingTV();
                         if (tw != null) {
                             hlo.addView(tw);
                         }
@@ -430,8 +431,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         LinearLayout inner_lo = generateHorLayout();
 
         ImageView currencyIcon = new ImageView(LevelSelectActivity.this);
-        currencyIcon.setImageResource(R.drawable.coin_anim1);
-
         TextView costLabel = new TextView(this);
 
         String dataKey = StoredProgress.levelUpgKey;
@@ -439,10 +438,16 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
                 level_value
         );
-        costLabel.setText(String.valueOf(level_cost));
-        costLabel.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
-        costLabel.setTextColor(Color.WHITE);
-        costLabel.setGravity(Gravity.FILL_VERTICAL);
+
+        if (Economist.maxLevel > level_value){
+            currencyIcon.setImageResource(R.drawable.coin_anim1);
+
+            costLabel.setText(String.valueOf(level_cost));
+            costLabel.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            costLabel.setTextColor(Color.WHITE);
+            costLabel.setGravity(Gravity.FILL_VERTICAL);
+        }
+
 
         inner_lo.addView(currencyIcon, iconParams);
         inner_lo.addView(costLabel, labelParams);

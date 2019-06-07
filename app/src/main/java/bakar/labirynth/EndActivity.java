@@ -61,9 +61,15 @@ public class EndActivity extends Activity implements View.OnClickListener{
     }
 
     void startConfirmationActivity(){
+        String dataKey = StoredProgress.levelUpgKey;
+        int level_value = StoredProgress.getInstance().getValue(dataKey);
+        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                level_value
+        );
+
         Intent intent = new Intent(this, LevelBuyActivity.class);
-        intent.putExtra("level_number", 22 + 1);
-        intent.putExtra("level_cost", 1234);
+        intent.putExtra("level_number", level_value + 1);
+        intent.putExtra("level_cost", level_cost);
         startActivityForResult(intent, 42);
     }
 
@@ -71,6 +77,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == RESULT_OK){
             if (intent.getStringExtra("result_key").equals("positive")){
+                loadMaxLevelOnResult = true;
                 SoundCore.inst().playSound(Sounds.correct);
                 String dataKey = StoredProgress.levelUpgKey;
                 int level_value = StoredProgress.getInstance().getValue(dataKey);
@@ -95,7 +102,11 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
     @Override
     public void onBackPressed(){
-        setResult("menu".hashCode());
+        Intent intent = new Intent(EndActivity.this,
+                GameActivity.class);
+        intent.putExtra("what_from", EndActivity.class.toString());
+        setResult(RESULT_OK, intent);
+        intent.putExtra("result", "menu");
         finish();
     }
 
@@ -163,6 +174,13 @@ public class EndActivity extends Activity implements View.OnClickListener{
     }
 
     void makeNextLevelSizeButton(){
+        int buying_level_number = 1 + StoredProgress.getInstance().getValue(
+                StoredProgress.levelUpgKey);
+
+        if (buying_level_number > Economist.maxLevel){
+            return;
+        }
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 itemSizePx,
                 itemSizePx,
@@ -170,9 +188,6 @@ public class EndActivity extends Activity implements View.OnClickListener{
         );
 
         TextView bgTextView = new TextView(this);
-
-        int buying_level_number = 1 + StoredProgress.getInstance().getValue(
-                StoredProgress.levelUpgKey);
 
         bgTextView.setText(String.valueOf(buying_level_number));
         bgTextView.setTypeface(
@@ -387,10 +402,10 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 intent.putExtra("what_from", EndActivity.class.toString());
 
                 if (loadMaxLevelOnResult){
-                    intent.putExtra("result", "next");
+                    intent.putExtra("result", "load_max_level");
                 }
                 else{
-                    intent.putExtra("result", "load_max_level");
+                    intent.putExtra("result", "next");
                 }
 
                 setResult(RESULT_OK, intent);
@@ -406,11 +421,14 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 finish();
                 break;
             case R.id.cl_end_level_next:
-                //setResult("result_shop".hashCode());
-                startConfirmationActivity();
+                int buying_level_number = 1 + StoredProgress.getInstance().getValue(
+                        StoredProgress.levelUpgKey);
+
+                if (buying_level_number <= Economist.maxLevel){
+                    startConfirmationActivity();
+                }
                 break;
         }
-        //
     }
 
     class TextChanger extends Thread{

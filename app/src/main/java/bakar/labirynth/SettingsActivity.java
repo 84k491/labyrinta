@@ -139,7 +139,6 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
         );
         sounds_TextView.setTextSize(text_size);
 
-
         findViewById(R.id.settings_imageview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

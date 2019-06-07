@@ -43,7 +43,8 @@ public class GameActivity extends Activity{
     // TODO: 5/19/19 low res pointer sprite
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 check any resolution gui
-    // TODO: 5/31/19 убрать цену на 50м левле
+    // TODO: 6/2/19 bonus range tutorial
+    // TODO: 5/31/19 убрать цену на 50м левле (проверить в конце уровня)
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
@@ -283,8 +284,9 @@ public class GameActivity extends Activity{
                     finish();
                 }
                 if (intent.getStringExtra("result").equals("load_max_level")){
-                    Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
+                    Logger.getAnonymousLogger().info("GameActivity loading max_level;");
                     gameLogic.level_difficulty = StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey);
+                    Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
                     gameLayout.removeView(gameRenderer);
                     setContentView(R.layout.loading_screen);
                     gameLayout = null;
