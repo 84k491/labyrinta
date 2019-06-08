@@ -24,7 +24,8 @@ enum TutorialKey{
     PathfinderTutorial,
     TeleportTutorial,
     PointerTutorial,
-    NextLevelBuyTutorial
+    NextLevelBuyTutorial,
+    BonusRangeTutorial
 }
 
 public class TutorialActivity extends Activity {
@@ -96,6 +97,10 @@ public class TutorialActivity extends Activity {
                 "It seems you have enough gold to unlock next level size!\n" +
                 "You can unlock it at shop, or at level menu."
         );
+        text_map.put(TutorialKey.BonusRangeTutorial,
+                "Just tap within range to use a bonus!\n" +
+                        "Tap outside to cancel."
+        );
 
         image_map.put(TutorialKey.BeginTutorial_1,
                 R.drawable.tutorial_exit
@@ -117,6 +122,8 @@ public class TutorialActivity extends Activity {
         );
         image_map.put(TutorialKey.NextLevelBuyTutorial,
                 R.drawable.expand
+        );image_map.put(TutorialKey.BonusRangeTutorial,
+                R.drawable.tutorial_range
         );
 
     }

@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -44,7 +43,7 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 player, exit, coin sprites
     // TODO: 5/5/19 check any resolution gui
     // TODO: 6/2/19 bonus range tutorial
-    // TODO: 5/31/19 убрать цену на 50м левле (проверить в конце уровня)
+    // TODO: 6/8/19 check max item upgrade
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
@@ -53,7 +52,6 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
     // TODO: 5/1/19 убрать блок девайса по времени surfaceHolder setKeepScreenOn()
-    // TODO: 5/14/19 отклик на кнопки
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;
@@ -243,10 +241,26 @@ public class GameActivity extends Activity{
         super.onDestroy();
     }
 
+    void startTutorialActivity(TutorialKey key){
+        Intent intent = new Intent(this, TutorialActivity.class);
+        intent.putExtra(TutorialKey.class.toString(), String.valueOf(key));
+        this.startActivityForResult(intent, EndActivity.class.toString().hashCode());
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         //TODO переделать. в resultCode должно быть -1. остальное в интент
         Logger.getAnonymousLogger().info("GameActivity.onActivityResult()");
+
+        Runnable startBonusRangeTutorial = () -> {
+            if (StoredProgress.getInstance().getValueBoolean(
+                    StoredProgress.isNeedToShowTutorialBonusRange)){
+                startTutorialActivity(TutorialKey.BonusRangeTutorial);
+                StoredProgress.getInstance().
+                        switchValueBoolean(StoredProgress.isNeedToShowTutorialBonusRange);
+            }
+        };
+
         if (-1 == resultCode){
             if (TutorialKey.class.toString().equals(intent.getStringExtra("what_from"))){
                 TutorialKey finishedTutorial = TutorialKey.valueOf
@@ -266,18 +280,22 @@ public class GameActivity extends Activity{
                 }
             }
 
+            Runnable fn =  () -> {
+                Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
+                gameLayout.removeView(gameRenderer);
+                setContentView(R.layout.loading_screen);
+                gameLayout = null;
+                if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
+                    showInterstitial();
+                }
+                else{
+                    goToNextLevel();
+                }
+            };
+
             if (EndActivity.class.toString().equals(intent.getStringExtra("what_from"))) {
                 if (intent.getStringExtra("result").equals("next")){
-                    Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
-                    gameLayout.removeView(gameRenderer);
-                    setContentView(R.layout.loading_screen);
-                    gameLayout = null;
-                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
-                        showInterstitial();
-                    }
-                    else{
-                        goToNextLevel();
-                    }
+                    fn.run();
                 }
                 if (intent.getStringExtra("result").equals("menu")){
                     saveData();
@@ -286,16 +304,7 @@ public class GameActivity extends Activity{
                 if (intent.getStringExtra("result").equals("load_max_level")){
                     Logger.getAnonymousLogger().info("GameActivity loading max_level;");
                     gameLogic.level_difficulty = StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey);
-                    Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
-                    gameLayout.removeView(gameRenderer);
-                    setContentView(R.layout.loading_screen);
-                    gameLayout = null;
-                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
-                        showInterstitial();
-                    }
-                    else{
-                        goToNextLevel();
-                    }
+                    fn.run();
                 }
             }
 
@@ -311,10 +320,13 @@ public class GameActivity extends Activity{
         if (resultCode == "teleport".hashCode()){
             gameLogic.teleportActive = true;
             gameLogic.remote_move_flag = true;
+            startBonusRangeTutorial.run();
         }
         if (resultCode == "path".hashCode()){
             gameLogic.pathfinderActive = true;
             gameLogic.remote_move_flag = true;
+            startBonusRangeTutorial.run();
+
         }
         if (resultCode == "abort".hashCode()){
             gameLogic.remote_move_flag = true;

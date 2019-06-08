@@ -56,6 +56,8 @@ public class Background extends SurfaceView{
         }
     };
 
+    private static final boolean doNothing = false;
+
     private RenderScript rs = RenderScript.create(getContext());
 
     public Background(Context _context){
@@ -172,6 +174,9 @@ public class Background extends SurfaceView{
         }
 
         void onDraw(Canvas canvas){
+            if (doNothing){
+                return;
+            }
             drawBackground(canvas);
             drawDots(canvas);
         }

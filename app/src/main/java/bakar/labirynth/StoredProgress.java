@@ -30,6 +30,7 @@ class StoredProgress {
     static final String isNeedToShowTutorialPointer = "isNeedToShowTutorialPointer";
     static final String isNeedToShowTutorialTeleport = "isNeedToShowTutorialTeleport";
     static final String isNeedToLightBonusButton = "isNeedToLightBonusButton";
+    static final String isNeedToShowTutorialBonusRange = "isNeedToShowTutorialBonusRange";
     static final String isNeedToShowTutorialNextLevel = "isNeedToShowTutorialNextLevel";
 
     static StoredProgress getInstance() {
@@ -59,6 +60,8 @@ class StoredProgress {
                 sharedPreferences.getBoolean(isNeedToLightBonusButton, true));
         ed.putBoolean(isNeedToShowTutorialNextLevel,
                 sharedPreferences.getBoolean(isNeedToShowTutorialNextLevel, true));
+        ed.putBoolean(isNeedToShowTutorialBonusRange,
+                sharedPreferences.getBoolean(isNeedToShowTutorialBonusRange, true));
 
         ed.putBoolean(isMusicOnKey,
                 sharedPreferences.getBoolean(isMusicOnKey, true));
