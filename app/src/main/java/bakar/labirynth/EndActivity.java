@@ -55,7 +55,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
     final HashMap<EndMenuItems, TextView> textViewMap = new HashMap<>();
 
     void setMap(){
-        imageMap.put(EndMenuItems.levelFinished, R.drawable.vortex_frame_00);
+        imageMap.put(EndMenuItems.levelFinished, R.drawable.exit_icon_glow);
         imageMap.put(EndMenuItems.coinsPicked, R.drawable.coin_anim1);
         imageMap.put(EndMenuItems.goldTotal, R.drawable.gold_pile);
     }

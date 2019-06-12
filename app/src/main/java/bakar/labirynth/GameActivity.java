@@ -39,8 +39,7 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-RELEASE
-    // TODO: 5/19/19 low res pointer sprite
-    // TODO: 3/18/19 player, exit, coin sprites
+    // TODO: 3/18/19 coin sprites
     // TODO: 5/5/19 check any resolution gui
     // TODO: 6/2/19 bonus range tutorial
     // TODO: 6/8/19 check max item upgrade
@@ -96,10 +95,7 @@ public class GameActivity extends Activity{
         Logger.getAnonymousLogger().info("GameActivity.onCreate() setContentView(R.layout.loading_screen)");
         setContentView(R.layout.loading_screen);
 
-        // todo использовать синглтон
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        boolean usesJoystick = sPref.getBoolean("uses_joystick", false);
-        if (!usesJoystick){
+        if (!StoredProgress.getInstance().getValueBoolean(StoredProgress.usesJoystickKey)){
             tiltController = new TiltController();
         }
 

@@ -1309,11 +1309,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             BitmapList list = new BitmapList("Coin");
 
             list.addBitmap(R.drawable.coin_anim1);
-            list.addBitmap(R.drawable.coin_anim2);
-            list.addBitmap(R.drawable.coin_anim3);
-            list.addBitmap(R.drawable.coin_anim4);
-            list.addBitmap(R.drawable.coin_anim5);
-            list.addBitmap(R.drawable.coin_anim6);
+//            list.addBitmap(R.drawable.coin_anim2);
+//            list.addBitmap(R.drawable.coin_anim3);
+//            list.addBitmap(R.drawable.coin_anim4);
+//            list.addBitmap(R.drawable.coin_anim5);
+//            list.addBitmap(R.drawable.coin_anim6);
 
             add(list);
         }
@@ -1321,16 +1321,16 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             if (null != getListByName("Exit"))
                 return;
 
-            BitmapList list = new BitmapList("Exit");
-
-            list.addBitmap(R.drawable.vortex_frame_00);
-            list.addBitmap(R.drawable.vortex_frame_01);
-            list.addBitmap(R.drawable.vortex_frame_02);
-            list.addBitmap(R.drawable.vortex_frame_03);
-            list.addBitmap(R.drawable.vortex_frame_04);
-            list.addBitmap(R.drawable.vortex_frame_05);
-            list.addBitmap(R.drawable.vortex_frame_06);
-            add(list);
+//            BitmapList list = new BitmapList("Exit");
+//
+//            list.addBitmap(R.drawable.vortex_frame_00);
+//            list.addBitmap(R.drawable.vortex_frame_01);
+//            list.addBitmap(R.drawable.vortex_frame_02);
+//            list.addBitmap(R.drawable.vortex_frame_03);
+//            list.addBitmap(R.drawable.vortex_frame_04);
+//            list.addBitmap(R.drawable.vortex_frame_05);
+//            list.addBitmap(R.drawable.vortex_frame_06);
+//            add(list);
         }
         void setTeleport(){
             if (null != getListByName("Teleport"))
