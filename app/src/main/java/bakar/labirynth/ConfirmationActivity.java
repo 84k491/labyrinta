@@ -1,6 +1,7 @@
 package bakar.labirynth;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -30,13 +31,16 @@ public class ConfirmationActivity extends Activity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("what_from", ConfirmationActivity.class.toString());
         if (v.getId() == R.id.bt_confirm_no ||
             v.getId() == R.id.confirmation_bg){
-            setResult("confirm_no".hashCode());
+            intent.putExtra("result", "confirm_no");
         }
         if (v.getId() == R.id.bt_confirm_yes){
-            setResult("confirm_yes".hashCode());
+            intent.putExtra("result", "confirm_yes");
         }
+        setResult(RESULT_OK, intent);
         finish();
     }
 }
