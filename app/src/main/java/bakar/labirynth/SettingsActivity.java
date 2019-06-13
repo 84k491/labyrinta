@@ -1,6 +1,7 @@
 package bakar.labirynth;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -152,7 +153,10 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.settings_bg_image){
-                    setResult("settings_finished".hashCode());
+                    Intent intent = new Intent(SettingsActivity.this, GameActivity.class);
+                    intent.putExtra("what_from", SettingsActivity.class.toString());
+                    intent.putExtra("result", "settings_finished");
+                    setResult(RESULT_OK, intent);
                     finish();
                 }
             }

@@ -1850,6 +1850,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         void onClick(){
+            gameLogic.playerPt = gameLogic.exitCoords();
+
             CPoint.Screen player_coord = game2screen(gameLogic.playerCoords());
 
             CPoint.Screen center = new CPoint.Screen(getWidth() / 2, getHeight() / 2);

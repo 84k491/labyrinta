@@ -10,6 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.view.Window;
 import android.view.WindowManager;
@@ -206,9 +207,11 @@ public class GameActivity extends Activity{
         Logger.getAnonymousLogger().info("GameActivity.onResume()");
 
         if (gameRenderer == null){
-            Logger.getAnonymousLogger().info("GameActivity new Loader()");
-            Loader loader = new Loader(true);
-            loader.start();
+            new Handler().postDelayed(()->{
+                Logger.getAnonymousLogger().info("GameActivity new Loader()");
+                Loader loader = new Loader(true);
+                loader.start();
+            }, 100);
         }
 
         if (tiltController != null) {
@@ -245,17 +248,7 @@ public class GameActivity extends Activity{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        //TODO переделать. в resultCode должно быть -1. остальное в интент
         Logger.getAnonymousLogger().info("GameActivity.onActivityResult()");
-
-        Runnable startBonusRangeTutorial = () -> {
-            if (StoredProgress.getInstance().getValueBoolean(
-                    StoredProgress.isNeedToShowTutorialBonusRange)){
-                startTutorialActivity(TutorialKey.BonusRangeTutorial);
-                StoredProgress.getInstance().
-                        switchValueBoolean(StoredProgress.isNeedToShowTutorialBonusRange);
-            }
-        };
 
         if (-1 == resultCode){
             if (TutorialKey.class.toString().equals(intent.getStringExtra("what_from"))){
@@ -276,20 +269,21 @@ public class GameActivity extends Activity{
                 }
             }
 
-            Runnable fn =  () -> {
-                Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
-                gameLayout.removeView(gameRenderer);
-                setContentView(R.layout.loading_screen);
-                gameLayout = null;
-                if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
-                    showInterstitial();
-                }
-                else{
-                    goToNextLevel();
-                }
-            };
-
             if (EndActivity.class.toString().equals(intent.getStringExtra("what_from"))) {
+                Runnable fn =  () -> {
+                    Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.loading_screen);");
+                    gameLayout.removeView(gameRenderer);
+                    setContentView(R.layout.loading_screen);
+                    gameLayout = null;
+                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
+                        showInterstitial();
+                    }
+                    else{
+                        new Handler().postDelayed(()->{
+                            goToNextLevel();
+                        }, 200);
+                    }
+                };
                 if (intent.getStringExtra("result").equals("next")){
                     fn.run();
                 }
@@ -304,43 +298,51 @@ public class GameActivity extends Activity{
                 }
             }
 
-        }
-        if (resultCode == "confirm_yes".hashCode()){
-            saveData();
-            finish();
-        }
-        if (resultCode == "pointer".hashCode()){
-            gameLogic.activatePointer();
-            gameLogic.remote_move_flag = true;
-        }
-        if (resultCode == "teleport".hashCode()){
-            gameLogic.teleportActive = true;
-            gameLogic.remote_move_flag = true;
-            startBonusRangeTutorial.run();
-        }
-        if (resultCode == "path".hashCode()){
-            gameLogic.pathfinderActive = true;
-            gameLogic.remote_move_flag = true;
-            startBonusRangeTutorial.run();
+            if (BonusActivity.class.toString().equals(intent.getStringExtra("what_from"))){
+                Runnable startBonusRangeTutorial = () -> {
+                    if (StoredProgress.getInstance().getValueBoolean(
+                            StoredProgress.isNeedToShowTutorialBonusRange)){
+                        startTutorialActivity(TutorialKey.BonusRangeTutorial);
+                        StoredProgress.getInstance().
+                                switchValueBoolean(StoredProgress.isNeedToShowTutorialBonusRange);
+                    }
+                };
+                if (intent.getStringExtra("result").equals("teleport")){
+                    gameLogic.teleportActive = true;
+                    gameLogic.remote_move_flag = true;
+                    startBonusRangeTutorial.run();
+                }
+                if (intent.getStringExtra("result").equals("pointer")){
+                    gameLogic.activatePointer();
+                    gameLogic.remote_move_flag = true;
+                }
+                if (intent.getStringExtra("result").equals("path")){
+                    gameLogic.pathfinderActive = true;
+                    gameLogic.remote_move_flag = true;
+                    startBonusRangeTutorial.run();
+                }
+                if (intent.getStringExtra("result").equals("abort_bonus")){
+                    gameLogic.remote_move_flag = true;
+                }
+            }
 
-        }
-        if (resultCode == "abort".hashCode()){
-            gameLogic.remote_move_flag = true;
-        }
-        if (resultCode == "settings_finished".hashCode()){
-            updateSettings();
-        }
-        if (resultCode == "result_shop".hashCode()){
-            saveData();
-            Intent intent1 = new Intent(this, GameActivity.class);
-            intent1.putExtra("startShop", true);
-            setResult(RESULT_OK, intent1);
-            finish();
-        }
+            if (SettingsActivity.class.toString().equals(intent.getStringExtra("what_from"))){
+                if (intent.getStringExtra("result").equals("settings_finished")){
+                    updateSettings();
+                }
+            }
 
+            if (ConfirmationActivity.class.toString().equals(intent.getStringExtra("what_from"))){
+                if (intent.getStringExtra("result").equals("confirm_yes")){
+                    saveData();
+                    finish();
+                }
+            }
+        }
     }
 
     void saveData() {
+        // TODO: 6/13/19 use singleton
         if (null == gameLogic) return;
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
@@ -351,6 +353,7 @@ public class GameActivity extends Activity{
         ed.commit(); //ed.apply();
     }
     void loadData() {
+        // TODO: 6/13/19 use singleton
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         //gameRenderer.globalScale = sPref.getFloat("global_scale", 3);
         gameLogic.pointerAmount = sPref.getInt("pointerAmount", 0);
@@ -465,7 +468,6 @@ public class GameActivity extends Activity{
                     public void run() {
                         Logger.getAnonymousLogger().info("Loader.run() init();");
                         init();
-
                     }
                 });
             }

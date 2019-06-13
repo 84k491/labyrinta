@@ -74,27 +74,29 @@ public class BonusActivity extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         boolean finishFlag = false;
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("what_from", BonusActivity.class.toString());
         switch (view.getId()){
             case R.id.bt_pointer:
                 if (pointerAmount > 0){
-                    setResult("pointer".hashCode());
+                    intent.putExtra("result", "pointer");
                     finishFlag = true;
                 }
                 break;
             case R.id.bt_teleport:
                 if (teleportAmount > 0){
-                    setResult("teleport".hashCode());
+                    intent.putExtra("result", "teleport");
                     finishFlag = true;
                 }
                 break;
             case R.id.bt_path:
                 if (pathfinderAmount > 0){
-                    setResult("path".hashCode());
+                    intent.putExtra("result", "path");
                     finishFlag = true;
                 }
                 break;
             case R.id.background_image:
-                setResult("abort".hashCode());
+                intent.putExtra("result", "abort_bonus");
                 finishFlag = true;
                 break;
         }
