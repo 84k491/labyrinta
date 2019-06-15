@@ -2,17 +2,16 @@ package bakar.labirynth;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.util.TypedValue;
 import android.util.Xml;
 import android.view.Display;
 import android.view.Gravity;
@@ -173,6 +172,11 @@ public class EndActivity extends Activity implements View.OnClickListener{
         return wraping_lo;
     }
 
+    public int convertDpToPixels(float dp) {
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, this.getResources().getDisplayMetrics());
+        return px;
+    }
+
     void makeNextLevelSizeButton(){
         int buying_level_number = 1 + StoredProgress.getInstance().getValue(
                 StoredProgress.levelUpgKey);
@@ -181,9 +185,13 @@ public class EndActivity extends Activity implements View.OnClickListener{
             return;
         }
 
+        //Это хардкод из лейаута
+        // TODO: 6/15/19 remove hardcode
+        final int max_size = convertDpToPixels(60);
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                itemSizePx,
-                itemSizePx,
+                max_size,
+                max_size,
                 1
         );
 
@@ -238,14 +246,14 @@ public class EndActivity extends Activity implements View.OnClickListener{
         set.centerHorizontally(bgTextView.getId(), ConstraintSet.PARENT_ID);
         set.centerVertically(bgTextView.getId(), ConstraintSet.PARENT_ID);
 
-        set.constrainWidth(bgTextView.getId(), itemSizePx);
-        set.constrainHeight(bgTextView.getId(), itemSizePx);
+        set.constrainWidth(bgTextView.getId(), max_size);
+        set.constrainHeight(bgTextView.getId(), max_size);
 
         set.centerHorizontally(costLabel.getId(), ConstraintSet.PARENT_ID);
         set.centerVertically(costLabel.getId(), ConstraintSet.PARENT_ID);
 
-        set.constrainWidth(costLabel.getId(), itemSizePx);
-        set.constrainHeight(costLabel.getId(), itemSizePx / 4);
+        set.constrainWidth(costLabel.getId(), max_size);
+        set.constrainHeight(costLabel.getId(), max_size / 4);
 
         set.applyTo(constraintLayout);
 
