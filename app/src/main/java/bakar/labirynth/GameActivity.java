@@ -43,7 +43,6 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 coin sprites
     // TODO: 5/5/19 check any resolution gui
     // TODO: 6/2/19 bonus range tutorial
-    // TODO: 6/8/19 check max item upgrade
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
