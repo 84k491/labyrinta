@@ -43,7 +43,6 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 coin sprites
     // TODO: 5/5/19 check any resolution gui
     // TODO: 6/2/19 bonus range tutorial
-    // TODO: 6/8/19 check max item upgrade
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
@@ -51,7 +50,6 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
-    // TODO: 5/1/19 убрать блок девайса по времени surfaceHolder setKeepScreenOn()
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;
@@ -544,7 +542,8 @@ public class GameActivity extends Activity{
             result = sensorManager.registerListener(listener, sensorGravity,
                     period);
 
-            registered = true;
+            //registered = true;
+            registered = result;
         }
         void unregisterSensors(){
             sensorManager.unregisterListener(listener);

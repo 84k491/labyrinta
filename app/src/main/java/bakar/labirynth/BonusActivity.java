@@ -100,7 +100,9 @@ public class BonusActivity extends Activity implements View.OnClickListener{
                 finishFlag = true;
                 break;
         }
-        if (finishFlag)
+        if (finishFlag){
+            setResult(RESULT_OK, intent);
             finish();
+        }
     }
 }

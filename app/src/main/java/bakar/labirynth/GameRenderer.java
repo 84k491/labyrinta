@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,48 +91,33 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     ArrayList<Button> buttons = new ArrayList<>();
     ArrayList<PickUpAnimation> pickUpAnimations = new ArrayList<>();
 
-    public GameRenderer(Context _context) {
-        super(_context);
-        Logger.getAnonymousLogger().info("GameRenderer.ctor 1p begin");
+    void constructor(Context _context){
+        Logger.getAnonymousLogger().info("GameRenderer.ctor p begin");
         setZOrderOnTop(true);
         context = _context;
         camera.setLocation(0,0,10);
         camera.save();
+        getHolder().setKeepScreenOn(true);
         getHolder().addCallback(this);
         getHolder().setFormat(PixelFormat.RGBA_8888);
 
         renderThread = new RenderThread();
         renderThread.start();
-        Logger.getAnonymousLogger().info("GameRenderer.ctor 1p end");
+        Logger.getAnonymousLogger().info("GameRenderer.ctor p end");
+    }
+
+    public GameRenderer(Context _context) {
+        super(_context);
+        constructor(_context);
     }
 
     public GameRenderer(Context _context, AttributeSet set, int defStyle){
         super(_context, set, defStyle);
-        Logger.getAnonymousLogger().info("GameRenderer.ctor 3p begin");
-        setZOrderOnTop(true);
-        context = _context;
-        camera.setLocation(0,0,10);
-        camera.save();
-        getHolder().addCallback(this);
-        getHolder().setFormat(PixelFormat.RGBA_8888);
-
-        renderThread = new RenderThread();
-        renderThread.start();
-        Logger.getAnonymousLogger().info("GameRenderer.ctor 3p end");
+        constructor(_context);
     }
     public GameRenderer(Context _context, AttributeSet set){
         super(_context, set);
-        Logger.getAnonymousLogger().info("GameRenderer.ctor 2p begin");
-        setZOrderOnTop(true);
-        context = _context;
-        camera.setLocation(0,0,10);
-        camera.save();
-        getHolder().addCallback(this);
-        getHolder().setFormat(PixelFormat.RGBA_8888);
-
-        renderThread = new RenderThread();
-        renderThread.start();
-        Logger.getAnonymousLogger().info("GameRenderer.ctor 2p end");
+        constructor(_context);
     }
     void addPickUpAnimation(CPoint.Game pointF, String text){
         pickUpAnimations.add(new PickUpAnimation(pointF, text));
@@ -1850,6 +1836,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         void onClick(){
+            gameLogic.playerPt = gameLogic.exitCoords();
+
             CPoint.Screen player_coord = game2screen(gameLogic.playerCoords());
 
             CPoint.Screen center = new CPoint.Screen(getWidth() / 2, getHeight() / 2);
