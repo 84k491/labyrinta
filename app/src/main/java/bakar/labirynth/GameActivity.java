@@ -168,21 +168,6 @@ public class GameActivity extends Activity{
         gameRenderer.prepareNewLevel();
 
         gameRenderer.centerCameraTo(new CPoint.Game(0,0));
-
-        if (getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel)){
-
-            String dataKey = StoredProgress.levelUpgKey;
-            int level_value = getInstance().getValue(dataKey);
-            int level_cost = Economist.getInstance().price_map.get(dataKey).apply(level_value);
-
-            if (getInstance().getGoldAmount() >= level_cost){
-                getInstance().
-                        switchValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel);
-                Intent tutorialIntent = new Intent(this, TutorialActivity.class);
-                tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(NextLevelBuyTutorial));
-                startActivityForResult(tutorialIntent, 42);
-            }
-        }
     }
     @Override
     public void onBackPressed(){
@@ -256,6 +241,11 @@ public class GameActivity extends Activity{
                 Map<TutorialKey, TutorialKey> finishedToNext = new HashMap<>();
                 finishedToNext.put(BeginTutorial_1, BeginTutorial_2);
                 finishedToNext.put(BeginTutorial_2, BeginTutorial_3);
+
+                if (NextLevelBuyTutorial == finishedTutorial){
+                    // после этого туториала должно появиться EndMenu
+                    gameLogic.startEndActivity();
+                }
 
                 if (finishedToNext.get(finishedTutorial) != null){
                     Intent tutorialIntent = new Intent(this, TutorialActivity.class);

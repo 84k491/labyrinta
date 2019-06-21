@@ -19,8 +19,10 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static bakar.labirynth.StoredProgress.getInstance;
 import static bakar.labirynth.StoredProgress.isNeedToLightBonusButton;
 import static bakar.labirynth.StoredProgress.isNeedToShowTutorialPointer;
+import static bakar.labirynth.TutorialKey.NextLevelBuyTutorial;
 
 /**
  * Created by Bakar on 10.03.2018.
@@ -152,7 +154,7 @@ class GameLogic {
         Intent intent = new Intent(gameRenderer.getContext(), EndActivity.class);
         intent.putExtra("goldEarnedByCoins", goldEarnedByCoins);
         intent.putExtra("goldEarnedByLevel", goldEarnedByLevel);
-        ((Activity)gameRenderer.getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
+        ((Activity)gameRenderer.getContext()).startActivityForResult(intent, 42);
     }
 
     void startTutorialActivity(TutorialKey key){
@@ -208,7 +210,28 @@ class GameLogic {
         pointerActive = false;
 
         SoundCore.inst().playSound(Sounds.levelFinished);
-        startEndActivity();
+
+        boolean flag = false;
+        if (StoredProgress.getInstance().getValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel)){
+
+            String dataKey = StoredProgress.levelUpgKey;
+            int level_value = getInstance().getValue(dataKey);
+            int level_cost = Economist.getInstance().price_map.get(dataKey).apply(level_value);
+
+            if ((StoredProgress.getInstance().getGoldAmount() + goldEarnedByLevel + goldEarnedByCoins) >= level_cost){
+                flag = true;
+                getInstance().
+                        switchValueBoolean(StoredProgress.isNeedToShowTutorialNextLevel);
+                Intent tutorialIntent = new Intent(gameRenderer.getContext(), TutorialActivity.class);
+                tutorialIntent.putExtra(TutorialKey.class.toString(), String.valueOf(NextLevelBuyTutorial));
+                ((Activity)gameRenderer.getContext()).startActivityForResult(tutorialIntent, 42);
+            }
+        }
+
+        if (!flag){
+            startEndActivity();
+        }
+
     }
     void onCoinPickedUp(){
         int pickedUpCoinCost = Economist.getInstance().getCoinCostRand();
