@@ -572,6 +572,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private Paint fog = new Paint();
         private Paint enlighten = new Paint();
         private Paint puanim = new Paint();
+        private Paint levelNumber = new Paint();
         private Paint bonusRadius = new Paint();
         private ExitDrawer exitDrawer = new ExitDrawer();
 
@@ -604,6 +605,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             puanim.setTextAlign(Paint.Align.CENTER);
             puanim.setTextSize(20);
             puanim.setTypeface(Typeface.createFromAsset(getContext().getAssets(),  "fonts/trench100free.ttf"));
+
+            levelNumber.setColor(Color.WHITE);
+            levelNumber.setTextAlign(Paint.Align.RIGHT);
+            levelNumber.setTextSize(95);
+            levelNumber.setTypeface(Typeface.createFromAsset(getContext().getAssets(),  "fonts/trench100free.ttf"));
+
             bonusRadius.setColor(Color.argb(220, 40, 255, 40));
 
             final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -814,6 +821,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
         void drawPickedUpAnimation(Canvas canvas){
             // FIXME: 12/31/18 размер шрифта
+            // что с размером шрифта?
             for (int i = 0; i < pickUpAnimations.size(); i++) {
                 if (pickUpAnimations.get(i).isOld()){
                     pickUpAnimations.remove(i);
@@ -1018,6 +1026,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void drawExit(Canvas canvas){
             exitDrawer.draw(canvas);
         }
+        void drawLevelNumber(Canvas canvas){
+            PointF pointF = new CPoint.Screen(80, 70);
+            canvas.drawText(String.valueOf(gameLogic.level_difficulty),
+                    pointF.x, pointF.y, levelNumber);
+        }
 
         void onDraw(Canvas canvas){
             if (!gameLogic.isInited) return;
@@ -1067,6 +1080,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             // дальше отрисовка HUD. В экранных координатах
             canvas.setMatrix(Ematrix);
 
+            drawLevelNumber(canvas);
             drawButtons(canvas);
             drawJoystick(canvas);
 
