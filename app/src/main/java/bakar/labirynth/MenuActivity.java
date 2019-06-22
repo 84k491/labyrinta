@@ -91,14 +91,14 @@ public class MenuActivity extends Activity implements OnClickListener {
     void startLevelSelectActivity(){
         Intent intent = new Intent(this, LevelSelectActivity.class);
         intent.putExtra("max_level_allowed", sPref.getInt("level_upg", 1)); //fixme
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, 42);
     }
     void startGameActivity(int level_size){
         long seed = System.currentTimeMillis();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("seed", seed);
         intent.putExtra("level_size", level_size);
-        startActivityForResult(intent, this.toString().hashCode());
+        startActivityForResult(intent, 42);
     }
     void startSettingsActivity(){
         Intent intent = new Intent(this, SettingsActivity.class);
@@ -120,7 +120,9 @@ public class MenuActivity extends Activity implements OnClickListener {
                 startShopActivity();
             }
             else{
-                startGameActivity(data.getIntExtra("level_size", 1));
+                if (data.getIntExtra("level_size", -1) > 0){
+                    startGameActivity(data.getIntExtra("level_size", 1));
+                }
             }
         }
     }

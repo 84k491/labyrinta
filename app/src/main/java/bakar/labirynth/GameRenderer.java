@@ -768,24 +768,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(bmp,
                     translate_matrix, common);
         }
-        void drawDotBitmap(Canvas canvas, Bitmap bmp, CPoint.Screen pos){
-            translate_matrix.reset();
-
-            translate_matrix.preTranslate(pos.x - (float)bmp.getWidth() / 2,
-                    pos.y  - (float)bmp.getHeight() / 2);
-
-            canvas.drawBitmap(bmp,
-                    translate_matrix, BgResources.inst().dotPaint);
-        }
-        void drawDots(Canvas canvas){
-            while (BgResources.inst().isDotsArrayLocked){}
-            BgResources.inst().isDotsArrayLocked = true;
-            for(TheDot dot: BgResources.inst().dotPool){
-                drawDotBitmap(canvas, BgResources.inst().getDotBmp(dot.radius, dot.depth, rs), dot.pos);
-                dot.onDraw(); // FIXME: 4/16/19
-            }
-            BgResources.inst().isDotsArrayLocked = false;
-        }
         void drawDebugText(Canvas canvas){
             if (!isDebug)
                 return;
@@ -1027,9 +1009,21 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             exitDrawer.draw(canvas);
         }
         void drawLevelNumber(Canvas canvas){
-            PointF pointF = new CPoint.Screen(80, 70);
-            canvas.drawText(String.valueOf(gameLogic.level_difficulty),
-                    pointF.x, pointF.y, levelNumber);
+            //todo don't create every time
+            String text = String.valueOf(gameLogic.level_difficulty);
+            if (gameLogic.level_difficulty < 10){
+                text = "0" + text;
+            }
+            Rect bounds = new Rect();
+            levelNumber.getTextBounds(text, 0, text.length(), bounds);
+            bounds.offset(-bounds.left, -bounds.top);
+            int offset = 15;
+            bounds.offset(offset + 3, offset); // по Х надо больше из-за кривого шрифта
+
+            //canvas.drawRect(bounds, hitbox);
+            canvas.drawText(text,
+                    bounds.right, bounds.bottom, levelNumber);
+
         }
 
         void onDraw(Canvas canvas){

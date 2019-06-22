@@ -120,7 +120,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         if (view.getId() == R.id.bt_select_back){
             Intent intent = new Intent(this, LevelSelectActivity.class);
             intent.putExtra("level_size", -1);
-            setResult(RESULT_CANCELED, intent);
+            setResult(RESULT_OK, intent);
             finish();
         }
 
