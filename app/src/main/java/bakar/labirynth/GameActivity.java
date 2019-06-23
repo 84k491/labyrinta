@@ -40,9 +40,10 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-RELEASE
+    // TODO: 6/23/19 make only vertical levels (?)
     // TODO: 3/18/19 coin sprites
     // TODO: 5/5/19 check any resolution gui
-    // TODO: 6/2/19 bonus range tutorial
+    // TODO: 6/23/19 block movement while usin bonus
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
@@ -201,8 +202,6 @@ public class GameActivity extends Activity{
             Logger.getAnonymousLogger().info("GameActivity tiltController.registerSensors()");
             tiltController.registerSensors();
         }
-
-
     }
     @Override
     protected void onPause(){

@@ -32,7 +32,7 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="20" />
+                android:layout_weight="40" />
 
             <LinearLayout
                 android:id="@+id/lo_tutorial"
@@ -44,7 +44,7 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="20" />
+                android:layout_weight="40" />
 
         </LinearLayout>
 

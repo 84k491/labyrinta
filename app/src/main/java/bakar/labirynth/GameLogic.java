@@ -122,6 +122,7 @@ class GameLogic {
         //eFactory.makePointer(new Point(1, 1));
         //eFactory.makeTeleport(new Point(3, 3));
         //eFactory.makePathfinder(new Point(5, 5));
+
         eFactory.dropCoins();
         eFactory.dropBonuses();
 

@@ -8,4 +8,5 @@
     <color name="loading_screen_bg">#2B2B2B</color>
     <color name="white">#FFFFFF</color>
     <color name="dialogue_background">#C8000000</color>
+    <color name="blue">#0D00FF</color>
 </resources>

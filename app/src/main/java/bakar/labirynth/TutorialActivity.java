@@ -35,6 +35,13 @@ public class TutorialActivity extends Activity {
     Map<TutorialKey, String> text_map = new HashMap<>();
     Map<TutorialKey, Integer> image_map = new HashMap<>();
 
+    boolean isDetailedTutorial(TutorialKey key){
+        return (key == TutorialKey.PathfinderTutorial ||
+                key == TutorialKey.TeleportTutorial ||
+                key == TutorialKey.PointerTutorial ||
+                key == TutorialKey.BonusRangeTutorial);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +75,7 @@ public class TutorialActivity extends Activity {
 
     void setMaps(){
         text_map.put(TutorialKey.BeginTutorial_1,
-                "Hello. The goal for each level is to reach an exit"
+                "Hello! The goal for each level is to reach an exit"
                 );
         text_map.put(TutorialKey.BeginTutorial_2,
                 "Tilt your device to move around. \n" +
@@ -95,7 +102,7 @@ public class TutorialActivity extends Activity {
         );
         text_map.put(TutorialKey.NextLevelBuyTutorial,
                 "It seems you have enough gold to unlock next level size!\n" +
-                "You can unlock it at shop, or at level menu."
+                "Tap this green button to buy it!."
         );
         text_map.put(TutorialKey.BonusRangeTutorial,
                 "Just tap within range to use a bonus!\n" +
@@ -121,7 +128,7 @@ public class TutorialActivity extends Activity {
                 R.drawable.tutorial_teleport
         );
         image_map.put(TutorialKey.NextLevelBuyTutorial,
-                R.drawable.expand
+                R.drawable.tutorial_expand
         );image_map.put(TutorialKey.BonusRangeTutorial,
                 R.drawable.tutorial_range
         );
@@ -129,20 +136,16 @@ public class TutorialActivity extends Activity {
     }
 
     void setTutorial(TutorialKey key){
-        LinearLayout.LayoutParams lo_params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                50
-        );
 
         LinearLayout.LayoutParams space_params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                10
+                40
         );
 
         LinearLayout.LayoutParams image_params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                200,
+                isDetailedTutorial(key) ? 400 : 200,
                 1
         );
 

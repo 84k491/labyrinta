@@ -1,6 +1,5 @@
 package bakar.labirynth;
 
-
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
