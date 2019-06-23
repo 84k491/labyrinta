@@ -40,10 +40,9 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
 
     // STEPS-TO-RELEASE
-    // TODO: 6/23/19 make only vertical levels (?)
     // TODO: 3/18/19 coin sprites
     // TODO: 5/5/19 check any resolution gui
-    // TODO: 6/23/19 block movement while usin bonus
+    // TODO: 6/23/19 randomize exit animation
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
@@ -78,9 +77,6 @@ public class GameActivity extends Activity{
         result.x = Math.round(resultF.x);
         result.y = Math.round(resultF.y);
 
-//        float hypot_check = (float)Math.sqrt(result.x * result.x + result.y * result.y);
-//        float diff = hypot - hypot_check;
-
         return result;
     }
 
@@ -110,7 +106,7 @@ public class GameActivity extends Activity{
         int difficulty = intent.getIntExtra("level_size", 1);
         Point lvl_size = difficultyToActualSize(difficulty);
         gameLogic = new GameLogic(null, intent.getLongExtra("seed", 123456789),
-                lvl_size.x, lvl_size.y);
+                Math.min(lvl_size.x, lvl_size.y), Math.max(lvl_size.x, lvl_size.y));
         gameLogic.level_difficulty = difficulty;
         gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", false);
         if (!gameLogic.usesJoystick){
@@ -160,7 +156,7 @@ public class GameActivity extends Activity{
     void reInit(){
         gameLogic.isInited = false;
         Point size = difficultyToActualSize(gameLogic.level_difficulty);
-        gameLogic.init(size.x, size.y);
+        gameLogic.init(Math.min(size.x, size.y), Math.max(size.x, size.y));
         gameRenderer.onTouchUp(null);
         gameRenderer.resetLab();
         gameRenderer.resetFog();
@@ -554,6 +550,11 @@ public class GameActivity extends Activity{
 
         @Override
         public CPoint.Game getCurrentVelocity() {
+            if (gameRenderer != null){
+                if (gameLogic.teleportActive || gameLogic.pathfinderActive){
+                    return new CPoint.Game(0.f,0.f);
+                }
+            }
             speed_vector.x = -valuesGravity[0] * coef;
             speed_vector.y = valuesGravity[1] * coef;
             //changeSpeedVector();

@@ -84,7 +84,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     private GameLogic gameLogic;
     private RenderThread renderThread;
-    private RenderScript rs = RenderScript.create(getContext());
 
     private Context context;
 
@@ -552,8 +551,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         AnimationBitmaps bitmaps = new AnimationBitmaps();
-
-        float exit_start_angle = 0;
 
         //Todo: перенести Paint в ресурсы цвета
         private Paint common = new Paint();
