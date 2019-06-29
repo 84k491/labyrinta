@@ -39,6 +39,7 @@ public class GameActivity extends Activity{
     // TODO: 6/25/19 центрировать первые уровние между выходом и шариком
     // TODO: 6/24/19 fix passing an exit on high speed
     // TODO: 6/25/19 туториал при покупке уровня выглядит как кнопка
+    // TODO: 6/29/19 remove adds for first beta
 
     // STEPS-TO-RELEASE
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
@@ -204,6 +205,8 @@ public class GameActivity extends Activity{
             Logger.getAnonymousLogger().info("GameActivity tiltController.registerSensors()");
             tiltController.registerSensors();
         }
+
+        //startTutorialActivity(BeginTutorial_1); // 4 test
     }
     @Override
     protected void onPause(){

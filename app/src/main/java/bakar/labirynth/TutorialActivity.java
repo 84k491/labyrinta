@@ -169,7 +169,16 @@ public class TutorialActivity extends Activity {
         image_lo.addView(imageView, image_params);
         image_lo.addView(spaces[1], space_params);
 
+        Space[] spaces_vert = {new Space(this), new Space(this)};
+        LinearLayout.LayoutParams space_params_vert = new LinearLayout.LayoutParams(
+                30,
+                30,
+                4
+        );
+
+        tutorial_lo.addView(spaces_vert[0], 0, space_params_vert);
         tutorial_lo.addView(image_lo, 0);
+        tutorial_lo.addView(spaces_vert[1], 0, space_params_vert);
         tutorial_lo.addView(textView, 0);
     }
 }
