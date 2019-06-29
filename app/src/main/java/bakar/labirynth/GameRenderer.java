@@ -743,22 +743,32 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         Random random;
 
-        void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge){
+        void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge, boolean is_coin){
             translate_matrix.reset();
-            if (isLarge)
-            {
-                translate_matrix.preTranslate(pos.x - cellSize * bigSquareScale,
-                        pos.y  - cellSize * bigSquareScale);
-                // из преобразования в AnimationBitmaps
-                translate_matrix.preScale(2 * bigSquareScale / max_scale,
-                        2 * bigSquareScale / max_scale);
+            // TODO: 6/29/19 написать нормально
+            if (!is_coin){
+                if (isLarge)
+                {
+                    translate_matrix.preTranslate(pos.x - cellSize * bigSquareScale,
+                            pos.y  - cellSize * bigSquareScale);
+                    // из преобразования в AnimationBitmaps
+                    translate_matrix.preScale(2 * bigSquareScale / max_scale,
+                            2 * bigSquareScale / max_scale);
+                }
+                else
+                {
+                    translate_matrix.preTranslate(pos.x - cellSize * bigSquareScale / 2,
+                            pos.y  - cellSize * bigSquareScale / 2);
+                    translate_matrix.preScale(1 * bigSquareScale / max_scale,
+                            1 * bigSquareScale / max_scale);
+                }
             }
-            else
-            {
-                translate_matrix.preTranslate(pos.x - cellSize * bigSquareScale / 2,
-                        pos.y  - cellSize * bigSquareScale / 2);
-                translate_matrix.preScale(1 * bigSquareScale / max_scale,
-                        1 * bigSquareScale / max_scale);
+            else{
+                float coin_coef = .7f;
+                translate_matrix.preTranslate(pos.x - coin_coef * cellSize * bigSquareScale / 2,
+                        pos.y  - coin_coef * cellSize * bigSquareScale / 2);
+                translate_matrix.preScale(1 * coin_coef * bigSquareScale / max_scale,
+                        1 * coin_coef * bigSquareScale / max_scale);
             }
 
             canvas.drawBitmap(bmp,
@@ -870,6 +880,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawTile(canvas,
                     bitmaps.getByName("Player"),
                     gameLogic.playerCoords(),
+                    false,
                     false);
             //canvas.drawRect(pt2rect(gameLogic.playerCoords()), player);
         }
@@ -941,7 +952,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 drawTile(canvas,
                         bitmaps.getByEntity(entity),
                         field2game(entity.pos),
-                        entity.isLarge);
+                        entity.isLarge,
+                        entity.whoami.equals("Coin"));
             }
             gameLogic.eFactory.unlock();
         }

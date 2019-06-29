@@ -34,10 +34,10 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-BETA
     // TODO: 3/18/19 coin sprites
-    // TODO: 6/29/19 remove adds for first beta
-    // TODO: 6/24/19 fix passing an exit on high speed
+    // TODO: 6/29/19 coin pack icon
 
     // STEPS-TO-RELEASE
+    // TODO: 6/24/19 fix passing an exit on high speed
     // TODO: 6/25/19 туториал при покупке уровня выглядит как кнопка
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
     // TODO: 6/25/19 change scaling speed
