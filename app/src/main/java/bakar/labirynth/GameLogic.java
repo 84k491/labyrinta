@@ -335,11 +335,11 @@ class GameLogic {
         }
 
         float exit_distance = distance(exitCoords(), playerCoords());
-        if (exit_distance < cellSize * 3){
+        if (exit_distance < cellSize * 1.1f){
             Line line = new Line(playerCoords(), exitCoords());
             PointF additional_movement = line.normalizedVector();
 
-            float coef = (cellSize * 3) / exit_distance;
+            float coef = (cellSize * 5) / exit_distance;
 
             additional_movement.x *= coef;
             additional_movement.y *= coef;
