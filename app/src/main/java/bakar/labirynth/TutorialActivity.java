@@ -102,7 +102,7 @@ public class TutorialActivity extends Activity {
         );
         text_map.put(TutorialKey.NextLevelBuyTutorial,
                 "It seems that you have enough gold to unlock next level size!\n" +
-                "Tap this green button to buy it!"
+                "Tap this green button at end of a level to buy it!"
         );
         text_map.put(TutorialKey.BonusRangeTutorial,
                 "Just tap within range to use a bonus!\n" +
