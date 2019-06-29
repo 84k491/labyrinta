@@ -454,8 +454,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             buttons.add(new PlayerFinder(pos1, rad1));
         }
 
-
-        if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) < 4){
+        if (gameLogic.level_difficulty < 4){
             centerCameraBetweenPlayerExit();
         }
         else{
@@ -623,6 +622,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             is_doing_preparations = true;
             Logger.getAnonymousLogger().info("RenderThread.doB4Surface() begin");
             updateLabyrinthBmp();
+            exitDrawer.setRandomObjects();
             Logger.getAnonymousLogger().info("RenderThread.doB4Surface() end");
             is_doing_preparations = false;
         }
@@ -1560,6 +1560,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         void setRandomObjects(){
             sectors.clear();
+            lines.clear();
             for (int color : colors){
                 // todo remove radius from ctor
                 sectors.add(new Sector(1.f, 80.f, color));
