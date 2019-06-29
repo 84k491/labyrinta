@@ -32,17 +32,17 @@ import static bakar.labirynth.TutorialKey.NextLevelBuyTutorial;
 
 public class GameActivity extends Activity{
 
-    // TODO: 19.05.2018 rate this app
-    // TODO: 4/20/19 плавное движение от акселерометра
-    // TODO: 3/18/19 in-app purchases
-    // TODO: 3/18/19 gold for video
-    // TODO: 5/1/19 randomizer bonus
-    // TODO: 4/20/19 pointer upgrade
+    // STEPS-TO-BETA
+    // TODO: 3/18/19 coin sprites
+    // TODO: 6/23/19 randomize exit animation
+    // TODO: 6/25/19 отступ между картинкой и кнопкой ок в туториале
+    // TODO: 6/25/19 центрировать первые уровние между выходом и шариком
+    // TODO: 6/24/19 fix passing an exit on high speed
+    // TODO: 6/25/19 туториал при покупке уровня выглядит как кнопка
 
     // STEPS-TO-RELEASE
-    // TODO: 3/18/19 coin sprites
-    // TODO: 5/5/19 check any resolution gui
-    // TODO: 6/23/19 randomize exit animation
+    // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
+    // TODO: 6/25/19 change scaling speed
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
@@ -50,6 +50,12 @@ public class GameActivity extends Activity{
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
+    // TODO: 19.05.2018 rate this app
+    // TODO: 4/20/19 плавное движение от акселерометра
+    // TODO: 3/18/19 in-app purchases
+    // TODO: 3/18/19 gold for video
+    // TODO: 5/1/19 randomizer bonus
+    // TODO: 4/20/19 pointer upgrade
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;

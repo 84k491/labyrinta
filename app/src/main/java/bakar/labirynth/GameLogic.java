@@ -50,7 +50,7 @@ class GameLogic {
     GameRenderer gameRenderer;
     Field field;
     Node currentNode;
-    CPoint.Game playerPt;
+    private CPoint.Game playerPt;
     long seed = 0;
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;

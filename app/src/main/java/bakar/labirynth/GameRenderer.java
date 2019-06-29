@@ -109,7 +109,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         super(_context);
         constructor(_context);
     }
-
     public GameRenderer(Context _context, AttributeSet set, int defStyle){
         super(_context, set, defStyle);
         constructor(_context);
@@ -118,6 +117,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         super(_context, set);
         constructor(_context);
     }
+
     void addPickUpAnimation(CPoint.Game pointF, String text){
         pickUpAnimations.add(new PickUpAnimation(pointF, text));
     }
@@ -400,13 +400,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     //
     void movePlayer(PointF pointSc){
-        CPoint.Screen pt = new CPoint.Screen();
-        pt.x = pointSc.x;
-        pt.y = pointSc.y;
-        if (gameLogic.usesJoystick)
+        if (gameLogic.usesJoystick){
+            final CPoint.Screen pt = new CPoint.Screen(pointSc.x, pointSc.y);
             gameLogic.joystick.lastTouch = screen2game(pt);
-        else
-            gameLogic.movePlayerTo(screen2game(pt));
+        }
+//        else
+//            gameLogic.movePlayerTo(screen2game(pt));
     }
     void changeOffset(PointF offset){
         camera.save();
@@ -1841,7 +1840,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         void onClick(){
-            gameLogic.playerPt = gameLogic.exitCoords();
+            //gameLogic.playerPt = gameLogic.exitCoords();
 
             CPoint.Screen player_coord = game2screen(gameLogic.playerCoords());
 
