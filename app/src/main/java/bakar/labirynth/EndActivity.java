@@ -429,10 +429,16 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 finish();
                 break;
             case R.id.cl_end_level_next:
-                int buying_level_number = 1 + StoredProgress.getInstance().getValue(
-                        StoredProgress.levelUpgKey);
+                final String dataKey = StoredProgress.levelUpgKey;
+                final int level_value = StoredProgress.getInstance().getValue(dataKey);
+                final int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
+                        level_value
+                );
 
-                if (buying_level_number <= Economist.maxLevel){
+                final int buying_level_number = 1 + level_value;
+
+                if (level_cost <= StoredProgress.getInstance().getGoldAmount() &&
+                        buying_level_number <= Economist.maxLevel){
                     startConfirmationActivity();
                 }
                 break;

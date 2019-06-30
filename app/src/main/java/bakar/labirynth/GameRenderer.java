@@ -53,7 +53,7 @@ import static android.graphics.Path.Direction.CW;
 public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     // IMPORT /////////////////////////////
-    boolean isDebug = false;
+    private static final boolean isDebug = false;
     ///////////////////////////////////////
 
     CPoint.Game lastToushGc = new CPoint.Game();
@@ -63,8 +63,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     boolean registerBonusTouch = false;
 
-    float smallSquareScale = 0.5f;
-    float bigSquareScale = 2.f - smallSquareScale;
+    private static final float smallSquareScale = 0.5f;
+    private static final float bigSquareScale = 2.f - smallSquareScale;
 
     static final float cellSize = 10; // gameCoords side
 

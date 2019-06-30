@@ -33,18 +33,21 @@ import static bakar.labirynth.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // STEPS-TO-BETA
-    // TODO: 3/18/19 coin sprites
-    // TODO: 6/29/19 coin pack icon
+    // TODO: 7/1/19 check copyrights
 
     // STEPS-TO-RELEASE
+    // TODO: 7/3/19 ignore system font size
+    // TODO: 7/3/19 joystick level end lag
+    // TODO: 6/30/19 проверить расположение точек бекграунда. они могут быть поверх всего
+    // TODO: 3/18/19 coin icons
     // TODO: 6/24/19 fix passing an exit on high speed
-    // TODO: 6/25/19 туториал при покупке уровня выглядит как кнопка
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
     // TODO: 6/25/19 change scaling speed
 
     //after release
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/18/19 Название съезжает если выйти домой в самом начале
+    // TODO: 6/29/19 make less coins
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
