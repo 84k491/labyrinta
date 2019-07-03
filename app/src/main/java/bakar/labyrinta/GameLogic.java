@@ -154,7 +154,7 @@ class GameLogic {
     void startTutorialActivity(TutorialKey key){
         Intent intent = new Intent(gameRenderer.getContext(), TutorialActivity.class);
         intent.putExtra(TutorialKey.class.toString(), String.valueOf(key));
-        ((Activity)gameRenderer.getContext()).startActivityForResult(intent, EndActivity.class.toString().hashCode());
+        ((Activity)gameRenderer.getContext()).startActivityForResult(intent, 42);
     }
 
     void activatePointer(){

@@ -123,8 +123,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     void startSettingsActivity(){
         Intent intent = new Intent(getContext(), SettingsActivity.class);
-        ((Activity)getContext()).startActivityForResult(intent,
-                SettingsActivity.class.toString().hashCode());
+        ((Activity)getContext()).startActivityForResult(intent, 42);
     }
 
     boolean isFieldAtScreen(){

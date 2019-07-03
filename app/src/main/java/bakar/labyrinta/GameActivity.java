@@ -226,7 +226,7 @@ public class GameActivity extends Activity{
     void startTutorialActivity(TutorialKey key){
         Intent intent = new Intent(this, TutorialActivity.class);
         intent.putExtra(TutorialKey.class.toString(), String.valueOf(key));
-        this.startActivityForResult(intent, EndActivity.class.toString().hashCode());
+        this.startActivityForResult(intent, 42);
     }
 
     @Override
