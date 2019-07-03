@@ -119,7 +119,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         intent.putExtra("pathfinderAmount", gameLogic.pathfinderAmount);
         intent.putExtra("teleportAmount", gameLogic.teleportAmount);
         intent.putExtra("pointerAmount", gameLogic.pointerAmount);
-        ((Activity)getContext()).startActivityForResult(intent, BonusActivity.class.toString().hashCode());
+        ((Activity)getContext()).startActivityForResult(intent, 42);
     }
     void startSettingsActivity(){
         Intent intent = new Intent(getContext(), SettingsActivity.class);
@@ -1918,7 +1918,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             gameLogic.remote_move_flag = false;
             lightAnimationEnabled = false;
             startBonusActivity();
-            //gameLogic.remote_move_flag = true;
         }
     }
     class Settings extends Button{
