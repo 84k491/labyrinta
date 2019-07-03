@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="bakar.labirynth">
+    package="bakar.labyrinta">
     <!-- Include required permissions for Google Mobile Ads to run. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -12,24 +12,24 @@
         android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LevelBuyActivity"
+        <activity android:name="bakar.labyrinta.LevelBuyActivity"
             android:theme="@style/Theme.IAPTheme" />
         <activity
-            android:name=".TutorialActivity"
+            android:name="bakar.labyrinta.TutorialActivity"
             android:theme="@style/Theme.IAPTheme" />
         <activity
-            android:name=".ConfirmationActivity"
+            android:name="bakar.labyrinta.ConfirmationActivity"
             android:theme="@style/Theme.IAPTheme" />
-        <activity android:name=".LevelSelectActivity"
+        <activity android:name="bakar.labyrinta.LevelSelectActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ShopActivity"
+        <activity android:name="bakar.labyrinta.ShopActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ResearchActivity"
+        <activity android:name="bakar.labyrinta.ResearchActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".SettingsActivity"
+            android:name="bakar.labyrinta.SettingsActivity"
             android:theme="@style/Theme.IAPTheme" />
-        <activity android:name=".MenuActivity"
+        <activity android:name="bakar.labyrinta.MenuActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,13 +37,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GameActivity"
+        <activity android:name="bakar.labyrinta.GameActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EndActivity"
+            android:name="bakar.labyrinta.EndActivity"
             android:theme="@style/Theme.IAPTheme" />
         <activity
-            android:name=".BonusActivity"
+            android:name="bakar.labyrinta.BonusActivity"
             android:theme="@style/Theme.IAPTheme" />
     </application>
 

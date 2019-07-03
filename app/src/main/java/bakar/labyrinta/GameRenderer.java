@@ -1,6 +1,6 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
-import android.app.Activity;import android.app.ActivityManager;
+import android.app.Activity;
 import android.arch.core.util.Function;
 import android.content.Context;
 import android.content.Intent;
@@ -9,12 +9,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -23,25 +21,14 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
-import android.util.Pair;
-import android.util.Range;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Random;
-import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static android.graphics.Path.Direction.CW;

@@ -1,8 +1,6 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
 import android.content.SharedPreferences;
-
-import static android.content.Context.MODE_PRIVATE;
 
 class StoredProgress {
     private static final StoredProgress ourInstance = new StoredProgress();

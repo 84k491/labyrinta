@@ -1,14 +1,12 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.provider.MediaStore;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 enum Sounds{
     coinPickedUp,

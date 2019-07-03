@@ -1,8 +1,7 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -19,10 +18,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 public class SettingsActivity extends Activity implements View.OnClickListener {
 

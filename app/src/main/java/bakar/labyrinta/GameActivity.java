@@ -1,4 +1,4 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,20 +15,16 @@ import android.support.constraint.ConstraintLayout;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import static bakar.labirynth.StoredProgress.getInstance;
-import static bakar.labirynth.TutorialKey.BeginTutorial_1;
-import static bakar.labirynth.TutorialKey.BeginTutorial_2;
-import static bakar.labirynth.TutorialKey.BeginTutorial_3;
-import static bakar.labirynth.TutorialKey.NextLevelBuyTutorial;
+import static bakar.labyrinta.StoredProgress.getInstance;
+import static bakar.labyrinta.TutorialKey.BeginTutorial_1;
+import static bakar.labyrinta.TutorialKey.BeginTutorial_2;
+import static bakar.labyrinta.TutorialKey.BeginTutorial_3;
+import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 
 public class GameActivity extends Activity{
 

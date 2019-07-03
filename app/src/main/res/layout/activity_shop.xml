@@ -8,7 +8,7 @@
     android:background="@drawable/bg_gradient"
     tools:context=".ShopActivity">
 
-    <bakar.labirynth.Background
+    <bakar.labyrinta.Background
         android:id="@+id/background3"
         android:layout_width="0dp"
         android:layout_height="0dp"

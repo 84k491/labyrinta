@@ -1,4 +1,4 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ConfirmationActivity extends Activity implements View.OnClickListener{

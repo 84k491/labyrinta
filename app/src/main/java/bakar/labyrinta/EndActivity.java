@@ -1,4 +1,4 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
 import android.app.Activity;
 import android.content.Intent;

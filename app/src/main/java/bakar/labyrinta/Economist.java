@@ -1,4 +1,4 @@
-package bakar.labirynth;
+package bakar.labyrinta;
 
 import android.arch.core.util.Function;
 import android.graphics.Point;
