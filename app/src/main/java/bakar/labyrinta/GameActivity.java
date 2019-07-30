@@ -28,12 +28,14 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 
 public class GameActivity extends Activity{
 
-    // STEPS-TO-BETA
-    // TODO: 7/1/19 check copyrights
-
     // STEPS-TO-RELEASE
     // TODO: 7/3/19 ignore system font size
     // TODO: 7/3/19 joystick level end lag
+    // TODO: 7/10/19 MiMax 2 back button lag
+    // TODO: 7/10/19 random coin spawn fix
+    // TODO: 7/10/19 check buying new level w/o coins @ Pie
+    // TODO: 7/10/19 add more soundtrack
+    // TODO: 7/10/19 add ads
     // TODO: 6/30/19 проверить расположение точек бекграунда. они могут быть поверх всего
     // TODO: 3/18/19 coin icons
     // TODO: 6/24/19 fix passing an exit on high speed
