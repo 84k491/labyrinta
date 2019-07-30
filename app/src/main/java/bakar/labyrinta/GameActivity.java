@@ -1,14 +1,17 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.VolumeShaper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -30,17 +33,16 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
     // TODO: 7/3/19 joystick level end lag
-    // TODO: 7/3/19 ignore system font size
     // TODO: 7/10/19 check MiMax 2 back button lag
+    // TODO: 7/10/19 add ads
+    // TODO: 6/25/19 change scaling speed
     // TODO: 7/10/19 random coin spawn fix
     // TODO: 7/10/19 check buying new level w/o coins @ Pie
     // TODO: 7/10/19 add more soundtrack
-    // TODO: 7/10/19 add ads
     // TODO: 6/30/19 проверить расположение точек бекграунда. они могут быть поверх всего
     // TODO: 3/18/19 coin icons
     // TODO: 6/24/19 fix passing an exit on high speed
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
-    // TODO: 6/25/19 change scaling speed
 
     //after release
     // TODO: 7/30/19 поменять иконку меню ?
@@ -86,6 +88,14 @@ public class GameActivity extends Activity{
         result.y = Math.round(resultF.y);
 
         return result;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        final Configuration configuration = new Configuration(newBase.getResources().getConfiguration());
+        configuration.fontScale = 1.0f;
+        applyOverrideConfiguration(configuration);
     }
 
     @Override

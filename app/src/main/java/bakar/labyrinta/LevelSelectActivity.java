@@ -3,6 +3,7 @@ package bakar.labyrinta;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -81,7 +82,15 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         public void onAnimationRepeat(Animation animation) {}
     };
 
-    int itemSizePx = 0;
+    int itemSizePx = 0; // FIXME: 7/30/19 remove?
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        final Configuration configuration = new Configuration(newBase.getResources().getConfiguration());
+        configuration.fontScale = 1.0f;
+        applyOverrideConfiguration(configuration);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {

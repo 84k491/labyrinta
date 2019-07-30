@@ -1,6 +1,8 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -85,6 +87,14 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         rebuildLayout();
 
         findViewById(R.id.bt_shop_back).setOnClickListener(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        final Configuration configuration = new Configuration(newBase.getResources().getConfiguration());
+        configuration.fontScale = 1.0f;
+        applyOverrideConfiguration(configuration);
     }
 
     @Override

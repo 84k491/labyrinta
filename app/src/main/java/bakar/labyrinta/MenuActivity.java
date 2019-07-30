@@ -1,8 +1,10 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -65,6 +67,14 @@ public class MenuActivity extends Activity implements OnClickListener {
         @Override
         public void onAnimationRepeat(Animation animation) {}
     };
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        final Configuration configuration = new Configuration(newBase.getResources().getConfiguration());
+        configuration.fontScale = 1.0f;
+        applyOverrideConfiguration(configuration);
+    }
 
     @Override
     public void onClick(View view) {

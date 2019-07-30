@@ -1,8 +1,10 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,14 @@ public class LevelBuyActivity extends Activity implements View.OnClickListener {
 
     int level_number = 0;
     int level_cost = 0;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        final Configuration configuration = new Configuration(newBase.getResources().getConfiguration());
+        configuration.fontScale = 1.0f;
+        applyOverrideConfiguration(configuration);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

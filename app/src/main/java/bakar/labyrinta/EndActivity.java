@@ -1,8 +1,10 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -70,6 +72,14 @@ public class EndActivity extends Activity implements View.OnClickListener{
         intent.putExtra("level_number", level_value + 1);
         intent.putExtra("level_cost", level_cost);
         startActivityForResult(intent, 42);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        final Configuration configuration = new Configuration(newBase.getResources().getConfiguration());
+        configuration.fontScale = 1.0f;
+        applyOverrideConfiguration(configuration);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -29,6 +31,14 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
     TextView sounds_TextView;
     TextView music_TextView;
     ConstraintLayout layout;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        final Configuration configuration = new Configuration(newBase.getResources().getConfiguration());
+        configuration.fontScale = 1.0f;
+        applyOverrideConfiguration(configuration);
+    }
 
     @Override
     public void onClick(View v){
