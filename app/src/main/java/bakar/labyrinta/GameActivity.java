@@ -29,9 +29,9 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
-    // TODO: 7/3/19 ignore system font size
     // TODO: 7/3/19 joystick level end lag
-    // TODO: 7/10/19 MiMax 2 back button lag
+    // TODO: 7/3/19 ignore system font size
+    // TODO: 7/10/19 check MiMax 2 back button lag
     // TODO: 7/10/19 random coin spawn fix
     // TODO: 7/10/19 check buying new level w/o coins @ Pie
     // TODO: 7/10/19 add more soundtrack
@@ -43,6 +43,9 @@ public class GameActivity extends Activity{
     // TODO: 6/25/19 change scaling speed
 
     //after release
+    // TODO: 7/30/19 поменять иконку меню ?
+    // TODO: 7/30/19 добавить переворот экрана
+    // TODO: 7/30/19 проверить шрифты на низком разрешении
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/18/19 Название съезжает если выйти домой в самом начале
     // TODO: 6/29/19 make less coins

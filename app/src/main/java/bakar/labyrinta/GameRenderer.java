@@ -239,6 +239,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread.enlightenFogBmp(gc);
     }
     void resetFog(){
+        if (!fogEnabled) return;
         renderThread.createFogBmp();
         renderThread.resizeFogBmp();
     }
@@ -930,19 +931,20 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawBitmap(labBitmap, matrix, common);
         }
         void drawEntities(Canvas canvas){
-            gameLogic.eFactory.lock();
-            for (Entity entity : gameLogic.eFactory.entities){
-                if (entity.whoami.equals("Exit")){
-                    continue;
+            synchronized (gameLogic.eFactory.entities){
+                for (Entity entity : gameLogic.eFactory.entities){
+                    if (entity.whoami.equals("Exit")){
+                        continue;
+                    }
+                    drawTile(canvas,
+                            bitmaps.getByEntity(entity),
+                            field2game(entity.pos),
+                            entity.isLarge,
+                            entity.whoami.equals("Coin"));
                 }
-                drawTile(canvas,
-                        bitmaps.getByEntity(entity),
-                        field2game(entity.pos),
-                        entity.isLarge,
-                        entity.whoami.equals("Coin"));
             }
-            gameLogic.eFactory.unlock();
         }
+
         void drawBonusRadius(Canvas canvas){
             PointF pointF = gameLogic.playerCoords();
 

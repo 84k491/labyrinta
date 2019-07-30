@@ -62,7 +62,6 @@ public class Background extends SurfaceView{
 
     private RenderScript rs = RenderScript.create(getContext());
 
-
     public Background(Context _context){
         super(_context);
         setZOrderOnTop(true);
@@ -151,29 +150,23 @@ public class Background extends SurfaceView{
         @Override
         public void run() {
             Canvas canvas = new Canvas();
-            boolean isCanvasLocked = false;
 
             while (running) {
                 if (getTime() - prevDrawTime > redrawPeriod) {
                     prevDrawTime = getTime();
                     try {
-                        if (!isCanvasLocked){
-                            //Logger.getAnonymousLogger().info("Locking canvas @ " + this);
-                            canvas = surfaceHolder.lockCanvas();
-                            isCanvasLocked = true;
-                            if (canvas == null){
-                                isCanvasLocked = false;
-                                continue;
-                            }
-                            synchronized (surfaceHolder){
-                                onDraw(canvas);
-                            }
+                        //Logger.getAnonymousLogger().info("Locking canvas @ " + this);
+                        canvas = surfaceHolder.lockCanvas();
+                        if (canvas == null){
+                            continue;
+                        }
+                        synchronized (surfaceHolder){
+                            onDraw(canvas);
                         }
                     } finally {
                         if (canvas != null) {
                             surfaceHolder.unlockCanvasAndPost(canvas);
                             //Logger.getAnonymousLogger().info("Unlocking canvas" + this);
-                            isCanvasLocked = false;
                         }
                     }
                 }

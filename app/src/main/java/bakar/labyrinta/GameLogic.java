@@ -47,7 +47,7 @@ class GameLogic {
     long seed = 0;
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
-    EntityFactory eFactory = new EntityFactory();
+    final EntityFactory eFactory = new EntityFactory();
     private int goldEarnedByCoins = 0;
     private int goldEarnedByLevel = 0;
 
@@ -509,9 +509,9 @@ class GameLogic {
         CPoint.Screen mainPos;
         CPoint.Screen curPos;
         CPoint.Game lastTouch = new CPoint.Game(0, 0);
-        float mainRadius;
-        float stickRadius; // только для отрисовки
-        float speed = (cellSize * 20 / 70);
+        final float mainRadius;
+        final float stickRadius; // только для отрисовки
+        final float speed = (cellSize * 20 / 70);
 
         Joystick(CPoint.Screen _mainPos, float _mainRadius){
             mainPos = _mainPos;
@@ -530,7 +530,7 @@ class GameLogic {
                 return false;
         }
 
-        CPoint.Game getPlayerOffsetOnMove(CPoint.Game pointF){ // gameCoord на инпуте // аккуратно с конвертацией
+        CPoint.Game getPlayerOffsetOnMove(CPoint.Game pointF){
             if (distance(gameRenderer.game2screen(pointF), mainPos) < mainRadius){
                 curPos = gameRenderer.game2screen(pointF);
             }
@@ -706,25 +706,9 @@ class GameLogic {
 
     class EntityFactory{
         // TODO check Glide
-        private boolean isLocked = false;
-
-        LinkedList<Entity> entities = new LinkedList<>();
+        final LinkedList<Entity> entities = new LinkedList<>();
 
         void init(){
-        }
-        void lock(){
-            while (isLocked){
-                try {
-                    Thread.sleep(10);
-                }
-                catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-            }
-            isLocked = true;
-        }
-        void unlock(){
-            isLocked = false;
         }
 
         CPoint.Field getFreeCell(){
@@ -749,9 +733,9 @@ class GameLogic {
         }
 
         void reset(){
-            eFactory.lock();
-            entities.clear();
-            eFactory.unlock();
+            synchronized (entities){
+                entities.clear();
+            }
         }
         void makeExit(CPoint.Field point){
             entities.push(new Exit(point));
@@ -807,27 +791,27 @@ class GameLogic {
 
             if ("Coin".equals(ret.whoami)){
                 onCoinPickedUp();
-                eFactory.lock();
-                entities.remove(ret);
-                eFactory.unlock();
+                synchronized (entities){
+                    entities.remove(ret);
+                }
             }
             if ("Teleport".equals(ret.whoami)){
                 onTeleportPickedUp();
-                eFactory.lock();
-                entities.remove(ret);
-                eFactory.unlock();
+                synchronized (entities){
+                    entities.remove(ret);
+                }
             }
             if ("Pathfinder".equals(ret.whoami)){
                 onPathfinderPickedUp();
-                eFactory.lock();
-                entities.remove(ret);
-                eFactory.unlock();
+                synchronized (entities){
+                    entities.remove(ret);
+                }
             }
             if ("Pointer".equals(ret.whoami)){
                 onPointerPickedUp();
-                eFactory.lock();
-                entities.remove(ret);
-                eFactory.unlock();
+                synchronized (entities){
+                    entities.remove(ret);
+                }
             }
 
             return ret;
