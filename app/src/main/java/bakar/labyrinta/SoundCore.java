@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Build;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,12 @@ public final class SoundCore {
     }
 
     private SoundCore(){
-        soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            soundPool = new SoundPool.Builder().setMaxStreams(5).build();
+        }
+        else{
+            soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        }
 
         resource_id_map.put(Sounds.coinPickedUp, R.raw.coin_pu);
         resource_id_map.put(Sounds.bonusPickedUp, R.raw.bonus_pu);
