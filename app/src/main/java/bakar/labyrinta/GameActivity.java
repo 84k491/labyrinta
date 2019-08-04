@@ -112,7 +112,6 @@ public class GameActivity extends Activity{
         if (!StoredProgress.getInstance().getValueBoolean(StoredProgress.usesJoystickKey)){
             tiltController = new TiltController();
         }
-
     }
 
     void init(){
@@ -175,14 +174,48 @@ public class GameActivity extends Activity{
         gameLogic.isInited = false;
         Point size = difficultyToActualSize(gameLogic.level_difficulty);
         gameLogic.init(Math.min(size.x, size.y), Math.max(size.x, size.y));
-        gameRenderer.onTouchUp(null);
-        gameRenderer.resetLab();
-        gameRenderer.resetFog();
-        gameRenderer.lightFog(gameLogic.playerCoords());
 
-        gameRenderer.prepareNewLevel();
+        runOnUiThread(()->{
+            gameRenderer = new GameRenderer(this);
+            gameRenderer.setGameLogic(gameLogic);
+            gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
 
-        gameRenderer.centerCameraTo(new CPoint.Game(0,0));
+            touchListener = new CustomTouchListener();
+
+            gameRenderer.setOnTouchListener(touchListener);
+
+            gameLogic.gameRenderer = gameRenderer;
+            loadData();
+            touchListener.setRenderer(gameRenderer);
+
+//        mInterstitialAd = newInterstitialAd();
+//        loadInterstitial();
+
+            while (!gameRenderer.threadIsStarted() || gameRenderer.threadIsDoingPreparations()){
+                try{
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+
+            Logger.getAnonymousLogger().info("GameActivity.init() changing surface to game_layout");
+            setContentView(R.layout.game_layout);
+            gameLayout = ((ConstraintLayout)findViewById(R.id.cl_game));
+            gameLayout.addView(gameRenderer);
+//        setContentView(gameRenderer);
+            Logger.getAnonymousLogger().info("GameActivity.init() end");
+        });
+
+//        gameRenderer.onTouchUp(null);
+//        gameRenderer.resetLab();
+//        gameRenderer.resetFog();
+//        gameRenderer.lightFog(gameLogic.playerCoords());
+//
+//        gameRenderer.prepareNewLevel();
+//
+//        gameRenderer.centerCameraTo(new CPoint.Game(0,0));
     }
     @Override
     public void onBackPressed(){

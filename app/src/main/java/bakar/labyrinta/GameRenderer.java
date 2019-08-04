@@ -65,6 +65,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     float max_scale = 6;
     float min_scale;
 
+    public boolean needToDestroyRenderer = false;
     public boolean isMovingOffset = false;
     public boolean isMovingPlayer = false;
     float enlightenRadius = cellSize * 200 / 70; // gamecoord
@@ -486,15 +487,18 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceDestroyed(SurfaceHolder holder) {
         renderThread.is_waiting_4_surface = true;
         Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() begin");
-//        boolean retry = true;
-//        renderThread.setRunning(false);
-//        while (retry) {
-//            try {
-//                renderThread.join();
-//                retry = false;
-//            } catch (InterruptedException e) {
-//            }
-//        }
+        if (needToDestroyRenderer){
+            needToDestroyRenderer = false;
+            boolean retry = true;
+            renderThread.setRunning(false);
+            while (retry) {
+                try {
+                    renderThread.join();
+                    retry = false;
+                } catch (InterruptedException e) {
+                }
+            }
+        }
         Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() end");
     }
 

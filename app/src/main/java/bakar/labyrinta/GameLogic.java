@@ -145,6 +145,7 @@ class GameLogic {
     }
 
     void startEndActivity(){
+        gameRenderer.needToDestroyRenderer = true;
         Intent intent = new Intent(gameRenderer.getContext(), EndActivity.class);
         intent.putExtra("goldEarnedByCoins", goldEarnedByCoins);
         intent.putExtra("goldEarnedByLevel", goldEarnedByLevel);
