@@ -18,6 +18,10 @@ import android.support.constraint.ConstraintLayout;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -67,7 +71,7 @@ public class GameActivity extends Activity{
     SharedPreferences sPref;
     TiltController tiltController;
     ConstraintLayout gameLayout;
-    //private InterstitialAd mInterstitialAd;
+    private InterstitialAd mInterstitialAd;
 
     Point difficultyToActualSize(int lvl_difficulty){
         // от сложности должна зависеть диагональ прямоугольника
@@ -143,8 +147,8 @@ public class GameActivity extends Activity{
         loadData();
         touchListener.setRenderer(gameRenderer);
 
-//        mInterstitialAd = newInterstitialAd();
-//        loadInterstitial();
+        mInterstitialAd = newInterstitialAd();
+        loadInterstitial();
 
         while (!gameRenderer.threadIsStarted() || gameRenderer.threadIsDoingPreparations()){
             try{
@@ -188,8 +192,8 @@ public class GameActivity extends Activity{
             loadData();
             touchListener.setRenderer(gameRenderer);
 
-//        mInterstitialAd = newInterstitialAd();
-//        loadInterstitial();
+            mInterstitialAd = newInterstitialAd();
+            loadInterstitial();
 
             while (!gameRenderer.threadIsStarted() || gameRenderer.threadIsDoingPreparations()){
                 try{
@@ -311,17 +315,17 @@ public class GameActivity extends Activity{
                     gameLayout.removeView(gameRenderer);
                     setContentView(R.layout.loading_screen);
                     gameLayout = null;
-//                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
-//                        showInterstitial();
-//                    }
-//                    else{
-//                        new Handler().postDelayed(()->{
-//                            goToNextLevel();
-//                        }, 200);
-//                    }
-                    new Handler().postDelayed(()->{
-                        goToNextLevel();
-                    }, 200);
+                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
+                        showInterstitial();
+                    }
+                    else{
+                        new Handler().postDelayed(()->{
+                            goToNextLevel();
+                        }, 200);
+                    }
+//                    new Handler().postDelayed(()->{
+//                        goToNextLevel();
+//                    }, 200);
                 };
                 if (intent.getStringExtra("result").equals("next")){
                     fn.run();
@@ -438,10 +442,10 @@ public class GameActivity extends Activity{
             }
         }
 
-        Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.game_layout);");
-        setContentView(R.layout.game_layout);
-        gameLayout = ((ConstraintLayout)findViewById(R.id.cl_game));
-        gameLayout.addView(gameRenderer);
+//        Logger.getAnonymousLogger().info("GameActivity setContentView(R.layout.game_layout);");
+//        setContentView(R.layout.game_layout);
+//        gameLayout = ((ConstraintLayout)findViewById(R.id.cl_game));
+//        gameLayout.addView(gameRenderer);
         //setContentView(gameRenderer);
 
 //        mInterstitialAd = newInterstitialAd();
@@ -449,40 +453,41 @@ public class GameActivity extends Activity{
 
         Logger.getAnonymousLogger().info("GameActivity.goToNextLevel() end");
     }
-//    private InterstitialAd newInterstitialAd() {
-//        InterstitialAd interstitialAd = new InterstitialAd(this);
-//        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-//        interstitialAd.setAdListener(new AdListener() {
-////            @Override
-////            public void onAdLoaded() {
-////            }
-//
-////            @Override
-////            public void onAdFailedToLoad(int errorCode) {
-////                mNextLevelButton.setEnabled(true);
-////            }
-//
+    private InterstitialAd newInterstitialAd() {
+        InterstitialAd interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                Logger.getAnonymousLogger().info("onAdLoaded()");
+            }
+
 //            @Override
-//            public void onAdClosed() {
-//                goToNextLevel();
+//            public void onAdFailedToLoad(int errorCode) {
+//                mNextLevelButton.setEnabled(true);
 //            }
-//        });
-//        return interstitialAd;
-//    }
-//    void loadInterstitial() {
-//        AdRequest adRequest = new AdRequest.Builder()
-//                .setRequestAgent("android_studio:ad_template").build();
-//        mInterstitialAd.loadAd(adRequest);
-//    }
-//    private void showInterstitial() {
-//        // Show the ad if it's ready. Otherwise toast and reload the ad.
-//        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-//            mInterstitialAd.show();
-//        }
-//        else {
-//            goToNextLevel();
-//        }
-//    }
+
+            @Override
+            public void onAdClosed() {
+                goToNextLevel();
+            }
+        });
+        return interstitialAd;
+    }
+    void loadInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .setRequestAgent("android_studio:ad_template").build();
+        mInterstitialAd.loadAd(adRequest);
+    }
+    private void showInterstitial() {
+        // Show the ad if it's ready. Otherwise toast and reload the ad.
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
+        else {
+            goToNextLevel();
+        }
+    }
 
     class Loader extends Thread{
         boolean is_first_launch;

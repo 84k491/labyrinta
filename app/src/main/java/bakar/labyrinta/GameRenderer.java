@@ -90,6 +90,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         renderThread = new RenderThread();
         renderThread.start();
+
         Logger.getAnonymousLogger().info("GameRenderer.ctor p end");
     }
 
@@ -140,6 +141,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 right_bot_of_scr_g.y
         );
 
+        //FIXME nullptr ex
         CPoint.Field right_bot_of_lab = new CPoint.Field(gameLogic.field.getxSize(), gameLogic.field.getySize());
         CPoint.Game right_bot_of_lab_g = field2game(right_bot_of_lab);
 
@@ -252,6 +254,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     float getGlobalScale(){
+        // TODO: 8/4/19 можно и покороче сделать
         Matrix matrix = new Matrix();
         camera.getMatrix(matrix);
         float[] values = new float[9];
@@ -411,8 +414,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         camera.translate(0,0, -value * (cellSize / 40));
         if (getGlobalScale() > max_scale || getGlobalScale() < min_scale)
             camera.restore();
-        if (renderThread.fogBmpScale != getGlobalScale())
-            renderThread.resizeFogBmp();
+//        if (renderThread.fogBmpScale != getGlobalScale())
+//            renderThread.resizeFogBmp();
 
         CPoint.Game new_center = screen2game(new CPoint.Screen(getWidth() / 2.f,
                 getHeight() / 2.f));
@@ -433,8 +436,15 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         Logger.getAnonymousLogger().info("GameRenderer.surfaceCreated() begin");
         min_scale = .6f * getWidth() / (gameLogic.field.getxSize() * cellSize);
         max_scale = 6;
-        while (getGlobalScale() < min_scale)
+        while (getGlobalScale() < min_scale){
             camera.translate(0,0,10);
+        }
+
+        camera.setLocation(
+                camera.getLocationX(),
+                camera.getLocationY(),
+                StoredProgress.getInstance().getCameraZ()
+        );
 
         float rad1 = (float)getWidth() / 20;
         if (buttons.size() < 1){
@@ -485,6 +495,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        StoredProgress.getInstance().setCameraZ(camera.getLocationZ());
+        float debug = StoredProgress.getInstance().getCameraZ();
+
         renderThread.is_waiting_4_surface = true;
         Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() begin");
         if (needToDestroyRenderer){

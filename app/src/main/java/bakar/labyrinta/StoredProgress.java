@@ -17,6 +17,7 @@ class StoredProgress {
     static final String levelUpgKey = "level_upg";
 
     static final String goldKey = "gold";
+    static final String cameraZKey = "cameraZ";
 
     static final String usesJoystickKey = "uses_joystick";
     static final String isDebugKey = "is_debug";
@@ -108,6 +109,13 @@ class StoredProgress {
         int result = sharedPreferences.getInt(key, 0);
         return result;
     }
+    void setCameraZ(float z){
+        setValue(cameraZKey, z);
+    }
+    float getCameraZ(){
+        float result = sharedPreferences.getFloat(cameraZKey, 10.f);
+        return result;
+    }
     boolean getValueBoolean(String key){
         boolean result = sharedPreferences.getBoolean(key, false);
         return result;
@@ -161,6 +169,6 @@ class StoredProgress {
         return sharedPreferences.getInt(goldKey, 0);
     }
     void setGold(int ga){
-        setValue("gold", ga);
+        setValue(goldKey, ga);
     }
 }
