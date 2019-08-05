@@ -255,14 +255,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     float getGlobalScale(){
         // TODO: 8/4/19 можно и покороче сделать
-        Matrix matrix = new Matrix();
+        final Matrix matrix = new Matrix();
         camera.getMatrix(matrix);
         float[] values = new float[9];
         matrix.getValues(values);
         return values[0];
     }
     PointF getGlobalOffset(){
-        Matrix matrix = new Matrix(); //TODO убрать генерацию. очень часто вызывается
+        final Matrix matrix = new Matrix(); //TODO убрать генерацию. очень часто вызывается
         camera.getMatrix(matrix);
         float[] values = new float[9];
         matrix.getValues(values);
@@ -440,11 +440,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             camera.translate(0,0,10);
         }
 
-        camera.setLocation(
-                camera.getLocationX(),
-                camera.getLocationY(),
-                StoredProgress.getInstance().getCameraZ()
-        );
+        // TODO: 8/5/19 сделать не итерационным методом
+        float newScale = StoredProgress.getInstance().getCameraZ();
+        for (int i = 0; i < 100 && Math.abs(getGlobalScale() - newScale) > 0.05f; ++i){
+            changeScale(Math.abs(getGlobalScale() - newScale) * 30 * -(getGlobalScale() / Math.abs(getGlobalScale())));
+        }
 
         float rad1 = (float)getWidth() / 20;
         if (buttons.size() < 1){
@@ -495,8 +495,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        StoredProgress.getInstance().setCameraZ(camera.getLocationZ());
-        float debug = StoredProgress.getInstance().getCameraZ();
+        StoredProgress.getInstance().setCameraZ(getGlobalScale());
 
         renderThread.is_waiting_4_surface = true;
         Logger.getAnonymousLogger().info("GameRenderer.surfaceDestroyed() begin");

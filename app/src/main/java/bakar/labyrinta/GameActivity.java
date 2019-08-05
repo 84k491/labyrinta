@@ -36,17 +36,14 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
-    // TODO: 7/3/19 joystick level end lag
-    // TODO: 7/10/19 check MiMax 2 back button lag
-    // TODO: 7/10/19 add ads
     // TODO: 6/25/19 change scaling speed
-    // TODO: 7/10/19 random coin spawn fix
-    // TODO: 7/10/19 check buying new level w/o coins @ Pie
+    // TODO: 7/10/19 random coin spawn fix (путь к монете может перекрыть выход)
     // TODO: 7/10/19 add more soundtrack
-    // TODO: 6/30/19 проверить расположение точек бекграунда. они могут быть поверх всего
     // TODO: 3/18/19 coin icons
     // TODO: 6/24/19 fix passing an exit on high speed
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
+    // TODO: 8/5/19 отклик на центровку на шарике (чтобы было видно, что это такое)
+    // TODO: 5/5/19 max level gz tutorial
 
     //after release
     // TODO: 7/30/19 поменять иконку меню ?
@@ -54,16 +51,17 @@ public class GameActivity extends Activity{
     // TODO: 7/30/19 проверить шрифты на низком разрешении
     // TODO: 5/5/19 currency on a same line with cost
     // TODO: 5/18/19 Название съезжает если выйти домой в самом начале
+    // TODO: 6/30/19 проверить расположение точек бекграунда. они могут быть поверх всего (после разворачивания)
     // TODO: 6/29/19 make less coins
-    // TODO: 5/5/19 max level gz tutorial
     // TODO: 5/5/19 doubleclick zoom
     // TODO: 5/1/19 затемнять итемы, которые нельзя купить
-    // TODO: 19.05.2018 rate this app
     // TODO: 4/20/19 плавное движение от акселерометра
     // TODO: 3/18/19 in-app purchases
-    // TODO: 3/18/19 gold for video
     // TODO: 5/1/19 randomizer bonus
     // TODO: 4/20/19 pointer upgrade
+    // TODO: 8/5/19 можно открыть настройки и завершение уровня
+    // TODO: 19.05.2018 rate this app
+    // TODO: 3/18/19 gold for video
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;
