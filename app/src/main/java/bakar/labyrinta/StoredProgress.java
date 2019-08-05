@@ -7,6 +7,9 @@ class StoredProgress {
 
     private SharedPreferences sharedPreferences = null;
 
+    static final String appId = "ca-app-pub-1080418191506746~9374299748";
+    static final String interstitialAdId = "ca-app-pub-1080418191506746/7657005347";
+
     static final String teleportAmountKey = "teleportAmount";
     static final String pathfinderAmountKey = "pathfinderAmount";
     static final String pointerAmountKey = "pointerAmount";

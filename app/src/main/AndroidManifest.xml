@@ -45,6 +45,9 @@
         <activity
             android:name="bakar.labyrinta.BonusActivity"
             android:theme="@style/Theme.IAPTheme" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1080418191506746~9374299748"/>
     </application>
 
 </manifest>

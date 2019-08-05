@@ -190,7 +190,7 @@ public class GameActivity extends Activity{
             loadData();
             touchListener.setRenderer(gameRenderer);
 
-            mInterstitialAd = newInterstitialAd();
+            //mInterstitialAd = newInterstitialAd();
             loadInterstitial();
 
             while (!gameRenderer.threadIsStarted() || gameRenderer.threadIsDoingPreparations()){
@@ -457,7 +457,7 @@ public class GameActivity extends Activity{
         interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
-                Logger.getAnonymousLogger().info("onAdLoaded()");
+                Logger.getAnonymousLogger().info("Ad onAdLoaded()");
             }
 
 //            @Override
@@ -467,6 +467,7 @@ public class GameActivity extends Activity{
 
             @Override
             public void onAdClosed() {
+                Logger.getAnonymousLogger().info("Ad onAdClosed()");
                 goToNextLevel();
             }
         });
@@ -480,9 +481,11 @@ public class GameActivity extends Activity{
     private void showInterstitial() {
         // Show the ad if it's ready. Otherwise toast and reload the ad.
         if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+            Logger.getAnonymousLogger().info("Ad show()");
             mInterstitialAd.show();
         }
         else {
+            Logger.getAnonymousLogger().info("Ad notLoaded!!!");
             goToNextLevel();
         }
     }

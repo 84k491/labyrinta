@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.MobileAds;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -144,6 +146,8 @@ public class MenuActivity extends Activity implements OnClickListener {
 
         StoredProgress.getInstance().
                 setSharedPreferences(getSharedPreferences("global", MODE_PRIVATE));
+
+        MobileAds.initialize(this, StoredProgress.appId);
 
         justLoadedState = true;
 
