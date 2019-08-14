@@ -83,38 +83,28 @@ public class TutorialActivity extends Activity {
 
     void setMaps(){
         text_map.put(TutorialKey.BeginTutorial_1,
-                "Hello! The goal for each level is to reach an exit"
+                getString(R.string.begin_tutorial_1)
                 );
         text_map.put(TutorialKey.BeginTutorial_2,
-                "Tilt your device to move around. \n" +
-                "You can change controls at settings menu at any time."
+                getString(R.string.begin_tutorial_2)
         );
         text_map.put(TutorialKey.BeginTutorial_3,
-                "You will earn gold for finishing levels and picking up coins. " +
-                "Gold can be spent in shop, buying bonuses and unlocking new level sizes"
+                getString(R.string.begin_tutorial_3)
         );
         text_map.put(TutorialKey.PathfinderTutorial,
-                "You picked up a Pathfinder bonus!\n" +
-                "Use it to highlight a path to any point within it's range.\n" +
-                "You can upgrade it, or buy more in the shop."
+                getString(R.string.pathfinder_tutorial)
         );
         text_map.put(TutorialKey.PointerTutorial,
-                "You picked up a Pointer bonus!\n" +
-                "It points to exit when used.\n" +
-                "You can buy more in the shop."
+                getString(R.string.pointer_tutorial)
         );
         text_map.put(TutorialKey.TeleportTutorial,
-                "You picked up a Teleport bonus!\n" +
-                "Use it to teleport yourself to any point within it's range.\n" +
-                "You can upgrade it, or buy more in the shop."
+                getString(R.string.teleport_tutorial)
         );
         text_map.put(TutorialKey.NextLevelBuyTutorial,
-                "It seems that you have enough gold to unlock next level size!\n" +
-                "Tap this green button at end of a level to buy it!"
+                getString(R.string.next_level_buy_tutorial)
         );
         text_map.put(TutorialKey.BonusRangeTutorial,
-                "Just tap within range to use a bonus!\n" +
-                        "Tap outside to cancel."
+                getString(R.string.bonus_range_tutorial)
         );
 
         image_map.put(TutorialKey.BeginTutorial_1,

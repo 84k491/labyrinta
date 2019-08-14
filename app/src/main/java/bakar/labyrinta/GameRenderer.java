@@ -1831,9 +1831,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     class CenteringCircle{
         private CPoint.Game m_pos;
-        private float m_radius = 100.f;
+        private float m_radius = 5.f;
         private static final float step = 10.f;
-        private static final float minRange = 5.f;
+        private static final float maxRange = 100.f;
 
         CenteringCircle(CPoint.Game pos){
             m_pos = pos;
@@ -1844,12 +1844,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         public float getRadius() {
-            m_radius -= step;
+            m_radius += step;
             return m_radius;
         }
 
         boolean isOld(){
-            return m_radius < minRange;
+            return m_radius > maxRange;
         }
     }
 

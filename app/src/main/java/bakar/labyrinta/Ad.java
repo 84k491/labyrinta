@@ -30,7 +30,7 @@ public class Ad extends Activity {
         setContentView(R.layout.activity_ad);
 
         // Create the next level button, which tries to show an interstitial when clicked.
-        mNextLevelButton = ((Button) findViewById(R.id.next_level_button));
+        //mNextLevelButton = ((Button) findViewById(R.id.next_level_button));
         mNextLevelButton.setEnabled(false);
         mNextLevelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +40,7 @@ public class Ad extends Activity {
         });
 
         // Create the text view to show the level number.
-        mLevelTextView = (TextView) findViewById(R.id.level);
+        //mLevelTextView = (TextView) findViewById(R.id.level);
         mLevel = START_LEVEL;
 
         // Create the InterstitialAd and set the adUnitId (defined in values/strings.xml).

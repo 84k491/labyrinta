@@ -37,6 +37,7 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
     // TODO: 8/14/19 локализация
+    // TODO: 8/14/19 в туторале дописать, что можно найти бонусы
     // TODO: 7/10/19 random coin spawn fix (путь к монете может перекрыть выход)
     // TODO: 7/10/19 add more soundtrack
     // TODO: 6/24/19 fix passing an exit on high speed
