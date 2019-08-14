@@ -40,7 +40,7 @@ public class LevelBuyActivity extends Activity implements View.OnClickListener {
         ((Button)findViewById(R.id.bt_level_buy_yes)).setOnClickListener(this);
 
         ((TextView)findViewById(R.id.tw_level_buy_title)).setText(
-                "Are you sure you want to buy level size " + level_number + "?"
+                getString(R.string.level_buy_confirmation, level_number)
         );
 
         ((TextView)findViewById(R.id.tw_level_buy_title)).setTypeface(

@@ -57,7 +57,7 @@
                 android:layout_height="72dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Are you sure you want to exit?"
+                android:text="@string/exit_confirmation"
                 android:textSize="24sp" />
 
             <Space
