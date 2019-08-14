@@ -21,6 +21,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -269,6 +270,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         return new PointF(values[2], values[5]);
     }
 
+    void spawnCenteringCircles(CPoint.Game pt){
+        synchronized (renderThread.centeringCircles){
+            renderThread.centeringCircles.add(new CenteringCircle(pt));
+        }
+    }
     void centerCameraTo(CPoint.Game pt){
         CPoint.Game old_center = screen2game(new CPoint.Screen(getWidth() / 2.f,
                 getHeight() / 2.f));
@@ -526,6 +532,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         final Matrix Ematrix = new Matrix();
         final Matrix fogMatrix = new Matrix();
         final Matrix translate_matrix = new Matrix();
+        final ArrayList<CenteringCircle> centeringCircles = new ArrayList<>();
 
         private long prevDrawTime = 0;
         private long redrawPeriod = 30; // milliS // microS
@@ -558,6 +565,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         private Paint floor = new Paint();
         private Paint wall = new Paint();
         private Paint node = new Paint();
+        private Paint centeringCircle = new Paint();
         private Paint player = new Paint();
         private Paint hitbox = new Paint();
         private Paint trace = new Paint();
@@ -599,6 +607,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             fog.setColor(Color.rgb(20, 20, 30));
             enlighten.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
             enlighten.setColor(Color.argb(0, 60, 50, 60));
+            centeringCircle.setColor(Color.WHITE);
+            centeringCircle.setStyle(Paint.Style.STROKE);
+            centeringCircle.setStrokeWidth(.5f);
             puanim.setColor(Color.WHITE);
             puanim.setTextAlign(Paint.Align.CENTER);
             puanim.setTextSize(20);
@@ -960,6 +971,19 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 }
             }
         }
+        void drawCenteringCircles(Canvas canvas){
+            synchronized (centeringCircles){
+                for (CenteringCircle c : centeringCircles){
+                    canvas.drawCircle(c.getPos().x, c.getPos().y, c.getRadius(), centeringCircle);
+                }
+                for (CenteringCircle c : centeringCircles){
+                    if (c.isOld()){
+                        centeringCircles.remove(c);
+                        break;
+                    }
+                }
+            }
+        }
 
         void drawBonusRadius(Canvas canvas){
             PointF pointF = gameLogic.playerCoords();
@@ -1073,6 +1097,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             drawPointer(canvas);
             drawPickedUpAnimation(canvas);
             drawExit(canvas);
+            drawCenteringCircles(canvas);
 
             drawDebug(canvas);
 
@@ -1804,6 +1829,30 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
+    class CenteringCircle{
+        private CPoint.Game m_pos;
+        private float m_radius = 100.f;
+        private static final float step = 10.f;
+        private static final float minRange = 5.f;
+
+        CenteringCircle(CPoint.Game pos){
+            m_pos = pos;
+        }
+
+        public CPoint.Game getPos() {
+            return m_pos;
+        }
+
+        public float getRadius() {
+            m_radius -= step;
+            return m_radius;
+        }
+
+        boolean isOld(){
+            return m_radius < minRange;
+        }
+    }
+
     abstract class Button { // all screenCoords
         CPoint.Screen pos = new CPoint.Screen();
         float rad = 0;
@@ -1903,6 +1952,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void instantAnimation(){
             set00CornerTo(newOffset);
             animationEnabled = false;
+            spawnCenteringCircles(gameLogic.playerCoords());
         }
     }
     class MenuButton extends Button{

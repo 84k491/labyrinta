@@ -36,14 +36,14 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
-    // TODO: 6/25/19 change scaling speed
+    // TODO: 8/14/19 локализация
     // TODO: 7/10/19 random coin spawn fix (путь к монете может перекрыть выход)
     // TODO: 7/10/19 add more soundtrack
-    // TODO: 3/18/19 coin icons
     // TODO: 6/24/19 fix passing an exit on high speed
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
-    // TODO: 8/5/19 отклик на центровку на шарике (чтобы было видно, что это такое)
+    // TODO: 3/18/19 coin icons
     // TODO: 5/5/19 max level gz tutorial
+    // TODO: 6/25/19 change scaling speed
 
     //after release
     // TODO: 7/30/19 поменять иконку меню ?
@@ -313,7 +313,7 @@ public class GameActivity extends Activity{
                     gameLayout.removeView(gameRenderer);
                     setContentView(R.layout.loading_screen);
                     gameLayout = null;
-                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 5){
+                    if (StoredProgress.getInstance().getValue(StoredProgress.levelUpgKey) >= 3){
                         showInterstitial();
                     }
                     else{
