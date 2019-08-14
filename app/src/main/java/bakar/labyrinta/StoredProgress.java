@@ -1,6 +1,8 @@
 package bakar.labyrinta;
 
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
 
 class StoredProgress {
     private static final StoredProgress ourInstance = new StoredProgress();
@@ -8,7 +10,22 @@ class StoredProgress {
     private SharedPreferences sharedPreferences = null;
 
     static final String appId = "ca-app-pub-1080418191506746~9374299748";
-    static final String interstitialAdId = "ca-app-pub-1080418191506746/7657005347";
+
+    private static final String titleFont = "fonts/CLiCHE 21.ttf";
+    private static final String trenchFont = "fonts/trench100free.ttf";
+    private static final String textFont = "fonts/JosefinSans_Regular.ttf";
+
+    Typeface getTitleFont(AssetManager manager){
+        return Typeface.createFromAsset(manager, titleFont);
+    }
+
+    Typeface getTrenchFont(AssetManager manager){
+        return Typeface.createFromAsset(manager, trenchFont);
+    }
+
+    Typeface getTextFont(AssetManager manager){
+        return Typeface.createFromAsset(manager, textFont);
+    }
 
     static final String teleportAmountKey = "teleportAmount";
     static final String pathfinderAmountKey = "pathfinderAmount";

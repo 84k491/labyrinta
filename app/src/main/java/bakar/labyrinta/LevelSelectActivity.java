@@ -168,13 +168,13 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         findViewById(R.id.bt_select_back).setOnClickListener(this);
 
         gold = findViewById(R.id.tw_gold_amount_ls);
-        gold.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+        gold.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
         gold.setTextColor(Color.WHITE);
         updateGoldLabel();
 
         ((TextView)findViewById(R.id.tw_select_level_size)).setTextColor(Color.WHITE);
         ((TextView)findViewById(R.id.tw_select_level_size)).
-                setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+                setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
 
         fillLayout(getIntent().getIntExtra("max_level_allowed", 0));
         for (NumeratedTextView tv : textViews){
@@ -241,7 +241,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         NumeratedTextView(Context c, int _number){
             super(c);
             number = _number;
-            setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
             setGravity(Gravity.RIGHT);
         }
     }
@@ -448,7 +448,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
             currencyIcon.setImageResource(R.drawable.coin_anim1);
 
             costLabel.setText(String.valueOf(level_cost));
-            costLabel.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            costLabel.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
             costLabel.setTextColor(Color.WHITE);
             costLabel.setGravity(Gravity.FILL_VERTICAL);
         }

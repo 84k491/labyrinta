@@ -161,7 +161,7 @@ public class MenuActivity extends Activity implements OnClickListener {
         shop = findViewById(R.id.shop_bt);
         shop.setOnClickListener(this);
 
-        title.setTypeface(Typeface.createFromAsset(getAssets(),  "fonts/CLiCHE 21.ttf"));
+        title.setTypeface(StoredProgress.getInstance().getTitleFont(getAssets()));
 
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_menu_button_tap);
         on_click_anim.setAnimationListener(animationListener);

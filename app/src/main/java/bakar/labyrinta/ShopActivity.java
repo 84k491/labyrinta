@@ -78,7 +78,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
         gold = (TextView)findViewById(R.id.tw_gold_amount_shop);
-        gold.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+        gold.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
         gold.setTextColor(Color.WHITE);
         updateGoldLabel();
 
@@ -358,7 +358,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             cost_tw.setTextSize(25);
             cost_tw.setTextColor(Color.WHITE);
             cost_tw.setGravity(Gravity.CENTER);
-            cost_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            cost_tw.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
             costLayout.addView(cost_tw);
 
 
@@ -469,7 +469,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             label_tw.setLayoutParams(labelParams);
             label_tw.setTextSize(20);
             label_tw.setTextColor(Color.WHITE);
-            label_tw.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+            label_tw.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
             //amount.setBackgroundColor(Color.RED);
             label_tw.setGravity(Gravity.RIGHT);
             constraintLayout.addView(label_tw);
@@ -549,7 +549,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             updateLabelText();
             ((TextView)mainIcon).setTextSize(20.f);
             ((TextView)mainIcon).setTypeface(
-                    Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+                    StoredProgress.getInstance().getTrenchFont(getAssets()));
             ((TextView)mainIcon).setGravity(Gravity.CENTER);
             constraintLayout.addView(mainIcon);
 

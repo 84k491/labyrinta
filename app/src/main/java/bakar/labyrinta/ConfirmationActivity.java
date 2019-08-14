@@ -35,7 +35,7 @@ public class ConfirmationActivity extends Activity implements View.OnClickListen
         findViewById(R.id.confirmation_bg).setOnClickListener(this);
 
         ((TextView)findViewById(R.id.tw_confirm_title)).setTypeface(
-                Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+                StoredProgress.getInstance().getTrenchFont(getAssets()));
     }
 
     @Override

@@ -149,7 +149,7 @@ public class TutorialActivity extends Activity {
 
         TextView textView = new TextView(this);
         textView.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/JosefinSans_Regular.ttf")
+                StoredProgress.getInstance().getTextFont(getAssets())
         );
         textView.setTextSize(20);
 

@@ -107,13 +107,13 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
         music.setTextColor(Color.WHITE);
 
         joystick.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
         sounds.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
         music.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
 
         float text_size = 25.f;
@@ -131,17 +131,17 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
 //        sounds_TextView.setBackgroundColor(Color.GREEN);
 
         joystick_TextView.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
         joystick_TextView.setTextSize(text_size);
 
         music_TextView.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
         music_TextView.setTextSize(text_size);
 
         sounds_TextView.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
         sounds_TextView.setTextSize(text_size);
 

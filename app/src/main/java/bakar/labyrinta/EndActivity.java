@@ -167,7 +167,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 level_value
         );
         costLabel.setText(String.valueOf(level_cost));
-        costLabel.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+        costLabel.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
         costLabel.setTextColor(Color.WHITE);
         costLabel.setGravity(Gravity.FILL_VERTICAL);
 
@@ -209,7 +209,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
         bgTextView.setText(String.valueOf(buying_level_number));
         bgTextView.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
         bgTextView.setTextSize(40);
         bgTextView.setLayoutParams(params);
@@ -299,7 +299,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
         next_level_buy.setOnClickListener(this);
 
         ((TextView)findViewById(R.id.tw_nice)).setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
 
         StoredProgress.getInstance().setGold(startGoldAmount + goldEarnedByCoins + goldEarnedByLevel);
@@ -374,7 +374,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
         TextView someText = new TextView(this);
         someText.setText(String.valueOf(item));
         someText.setTypeface(
-                Typeface.createFromAsset(getAssets(),  "fonts/trench100free.ttf")
+                StoredProgress.getInstance().getTrenchFont(getAssets())
         );
 
         if (EndMenuItems.goldTotal == item){

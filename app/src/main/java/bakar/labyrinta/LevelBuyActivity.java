@@ -44,11 +44,11 @@ public class LevelBuyActivity extends Activity implements View.OnClickListener {
         );
 
         ((TextView)findViewById(R.id.tw_level_buy_title)).setTypeface(
-                Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+                StoredProgress.getInstance().getTrenchFont(getAssets()));
 
         ((TextView)findViewById(R.id.tw_level_cost)).setText(String.valueOf(level_cost));
         ((TextView)findViewById(R.id.tw_level_cost)).setTypeface(
-                Typeface.createFromAsset(getAssets(), "fonts/trench100free.ttf"));
+                StoredProgress.getInstance().getTrenchFont(getAssets()));
 
     }
 

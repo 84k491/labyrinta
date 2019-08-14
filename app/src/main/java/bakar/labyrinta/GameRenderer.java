@@ -613,12 +613,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             puanim.setColor(Color.WHITE);
             puanim.setTextAlign(Paint.Align.CENTER);
             puanim.setTextSize(20);
-            puanim.setTypeface(Typeface.createFromAsset(getContext().getAssets(),  "fonts/trench100free.ttf"));
+            puanim.setTypeface(StoredProgress.getInstance().getTrenchFont(getContext().getAssets()));
 
             levelNumber.setColor(Color.WHITE);
             levelNumber.setTextAlign(Paint.Align.RIGHT);
             levelNumber.setTextSize(95);
-            levelNumber.setTypeface(Typeface.createFromAsset(getContext().getAssets(),  "fonts/trench100free.ttf"));
+            levelNumber.setTypeface(StoredProgress.getInstance().getTrenchFont(getContext().getAssets()));
 
             bonusRadius.setColor(Color.argb(220, 40, 255, 40));
 
