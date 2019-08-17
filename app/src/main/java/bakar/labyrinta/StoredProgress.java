@@ -12,8 +12,9 @@ class StoredProgress {
     static final String appId = "ca-app-pub-1080418191506746~9374299748";
 
     private static final String titleFont = "fonts/CLiCHE 21.ttf";
-    private static final String trenchFont = "fonts/trench100free.ttf";
-    private static final String textFont = "fonts/JosefinSans_Regular.ttf";
+    //private static final String trenchFont = "fonts/trench100free.ttf";
+    private static final String trenchFont = "fonts/Gravity-UltraLight.otf";
+    private static final String textFont = "fonts/Gravity-Regular.otf";
 
     Typeface getTitleFont(AssetManager manager){
         return Typeface.createFromAsset(manager, titleFont);

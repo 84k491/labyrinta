@@ -612,7 +612,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             centeringCircle.setStrokeWidth(.5f);
             puanim.setColor(Color.WHITE);
             puanim.setTextAlign(Paint.Align.CENTER);
-            puanim.setTextSize(20);
+            puanim.setTextSize(15);
             puanim.setTypeface(StoredProgress.getInstance().getTrenchFont(getContext().getAssets()));
 
             levelNumber.setColor(Color.WHITE);

@@ -377,13 +377,14 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 StoredProgress.getInstance().getTrenchFont(getAssets())
         );
 
+        float text_size = 17.f;
         if (EndMenuItems.goldTotal == item){
-            someText.setTextSize(20.f * size_coef);
+            someText.setTextSize(text_size * size_coef);
             someText.setTextColor(Color.rgb(170, 200, 20));
         }
         else{
             someText.setTextColor(Color.rgb(50, 200, 70));
-            someText.setTextSize(20.f);
+            someText.setTextSize(text_size);
         }
         //someText.setBackgroundColor(Color.BLUE);
         textViewMap.put(item, someText);

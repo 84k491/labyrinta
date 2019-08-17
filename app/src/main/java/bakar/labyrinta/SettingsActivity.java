@@ -98,9 +98,11 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
         sounds.setGravity(Gravity.FILL_VERTICAL | Gravity.CENTER_HORIZONTAL);
         music.setGravity(Gravity.FILL_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
-        joystick.setTextSize(25.f);
-        sounds.setTextSize(25.f);
-        music.setTextSize(25.f);
+        float button_size = 20.f;
+
+        joystick.setTextSize(button_size);
+        sounds.setTextSize(button_size);
+        music.setTextSize(button_size);
 
         joystick.setTextColor(Color.WHITE);
         sounds.setTextColor(Color.WHITE);
@@ -178,9 +180,9 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
 
         String text = is_on
                 ?
-                "On"
+                getString(R.string.on)
                 :
-                "Off";
+                getString(R.string.on);
         bt.setText(text);
 
         try{

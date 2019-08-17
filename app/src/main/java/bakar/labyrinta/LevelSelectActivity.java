@@ -297,7 +297,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
             }
         }
 
-        res.setTextSize(40);
+        res.setTextSize(35);
         res.setLayoutParams(params);
         res.setTextColor(Color.WHITE);
         res.setGravity(Gravity.CENTER);

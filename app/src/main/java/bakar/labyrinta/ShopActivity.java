@@ -251,7 +251,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     abstract class ShopItem{
         String label;
         LinearLayout assosiatedLayout = null;
-        int costIconResource = R.drawable.coin_anim1;
         ImageView costIcon = null;
         int mainIconResource = -1;
         View mainIcon = null;
@@ -355,7 +354,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             costLayout.setOrientation(LinearLayout.HORIZONTAL);
             cost_tw = new TextView(ShopActivity.this);
             cost_tw.setLayoutParams(costParams);
-            cost_tw.setTextSize(25);
+            cost_tw.setTextSize(17);
             cost_tw.setTextColor(Color.WHITE);
             cost_tw.setGravity(Gravity.CENTER);
             cost_tw.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
@@ -547,7 +546,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             mainIcon.setId(getRandomId());
             ((TextView)mainIcon).setTextColor(Color.WHITE);
             updateLabelText();
-            ((TextView)mainIcon).setTextSize(20.f);
+            ((TextView)mainIcon).setTextSize(15.f);
             ((TextView)mainIcon).setTypeface(
                     StoredProgress.getInstance().getTrenchFont(getAssets()));
             ((TextView)mainIcon).setGravity(Gravity.CENTER);
@@ -567,8 +566,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
         @Override
         void updateLabelText(){
-            //label_tw.setText(String.valueOf(getValue() + 1));
-            ((TextView)mainIcon).setText("Level size\n" + (getValue() + 1));
+            ((TextView)mainIcon).setText(getString(R.string.shop_item_level, (getValue() + 1)));
         }
         @Override
         ConstraintLayout getFinalIconLayout(){

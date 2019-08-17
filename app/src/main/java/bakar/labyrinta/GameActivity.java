@@ -36,7 +36,6 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
-    // TODO: 8/14/19 локализация
     // TODO: 8/14/19 в туторале дописать, что можно найти бонусы
     // TODO: 7/10/19 random coin spawn fix (путь к монете может перекрыть выход)
     // TODO: 7/10/19 add more soundtrack
@@ -45,6 +44,7 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 coin icons
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 6/25/19 change scaling speed
+    // TODO: 8/14/19 куплен 2й левел, куплен 3й левел, на 4й не хватает, но кнопка зеленая
 
     //after release
     // TODO: 7/30/19 поменять иконку меню ?
@@ -537,9 +537,6 @@ public class GameActivity extends Activity{
         private boolean registered = false;
         boolean isRegistered(){return registered;}
 
-        float[] valuesAccel = new float[3];
-        float[] valuesAccelMotion = new float[3];
-        float[] valuesAccelGravity = new float[3];
         float[] valuesGravity = new float[3];
 
         SensorEventListener listener = new SensorEventListener() {
@@ -552,12 +549,6 @@ public class GameActivity extends Activity{
             public void onSensorChanged(SensorEvent event) {
                 switch (event.sensor.getType()) {
                     case Sensor.TYPE_ACCELEROMETER:
-//                        for (int i = 0; i < 3; i++) {
-//                            valuesAccel[i] = event.values[i];
-//                            valuesAccelGravity[i] = (float) (0.1 * event.values[i] + 0.9 * valuesAccelGravity[i]);
-//                            valuesAccelMotion[i] = event.values[i]
-//                                    - valuesAccelGravity[i];
-//                        }
                         for (int i = 0; i < 3; i++) {
                             valuesGravity[i] = event.values[i];
                         }
@@ -584,14 +575,9 @@ public class GameActivity extends Activity{
         void registerSensors(){
             int period = SensorManager.SENSOR_DELAY_GAME;
             boolean result = false;
-//            result = sensorManager.registerListener(listener, sensorAccel,
-//                    period);
-//            result = sensorManager.registerListener(listener, sensorLinAccel,
-//                    period);
             result = sensorManager.registerListener(listener, sensorGravity,
                     period);
 
-            //registered = true;
             registered = result;
         }
         void unregisterSensors(){

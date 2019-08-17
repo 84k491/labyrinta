@@ -42,7 +42,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Are you sure you want to buy level size N?"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <Space
                 android:layout_width="match_parent"

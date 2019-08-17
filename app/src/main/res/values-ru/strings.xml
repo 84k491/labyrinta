@@ -12,5 +12,11 @@
     <string name="end_level_nice">Отлично!</string>
     <string name="level_buy_confirmation">Вы уверены, что хотите купить %1$d размер уровня?</string>
     <string name="exit_confirmation">Вы уверены, что хотите выйти в меню?</string>
-    
+    <string name="joystick">Джойстик</string>
+    <string name="music">Музыка</string>
+    <string name="off">Выкл</string>
+    <string name="on">Вкл</string>
+    <string name="sounds">Звуки</string>
+    <string name="shop_item_level">Размер уровня\n%1$d</string>
+
 </resources>

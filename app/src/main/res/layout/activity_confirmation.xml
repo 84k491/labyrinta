@@ -58,7 +58,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/exit_confirmation"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <Space
                 android:layout_width="match_parent"

@@ -56,7 +56,7 @@
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
-                android:text="Music" />
+                android:text="@string/music" />
 
             <Button
                 android:id="@+id/music_bt"
@@ -81,7 +81,7 @@
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
-                android:text="Sounds" />
+                android:text="@string/sounds" />
 
             <Button
                 android:id="@+id/sounds_bt"
@@ -106,7 +106,7 @@
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
-                android:text="Joystick" />
+                android:text="@string/joystick" />
 
             <Button
                 android:id="@+id/joystick_bt"
