@@ -328,19 +328,19 @@ class GameLogic {
             gameRenderer.buttons.get(0).lightAnimationEnabled = !gameRenderer.isPlayerInSight();
         }
 
-        float exit_distance = distance(exitCoords(), playerCoords());
-        if (exit_distance < cellSize * 1.1f){
-            Line line = new Line(playerCoords(), exitCoords());
-            PointF additional_movement = line.normalizedVector();
-
-            float coef = (cellSize * 5) / exit_distance;
-
-            additional_movement.x *= coef;
-            additional_movement.y *= coef;
-
-            pointF.x += additional_movement.x;
-            pointF.y += additional_movement.y;
-        }
+//        float exit_distance = distance(exitCoords(), playerCoords());
+//        if (exit_distance < cellSize * 1.1f && exit_distance > 0.1f){
+//            Line line = new Line(playerCoords(), exitCoords());
+//            PointF additional_movement = line.normalizedVector();
+//
+//            float coef = (cellSize * 5) / exit_distance;
+//
+//            additional_movement.x *= coef;
+//            additional_movement.y *= coef;
+//
+//            pointF.x += additional_movement.x;
+//            pointF.y += additional_movement.y;
+//        }
 
         CPoint.Game input;
         if (usesJoystick){
@@ -370,8 +370,13 @@ class GameLogic {
             }
         }
 
-        if (distanceToRail > cellSize * 3)
+        CPoint.Game pointBetween = new CPoint.Game();
+        pointBetween.x = playerPt.x + (newPlayerPt.x - playerPt.x) / 2;
+        pointBetween.y = playerPt.y + (newPlayerPt.y - playerPt.y) / 2;
+
+        if (distanceToRail > cellSize * 3) {
             gameRenderer.isMovingPlayer = false;
+        }
         else{
             playerPt.x = newPlayerPt.x;
             playerPt.y = newPlayerPt.y;
@@ -386,7 +391,7 @@ class GameLogic {
                 currentNode.updateLinks();
             }
         }
-        eFactory.intersectsWith(game2field(playerCoords()));
+        eFactory.intersectsWith(game2field(pointBetween));
     }
     CPoint.Game playerCoords(){ // gameCoord
         return new CPoint.Game(playerPt.x, playerPt.y);
@@ -775,7 +780,7 @@ class GameLogic {
                 makePathfinder(getFreeCell());
             }
         }
-        Entity intersectsWith(Point point){
+        Entity intersectsWith(CPoint.Field point){
             Entity ret = null;
             for (Entity entity : entities
                  ) {
@@ -816,6 +821,19 @@ class GameLogic {
             }
 
             return ret;
+        }
+        Entity intersectsWith(CPoint.Game point){
+            Entity ret = null;
+            for (Entity entity : entities
+            ) {
+                if (distance(field2game(entity.pos), point) < cellSize - 1){
+                    ret = entity;
+                    break;
+                }
+            }
+            if (ret == null)
+                return ret;
+            return intersectsWith(ret.pos);
         }
 
         void makeRandom(){
