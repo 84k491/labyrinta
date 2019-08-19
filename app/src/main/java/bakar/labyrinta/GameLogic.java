@@ -328,20 +328,6 @@ class GameLogic {
             gameRenderer.buttons.get(0).lightAnimationEnabled = !gameRenderer.isPlayerInSight();
         }
 
-//        float exit_distance = distance(exitCoords(), playerCoords());
-//        if (exit_distance < cellSize * 1.1f && exit_distance > 0.1f){
-//            Line line = new Line(playerCoords(), exitCoords());
-//            PointF additional_movement = line.normalizedVector();
-//
-//            float coef = (cellSize * 5) / exit_distance;
-//
-//            additional_movement.x *= coef;
-//            additional_movement.y *= coef;
-//
-//            pointF.x += additional_movement.x;
-//            pointF.y += additional_movement.y;
-//        }
-
         CPoint.Game input;
         if (usesJoystick){
             CPoint.Game offsetp = joystick.getPlayerOffsetOnMove(pointF);
@@ -629,6 +615,16 @@ class GameLogic {
 
         private LinkedList<CPoint.Game> AStar(){
 
+            LinkedList<CPoint.Game> result = new LinkedList<>();
+
+            //На случай тупого юзера
+            if ((star.x - cross.x < 2 && star.y == cross.y) ||
+                (star.y - cross.y < 2 && star.x == cross.x)){
+                result.push(field2game(star));
+                result.push(field2game(cross));
+                return result;
+            }
+
             open.push(new AStarNode(starNode, null));
 
             AStarNode curr = open.getFirst();
@@ -645,7 +641,6 @@ class GameLogic {
                 path.push(path.getFirst().cameFrom);
             }
 
-            LinkedList<CPoint.Game> result = new LinkedList<>();
             for (AStarNode aStarNode : path
                  ) {
                 result.add(result.size(), field2game(aStarNode.pos));
