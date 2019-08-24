@@ -1,13 +1,16 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
+import android.arch.core.util.Function;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.ArrayMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -43,8 +46,8 @@ class GameLogic {
     GameRenderer gameRenderer;
     Field field;
     Node currentNode;
-    private CPoint.Game playerPt;
-    long seed = 0;
+    CPoint.Game playerPt;
+    long seed = 0; //1566662708251
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
     final EntityFactory eFactory = new EntityFactory();
@@ -112,12 +115,13 @@ class GameLogic {
 
         eFactory.reset();
         eFactory.makeExit(field.exitPos);
-        //eFactory.makePointer(new Point(1, 1));
-        //eFactory.makeTeleport(new Point(3, 3));
-        //eFactory.makePathfinder(new Point(5, 5));
 
         eFactory.dropCoins();
         eFactory.dropBonuses();
+
+        if (level_difficulty < 5){
+            eFactory.moveInaccessibleEntities();
+        }
 
         isInited = true;
         remote_move_flag = true;
@@ -550,12 +554,12 @@ class GameLogic {
     }
     class AStarAlg{
         //Todo: сделать отдельным потоком
-        Node starNode;
-        Node crossNode;
-        CPoint.Field star;
-        CPoint.Field cross;
-        LinkedList<AStarNode> open = new LinkedList<>();
-        LinkedList<AStarNode> closed = new LinkedList<>();
+        private Node starNode;
+        private Node crossNode;
+        private CPoint.Field star;
+        private CPoint.Field cross;
+        private final LinkedList<AStarNode> open = new LinkedList<>();
+        private final LinkedList<AStarNode> closed = new LinkedList<>();
 
         AStarAlg(CPoint.Game star_, CPoint.Game cross_){
             starNode = new Node(game2field(star_));
@@ -569,7 +573,7 @@ class GameLogic {
             star = game2field(star_);
         }
 
-        Node getClosestToPoint(LinkedList<Node> nodes, CPoint.Field pt){
+        private Node getClosestToPoint(LinkedList<Node> nodes, CPoint.Field pt){
             Node result = new Node(new CPoint.Field(0, 0));
             double min_dist = 10e3;
             for (Node node: nodes
@@ -582,7 +586,7 @@ class GameLogic {
             return new Node(result.pos);
         }
 
-        boolean contains(LinkedList<Node> list, Node node){
+        private boolean contains(LinkedList<Node> list, Node node){
             for (Node nd : list
                  ) {
                 if (nd.pos.x == node.pos.x && nd.pos.y == node.pos.y)
@@ -590,7 +594,7 @@ class GameLogic {
             }
             return false;
         }
-        boolean contains(LinkedList<AStarNode> list, AStarNode node){
+        private boolean contains(LinkedList<AStarNode> list, AStarNode node){
             for (Node nd : list
                     ) {
                 if (nd.pos.x == node.pos.x && nd.pos.y == node.pos.y)
@@ -598,7 +602,7 @@ class GameLogic {
             }
             return false;
         }
-        AStarNode minFG(LinkedList<AStarNode> list){
+        private AStarNode minFG(LinkedList<AStarNode> list){
             double minfg = 10e3;
             AStarNode result = null;
             for (AStarNode aStarNode : list
@@ -613,11 +617,10 @@ class GameLogic {
             return result;
         }
 
-        private LinkedList<CPoint.Game> AStar(){
+        LinkedList<CPoint.Game> AStar(){
 
             LinkedList<CPoint.Game> result = new LinkedList<>();
 
-            //На случай тупого юзера
             if ((star.x - cross.x < 2 && star.y == cross.y) ||
                 (star.y - cross.y < 2 && star.x == cross.x)){
                 result.push(field2game(star));
@@ -649,6 +652,16 @@ class GameLogic {
 
             if (contains(new Node(cross).getLinkedNodes(), new Node(game2field(result.get(result.size() - 3)))))
                 result.remove(result.size() - 2);
+
+            return result;
+        }
+        LinkedList<CPoint.Field> game2FieldPath(LinkedList<CPoint.Game> path){
+            final LinkedList<CPoint.Field> result = new LinkedList<>();
+
+            for (CPoint.Game pt : path
+                    ) {
+                result.push(game2field(pt));
+            }
 
             return result;
         }
@@ -708,12 +721,18 @@ class GameLogic {
     class EntityFactory{
         // TODO check Glide
         final LinkedList<Entity> entities = new LinkedList<>();
+        Random random = new Random(seed);
 
-        void init(){
+        Map<String, Function<CPoint.Field, Entity>> entityMap = new HashMap<>();
+
+        EntityFactory(){
+            entityMap.put("Coin", this::makeCoin);
+            entityMap.put("Pathfinder", this::makePathfinder);
+            entityMap.put("Teleport", this::makeTeleport);
+            entityMap.put("Pointer", this::makePointer);
         }
 
         CPoint.Field getFreeCell(){
-            Random random = new Random(seed);
             do{
                 CPoint.Field point = new CPoint.Field();
                 point.set(random.nextInt(field.getxSize()), random.nextInt(field.getySize()));
@@ -738,26 +757,49 @@ class GameLogic {
                 entities.clear();
             }
         }
-        void makeExit(CPoint.Field point){
+        Entity makeExit(CPoint.Field point){
             entities.push(new Exit(point));
+            return entities.getLast();
         }
-        void makeCoin(CPoint.Field point){
+        Exit getExit(){
+            for (Entity e : entities){
+                if (e.whoami.equals("Exit")){
+                    return (Exit)e;
+                }
+            }
+            return null;
+        }
+        Entity makeCoin(CPoint.Field point){
             entities.push(new Coin(point));
+            return entities.getLast();
         }
-        void makeTeleport(CPoint.Field point){
+        Entity makeTeleport(CPoint.Field point){
             entities.push(new Teleport(point));
+            return entities.getLast();
         }
-        void makePointer(CPoint.Field point){
+        Entity makePointer(CPoint.Field point){
             entities.push(new Pointer(point));
+            return entities.getLast();
         }
-        void makePathfinder(CPoint.Field point){
+        Entity makePathfinder(CPoint.Field point){
             entities.push(new Pathfinder(point));
+            return entities.getLast();
+        }
+        Entity makeEntity(String key, CPoint.Field point){
+            try {
+                entityMap.get(key).apply(point);
+            }
+            catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            return entities.getLast();
         }
 
         void dropCoins(){
             int amount_of_coins = Economist.getInstance().getCoinsAmountRand(field.getHypot());
-            for (int i = 0; i < amount_of_coins; ++i)
+            for (int i = 0; i < amount_of_coins; ++i){
                 makeCoin(getFreeCell());
+            }
         }
         void dropBonuses(){
             Random random = new Random(seed);
@@ -773,6 +815,22 @@ class GameLogic {
             nextint = random.nextInt(bound);
             if ((float)(nextint) / (float)bound < Economist.getInstance().getPathfinderPropability(field.getHypot())){
                 makePathfinder(getFreeCell());
+            }
+        }
+        void moveInaccessibleEntities(){
+            for (Entity e : entities){
+                if (e.whoami.equals("Exit")){
+                    continue;
+                }
+                AStarAlg alg = new AStarAlg(playerCoords(), field2game(e.pos));
+                Exit exit = getExit();
+                if (exit != null && exit.isLiesOnPath(alg.game2FieldPath(alg.AStar()))){
+                    Logger.getAnonymousLogger().info("Replaced " + e.whoami);
+                    eFactory.makeEntity(e.whoami, getFreeCell());
+                    entities.remove(e);
+                    moveInaccessibleEntities();
+                    return;
+                }
             }
         }
         Entity intersectsWith(CPoint.Field point){
@@ -850,6 +908,27 @@ abstract class Entity{
 
     Entity(CPoint.Field _pos){
         pos = new CPoint.Field(_pos);
+    }
+
+    boolean isLiesOnPath(LinkedList<CPoint.Field> path){
+        for (int i = 0; i < path.size() - 1; ++i){
+            boolean isBtwX = ((path.get(i).x <= pos.x && pos.x <= path.get(i + 1).x) &&
+                             (path.get(i + 1).y == pos.y) && (path.get(i).y == pos.y))
+                    ||
+                             (path.get(i + 1).x <= pos.x && pos.x <= path.get(i).x) &&
+                             ((path.get(i + 1).y == pos.y) && (path.get(i).y == pos.y));
+
+            boolean isBtwY = ((path.get(i).y <= pos.y && pos.y <= path.get(i + 1).y) &&
+                             (path.get(i + 1).x == pos.x) && (path.get(i).x == pos.x))
+                    ||
+                             (path.get(i + 1).y <= pos.y && pos.y <= path.get(i).y) &&
+                             ((path.get(i + 1).x == pos.x) && (path.get(i).x == pos.x));
+
+            if (isBtwX || isBtwY){
+                return true;
+            }
+        }
+        return false;
     }
 }
 

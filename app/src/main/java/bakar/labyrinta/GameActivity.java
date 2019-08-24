@@ -37,13 +37,12 @@ public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
     // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
-    // TODO: 7/10/19 random coin spawn fix (путь к монете может перекрыть выход)
     // TODO: 7/10/19 add more soundtrack
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
-    // TODO: 3/18/19 coin icons
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 6/25/19 change scaling speed
     // TODO: 8/14/19 куплен 2й левел, куплен 3й левел, на 4й не хватает, но кнопка зеленая
+    // TODO: 3/18/19 coin icons
 
     //after release
     // TODO: 7/30/19 поменять иконку меню ?

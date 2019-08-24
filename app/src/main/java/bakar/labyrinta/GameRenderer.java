@@ -480,7 +480,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             buttons.add(new Settings(pos4, rad1));
         }
 
-        gameLogic.eFactory.init();
         if (gameLogic.usesJoystick){
             createJoystick();
         }
@@ -1906,7 +1905,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         void onClick(){
-            //gameLogic.playerPt = gameLogic.exitCoords();
+//            CPoint.Game a = gameLogic.exitCoords();
+//            a.offset(.1f, .1f);
+//            gameLogic.playerPt = a;
 
             CPoint.Screen player_coord = game2screen(gameLogic.playerCoords());
 
