@@ -36,13 +36,15 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
-    // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
     // TODO: 7/10/19 add more soundtrack
+    // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 6/25/19 change scaling speed
     // TODO: 8/14/19 куплен 2й левел, куплен 3й левел, на 4й не хватает, но кнопка зеленая
     // TODO: 3/18/19 coin icons
+    // TODO: 8/24/19 подписи к бонусам в магазине
+    // TODO: 8/24/19 проверить как отображается цена на кнопке уровня на 720р
 
     //after release
     // TODO: 7/30/19 поменять иконку меню ?

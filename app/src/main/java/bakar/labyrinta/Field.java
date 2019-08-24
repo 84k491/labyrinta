@@ -46,8 +46,8 @@ class Field {
             }
         }
 
-         Architect architect = new Architect();
-         architect.createLabyrinth(seed);
+         Architect architect = new Architect(seed);
+         architect.createLabyrinth();
      }
 
      public CPoint.Field ptAt(CPoint.Field point, Direction direction){
@@ -108,23 +108,25 @@ class Field {
          CPoint.Field cursor;
          Stack<CPoint.Field> path = new Stack<>();
 
-         Architect(){
+         Random random;
+
+         Architect(long seed){
              cursor = new CPoint.Field(1, 1);
              path.push(cursor);
+             random = new Random(seed);
              set(cursor, true);
          }
 
-         public void createLabyrinth(long seed){
-             Random random = new Random(seed);
-
+         public void createLabyrinth(){
              while (path.size() == 1)
                  goTo(Direction.values()[random.nextInt(Direction.values().length)]);
              while (path.size() > 1)
                  goTo(Direction.values()[random.nextInt(Direction.values().length)]);
-             placeExtraConnectors(seed);
+             placeExtraConnectors();
+             removeSingleColumns();
 
-             placeExit(seed);
-             placeStartPos(seed);
+             placeExit();
+             placeStartPos();
          }
          private void goTo(Direction direction){
              if (canGo(direction)){
@@ -156,9 +158,32 @@ class Field {
                  return false;
          }
 
-         private void placeExtraConnectors(long seed){
-             Random random = new Random(seed);
+         private void removeSingleColumns(){
+             //отступ, чтобы случайно не перекрылся единственный проход у края
+             for (int x = 2; x < getxSize() - 2; ++x){
+                 for (int y = 1; y < getySize() - 2; ++y) {
+                     CPoint.Field point = new CPoint.Field(x, y);
+                     if (isSingleColumn(point)){
+                         Direction dir = Direction.values()[random.nextInt(Direction.values().length)];
+                         set(ptAt(point, dir), false);
+                     }
+                 }
+             }
+         }
+         private boolean isSingleColumn(CPoint.Field point){
+             CPoint.Field pt = new CPoint.Field(point);
+             if ((point.x < 0) || (point.x > xSize - 1) || (point.y < 0) || (point.y > ySize - 1))
+                 return false;
 
+             boolean isWallLeft = !get(ptAt(pt, Direction.Left));
+             boolean isWallRight = !get(ptAt(pt, Direction.Right));
+             boolean isWallUp = !get(ptAt(pt, Direction.Up));
+             boolean isWallDown = !get(ptAt(pt, Direction.Down));
+
+             return !isWallDown && !isWallUp && !isWallLeft && !isWallRight;
+         }
+
+         private void placeExtraConnectors(){
              for (int x = 1; x < getxSize() - 1; ++x){
                  for (int y = 1; y < getySize() - 1; ++y){
                      cursor.set(x,y);
@@ -188,8 +213,7 @@ class Field {
                  return false;
          }
 
-         private void placeStartPos(long seed){
-             Random random = new Random(seed);
+         private void placeStartPos(){
              float reqDist = (float)Math.sqrt(getxSize() * getxSize() + getySize() * getySize()) / 2;
 
              int x = exitPos.x, y = exitPos.y;
@@ -206,8 +230,7 @@ class Field {
              startPos = new CPoint.Field(x, y);
 
          }
-         private void placeExit(long seed){
-             Random random = new Random(seed);
+         private void placeExit(){
              double rad = Math.sqrt(getxSize()*getxSize() + getySize()*getySize()) / 2;
 
              CPoint.Field exit = new CPoint.Field(getxSize() / 2, getySize() / 2);

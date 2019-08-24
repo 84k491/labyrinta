@@ -47,7 +47,7 @@ class GameLogic {
     Field field;
     Node currentNode;
     private CPoint.Game playerPt;
-    long seed = 0; //1566662708251
+    long seed = 0;
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
     final EntityFactory eFactory = new EntityFactory();
