@@ -18,5 +18,6 @@
     <string name="on">Вкл</string>
     <string name="sounds">Звуки</string>
     <string name="shop_item_level">Размер уровня\n%1$d</string>
+    <string name="loading">Загрузка</string>
 
 </resources>

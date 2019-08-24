@@ -78,5 +78,6 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="shop_item_level">Level size\n%1$d</string>
+    <string name="loading">Loading</string>
 
 </resources>
