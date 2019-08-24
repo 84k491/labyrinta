@@ -46,7 +46,7 @@ class GameLogic {
     GameRenderer gameRenderer;
     Field field;
     Node currentNode;
-    CPoint.Game playerPt;
+    private CPoint.Game playerPt;
     long seed = 0; //1566662708251
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
@@ -199,6 +199,7 @@ class GameLogic {
 
     void onExitReached(){
         remote_move_flag = false;
+        playerPt = exitCoords();
         goldEarnedByLevel =
                 Economist.getInstance().getLevelReward(
                         Economist.hypot(new Point(field.getxSize(), field.getySize())));
