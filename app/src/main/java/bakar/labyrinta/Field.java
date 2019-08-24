@@ -21,9 +21,9 @@ Direction getOpposite(){
 
 class Field {
     private boolean[][] cells;
-    private int xSize = 3;
-    private int ySize = 3;
-    private int persOfDeadEnds = 70;
+    private int xSize;
+    private int ySize;
+    private static final int persOfDeadEnds = 70;
     public CPoint.Field startPos;
     public CPoint.Field exitPos;
 
@@ -123,7 +123,7 @@ class Field {
              while (path.size() > 1)
                  goTo(Direction.values()[random.nextInt(Direction.values().length)]);
              placeExtraConnectors();
-             removeSingleColumns();
+             //removeSingleColumns();
 
              placeExit();
              placeStartPos();
