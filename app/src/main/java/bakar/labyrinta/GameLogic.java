@@ -47,6 +47,7 @@ class GameLogic {
     Field field;
     Node currentNode;
     private CPoint.Game playerPt;
+    //1566843055181 invisible wall
     long seed = 0;
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
@@ -377,7 +378,7 @@ class GameLogic {
         for (int i = 0; i < currentNode.availableDirections.size(); ++i){
             if (distance(newPlayerPt,
                     field2game(currentNode.links.get(currentNode.availableDirections.get(i)).pos)) <
-                    gameRenderer.getCellSize() * (3 / 2)){
+                    GameRenderer.cellSize * (3 / 2)){
                 currentNode = currentNode.links.get(currentNode.availableDirections.get(i));
                 currentNode.updateLinks();
             }

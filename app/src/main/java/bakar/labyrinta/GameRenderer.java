@@ -40,9 +40,7 @@ import static android.graphics.Path.Direction.CW;
 
 public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
-    // IMPORT /////////////////////////////
     private static final boolean isDebug = false;
-    ///////////////////////////////////////
 
     CPoint.Game lastToushGc = new CPoint.Game();
     CPoint.Screen lastToushSc = new CPoint.Screen();
@@ -54,7 +52,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     private static final float smallSquareScale = 0.5f;
     private static final float bigSquareScale = 2.f - smallSquareScale;
 
-    static final float cellSize = 10; // gameCoords side
+    public static final float cellSize = 10; // gameCoords side
 
     ///// это костыль. позволяет сделать уменьшенную бмп уровня, не затрагивая остальное ///
     final float labBitmapcellSize = 4;
@@ -113,9 +111,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
     public void setGameLogic(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
-    }
-    public float getCellSize() {
-        return cellSize;
     }
     void startBonusActivity(){
         Intent intent = new Intent(getContext(), BonusActivity.class);
@@ -298,6 +293,19 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         centerCameraTo(result);
     }
 
+    boolean isWholeFieldInScreen(){
+        final CPoint.Field bot_right_field = new CPoint.Field(gameLogic.field.getxSize(),
+                gameLogic.field.getySize());
+        final CPoint.Screen bot_right_screen = field2screen(bot_right_field);
+
+        final CPoint.Field top_left_field = new CPoint.Field(0, 0);
+        final CPoint.Screen top_left_screen = field2screen(top_left_field);
+
+        final PointF diff = new PointF(bot_right_screen.x - top_left_screen.x,
+                                       bot_right_screen.y - top_left_screen.y);
+
+        return diff.x < getWidth() && diff.y < getHeight();
+    }
     boolean isPlayerAndExitAtScreen(){
         PointF ofseted_exit = new PointF();
         ofseted_exit.x = gameLogic.exitCoords().x;
@@ -458,9 +466,17 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             buttons.add(new PlayerFinder(pos1, rad1));
         }
 
-        if (gameLogic.level_difficulty < 4){
-            centerCameraBetweenPlayerExit();
+        if (isWholeFieldInScreen()){
+            final CPoint.Field bot_right_field = new CPoint.Field(gameLogic.field.getxSize(),
+                                                            gameLogic.field.getySize());
+            final CPoint.Game center = field2game(bot_right_field);
+            center.x = center.x / 2.f;
+            center.y = center.y / 2.f;
+            centerCameraTo(center);
         }
+//        else if (isPlayerAndExitAtScreen()){
+//            centerCameraBetweenPlayerExit();
+//        }
         else{
             centerCameraTo(gameLogic.playerCoords());
         }
@@ -495,6 +511,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         renderThread.enlightenFogBmp(gameLogic.playerCoords());
 
         renderThread.is_waiting_4_surface = false;
+
 
         Logger.getAnonymousLogger().info("GameRenderer.surfaceCreated() end");
     }
@@ -1876,9 +1893,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         Button(CPoint.Screen position, float radius){
             pos = position;
             rad = radius;
-            init();
         }
-        void init(){}
 
         boolean tryClick (PointF screenCoord){
             if (GameLogic.distance(screenCoord, pos) < rad)
@@ -1900,7 +1915,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             whoami = "CenterButton";
             pos = position;
             rad = radius;
-            init();
         }
 
         @Override
@@ -1962,7 +1976,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             whoami = "MenuButton";
             pos = position;
             rad = radius;
-            init();
         }
 
         @Override
@@ -1977,7 +1990,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             whoami = "BonusesButton";
             pos = position;
             rad = radius;
-            init();
         }
 
         @Override
@@ -1993,7 +2005,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             whoami = "SettingsButton";
             pos = position;
             rad = radius;
-            init();
         }
 
         @Override
