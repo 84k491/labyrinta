@@ -47,7 +47,6 @@ class GameLogic {
     Field field;
     Node currentNode;
     private CPoint.Game playerPt;
-    //1566843055181 invisible wall
     long seed = 0;
     Joystick joystick;
     LinkedList<CPoint.Game> finded_path;
@@ -120,13 +119,14 @@ class GameLogic {
         eFactory.dropCoins();
         eFactory.dropBonuses();
 
-        if (level_difficulty < 5){
-            eFactory.moveInaccessibleEntities();
-        }
-
         isInited = true;
         remote_move_flag = true;
     }
+
+    void moveInaccessibleEntities(){
+        eFactory.moveInaccessibleEntities();
+    }
+
     void init(long _seed, int xsize, int ysize){
         seed = _seed;
         init(xsize, ysize);

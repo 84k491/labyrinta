@@ -437,6 +437,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
         ImageView currencyIcon = new ImageView(LevelSelectActivity.this);
         TextView costLabel = new TextView(this);
+        costLabel.setTextSize(10);
 
         String dataKey = StoredProgress.levelUpgKey;
         int level_value = StoredProgress.getInstance().getValue(dataKey);
