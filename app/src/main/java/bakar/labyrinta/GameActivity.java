@@ -36,7 +36,6 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // STEPS-TO-RELEASE
-    // TODO: 8/24/19 проверить как отображается цена на кнопке уровня на 720р
     // TODO: 7/10/19 add more soundtrack
     // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
     // TODO: 5/5/19 max level gz tutorial
@@ -260,7 +259,7 @@ public class GameActivity extends Activity{
         }
 
         //StoredProgress.getInstance().setValue(StoredProgress.goldKey, 260000);
-        //StoredProgress.getInstance().setValue(StoredProgress.levelUpgKey, 47);
+        //StoredProgress.getInstance().setValue(StoredProgress.levelUpgKey, 29);
         //startTutorialActivity(BeginTutorial_1); // 4 test
     }
     @Override

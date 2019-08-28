@@ -12,9 +12,9 @@ public class Economist {
 
     private final float coinCostAvg;
 
-    static final int maxLevel = 50;
-    static final int maxUpgPathfinder = 20;
-    static final int maxUpgTeleport = 10;
+    static final int maxLevel = 30;
+    static final int maxUpgPathfinder = 10;
+    static final int maxUpgTeleport = 5;
 
     private final Random random;
 
