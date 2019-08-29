@@ -15,6 +15,8 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import static bakar.labyrinta.GameRenderer.cellSize;
+
 import static bakar.labyrinta.StoredProgress.getInstance;
 import static bakar.labyrinta.StoredProgress.isNeedToLightBonusButton;
 import static bakar.labyrinta.StoredProgress.isNeedToShowTutorialPointer;
@@ -33,13 +35,11 @@ class GameLogic {
     boolean pathfinderActive = false;
     boolean teleportActive = false;
 
-    int level_difficulty = 1;
+    int level_difficulty;
 
     int pointerAmount = 0;
     int teleportAmount = 0;
     int pathfinderAmount = 0;
-
-    float cellSize = 10;
 
     VelosityControllerInterface tiltControler = null;
 
@@ -59,14 +59,14 @@ class GameLogic {
     Queue<CPoint.Field> traces = new LinkedList<>();
     private int tracesSize = 10;
 
-    GameLogic(GameRenderer gameRenderer_, long _seed, int _xsize, int _ysize, int difficulty){
+    GameLogic(GameRenderer gameRenderer_, long _seed, int difficulty){
         Logger.getAnonymousLogger().info("GameLogic.ctor");
         if (gameRenderer_ != null) {
             gameRenderer = gameRenderer_;
-            cellSize = GameRenderer.cellSize;
         }
         level_difficulty = difficulty;
-        init(_seed, _xsize, _ysize);
+        Point lvl_size = difficultyToActualSize(level_difficulty);
+        init(_seed, Math.min(lvl_size.x, lvl_size.y), Math.max(lvl_size.x, lvl_size.y));
     }
 
     boolean isCoordIsWithinField(CPoint.Game coord){
@@ -96,6 +96,33 @@ class GameLogic {
         CPoint.Game result = new CPoint.Game();
         result.set(value.x * cellSize + cellSize / 2, value.y * cellSize + cellSize / 2);
         return result;
+    }
+
+    Point difficultyToActualSize(int lvl_difficulty){
+        // от сложности должна зависеть диагональ прямоугольника
+        float hypot = Economist.getInstance().getLevelHypotByUpg(lvl_difficulty);
+
+        float square_side = Economist.getInstance().getSquareSide(hypot);
+
+        Random random = new Random(System.currentTimeMillis());
+        float rand = random.nextFloat() * 2.f - 1.f;
+        rand *= square_side / 4.f;
+
+        PointF resultF = new PointF(0,0);
+        resultF.x = square_side + rand;
+        resultF.y = (float)Math.sqrt(hypot * hypot - resultF.x * resultF.x);
+
+        Point result = new Point();
+        result.x = Math.round(resultF.x);
+        result.y = Math.round(resultF.y);
+
+        return result;
+    }
+
+    void reInit(){
+        isInited = false;
+        Point size = difficultyToActualSize(level_difficulty);
+        init(Math.min(size.x, size.y), Math.max(size.x, size.y));
     }
 
     void init(int xsize, int ysize){
@@ -385,7 +412,7 @@ class GameLogic {
         for (int i = 0; i < currentNode.availableDirections.size(); ++i){
             if (distance(newPlayerPt,
                     field2game(currentNode.links.get(currentNode.availableDirections.get(i)).pos)) <
-                    GameRenderer.cellSize * (3 / 2)){
+                    cellSize * (3 / 2)){
                 currentNode = currentNode.links.get(currentNode.availableDirections.get(i));
                 currentNode.updateLinks();
             }

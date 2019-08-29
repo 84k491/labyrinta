@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import static bakar.labyrinta.GameRenderer.cellSize;
+
 public class ResearchActivity extends Activity implements View.OnClickListener {
 
     Button start;
@@ -56,7 +58,7 @@ public class ResearchActivity extends Activity implements View.OnClickListener {
         float dist = 0;
         int iterations_amount = Integer.parseInt(iter.getText().toString());
         long start_time = System.currentTimeMillis();
-        gameLogic = new GameLogic(null, start_time, xSize, ySize, 5);
+        gameLogic = new GameLogic(null, start_time, 5);
 
         for (int i = 0; i < iterations_amount; ++i){
             dist += gameLogic.getPathLength(
@@ -72,7 +74,7 @@ public class ResearchActivity extends Activity implements View.OnClickListener {
 
         dist = dist / iterations_amount;
 
-        dist = dist / gameLogic.cellSize;
+        dist = dist / cellSize;
 
         results.setText("Average distance: " + dist + "\n" +
                         "Previous value = " + previous_dist);

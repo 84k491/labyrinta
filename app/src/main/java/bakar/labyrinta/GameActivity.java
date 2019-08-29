@@ -74,28 +74,6 @@ public class GameActivity extends Activity{
     ConstraintLayout gameLayout;
     private InterstitialAd mInterstitialAd;
 
-    Point difficultyToActualSize(int lvl_difficulty){
-        // TODO: 8/29/19 move to gamelogic
-        // от сложности должна зависеть диагональ прямоугольника
-        float hypot = Economist.getInstance().getLevelHypotByUpg(lvl_difficulty);
-
-        float square_side = Economist.getInstance().getSquareSide(hypot);
-
-        Random random = new Random(System.currentTimeMillis());
-        float rand = random.nextFloat() * 2.f - 1.f;
-        rand *= square_side / 4.f;
-
-        PointF resultF = new PointF(0,0);
-        resultF.x = square_side + rand;
-        resultF.y = (float)Math.sqrt(hypot * hypot - resultF.x * resultF.x);
-
-        Point result = new Point();
-        result.x = Math.round(resultF.x);
-        result.y = Math.round(resultF.y);
-
-        return result;
-    }
-
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
@@ -127,9 +105,7 @@ public class GameActivity extends Activity{
         sPref = getSharedPreferences("global", MODE_PRIVATE);
 
         int difficulty = intent.getIntExtra("level_size", 1);
-        Point lvl_size = difficultyToActualSize(difficulty);
-        gameLogic = new GameLogic(null, intent.getLongExtra("seed", 123456789),
-                Math.min(lvl_size.x, lvl_size.y), Math.max(lvl_size.x, lvl_size.y), difficulty);
+        gameLogic = new GameLogic(null, intent.getLongExtra("seed", 123456789), difficulty);
         gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", false);
         if (!gameLogic.usesJoystick){
             //tiltController = new TiltController();
@@ -176,9 +152,7 @@ public class GameActivity extends Activity{
         }
     }
     void reInit(){
-        gameLogic.isInited = false;
-        Point size = difficultyToActualSize(gameLogic.level_difficulty);
-        gameLogic.init(Math.min(size.x, size.y), Math.max(size.x, size.y));
+        gameLogic.reInit();
 
         runOnUiThread(()->{
             gameRenderer = new GameRenderer(this);
