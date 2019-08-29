@@ -147,7 +147,7 @@ public class MenuActivity extends Activity implements OnClickListener {
         StoredProgress.getInstance().
                 setSharedPreferences(getSharedPreferences("global", MODE_PRIVATE));
 
-        MobileAds.initialize(this, StoredProgress.appId);
+        MobileAds.initialize(this, getString(R.string.app_id_ad));
 
         justLoadedState = true;
 

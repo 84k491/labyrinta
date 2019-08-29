@@ -23,12 +23,19 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class ShopActivity extends Activity implements View.OnClickListener {
 
@@ -37,6 +44,63 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     int s_teleport_upg = 0;
     int s_pathfinder_upg = 0;
     ////////////
+
+    // VIDEO ADS //
+    private RewardedVideoAd mRewardedVideoAd;
+    RewardedVideoAdListener mRewardedVideoAdListener = new RewardedVideoAdListener() {
+        @Override
+        public void onRewardedVideoAdLoaded() {
+            Logger.getAnonymousLogger().info("Video ad loaded!");
+        }
+
+        @Override
+        public void onRewardedVideoAdOpened() {
+            Logger.getAnonymousLogger().info("Video ad opened!");
+        }
+
+        @Override
+        public void onRewardedVideoStarted() {
+            Logger.getAnonymousLogger().info("Video ad started!");
+        }
+
+        @Override
+        public void onRewardedVideoAdClosed() {
+            Logger.getAnonymousLogger().info("Video ad closed!");
+            loadRewardedVideoAd();
+        }
+
+        @Override
+        public void onRewarded(RewardItem rewardItem) {
+            Logger.getAnonymousLogger().info("Video ad onRewarded() type: " + rewardItem.getType() +
+                    " amount: " + rewardItem.getAmount());
+
+            StoredProgress.getInstance().setGold(StoredProgress.getInstance().getGoldAmount()
+                    + rewardItem.getAmount()
+            );
+
+            runOnUiThread(()->{
+                ((TextView)findViewById(R.id.tw_gold_amount_shop)).
+                        setText(StoredProgress.getInstance().getGoldAmount());
+            });
+        }
+
+        @Override
+        public void onRewardedVideoAdLeftApplication() {
+            Logger.getAnonymousLogger().info("Video ad LeftApplication!");
+
+        }
+
+        @Override
+        public void onRewardedVideoAdFailedToLoad(int i) {
+            Logger.getAnonymousLogger().info("Video ad failed! Reason: " + i);
+
+        }
+
+        @Override
+        public void onRewardedVideoCompleted() {
+            Logger.getAnonymousLogger().info("Video ad completed!");
+        }
+    };
 
     LinearLayout layout;
     ArrayList<ShopItem> items = new ArrayList<>();
@@ -87,6 +151,24 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         rebuildLayout();
 
         findViewById(R.id.bt_shop_back).setOnClickListener(this);
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(mRewardedVideoAdListener);
+        loadRewardedVideoAd();
+    }
+
+    private void loadRewardedVideoAd() {
+        mRewardedVideoAd.loadAd(getString(R.string.interstitial_video_test_id),
+                new AdRequest.Builder().build());
+    }
+
+    private void showVideoAd(){
+        if (mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.show();
+        }
+        else{
+            Logger.getAnonymousLogger().info("Video ad not loaded!");
+        }
     }
 
     @Override
@@ -205,6 +287,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     void setItems(){
+        items.add(new RewardedVideoShopItem());
+
         if (StoredProgress.getInstance().getValue(
                 StoredProgress.levelUpgKey
         ) < Economist.maxLevel){
@@ -236,7 +320,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             items.add(new BonusBuyItem(StoredProgress.pointerAmountKey));
             //items.add(new UpgrageItem(StoredProgress.getInstance().pointerUpgKey));
         }
-//        items.add(new GoldBuyItem(3, 100));
 //        items.add(new GoldBuyItem(5,300));
         //items.add(new GoldBuyItem(10,1000));
     }
@@ -360,7 +443,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             cost_tw.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
             costLayout.addView(cost_tw);
 
-
             costIcon = new ImageView(ShopActivity.this);
 //            if (costIconResource != -1)
 //                costIcon.setBackgroundResource(costIconResource);
@@ -483,6 +565,22 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             set.applyTo(constraintLayout);
             return constraintLayout;
+        }
+    }
+
+    class RewardedVideoShopItem extends ShopItem{
+
+        RewardedVideoShopItem(){
+            mainIconResource = R.drawable.video_ad;
+        }
+        @Override
+        int getCost(){
+            return 10;
+        }
+
+        @Override
+        void onTrigger() {
+            showVideoAd();
         }
     }
 

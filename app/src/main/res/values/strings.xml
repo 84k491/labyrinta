@@ -5,8 +5,9 @@
         This is an ad unit ID for an interstitial test ad. Replace with your own interstitial ad unit id.
         For more information, see https://support.google.com/admob/answer/3052638
     <!- -->
-    <string name="interstitial_test" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="interstitial_video_test_id" translatable="false">ca-app-pub-3940256099942544/5224354917</string>
     <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-1080418191506746/7657005347</string>
+    <string name="app_id_ad" translatable="false">ca-app-pub-1080418191506746~9374299748</string>
 
     <!-- Strings related to Settings -->
 

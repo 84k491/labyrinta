@@ -36,10 +36,11 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // HIGH PRIORITY
+    // TODO: 8/29/19 skins
+    // TODO: 3/18/19 gold for video
     // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 6/25/19 change scaling speed
-    // TODO: 8/14/19 куплен 2й левел, куплен 3й левел, на 4й не хватает, но кнопка зеленая
     // TODO: 3/18/19 coin icons
     // TODO: 8/24/19 подписи к бонусам в магазине
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
@@ -64,7 +65,6 @@ public class GameActivity extends Activity{
     // TODO: 4/20/19 pointer upgrade
     // TODO: 8/5/19 можно открыть настройки и завершение уровня
     // TODO: 19.05.2018 rate this app
-    // TODO: 3/18/19 gold for video
 
     GameRenderer gameRenderer;
     GameLogic gameLogic;
@@ -430,6 +430,7 @@ public class GameActivity extends Activity{
 
         Logger.getAnonymousLogger().info("GameActivity.goToNextLevel() end");
     }
+
     private InterstitialAd newInterstitialAd() {
         InterstitialAd interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
