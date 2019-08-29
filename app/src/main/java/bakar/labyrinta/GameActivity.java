@@ -237,7 +237,7 @@ public class GameActivity extends Activity{
     }
     @Override
     protected void onStart(){
-        SoundCore.inst().playBackgroungMusic();
+        SoundCore.inst().playGameBackgroundMusic();
         super.onStart();
     }
     @Override
@@ -273,7 +273,7 @@ public class GameActivity extends Activity{
     }
     @Override
     protected void onStop(){
-        SoundCore.inst().pauseBackgroundMusic();
+        SoundCore.inst().pauseGameBackgroundMusic();
         super.onStop();
     }
     @Override

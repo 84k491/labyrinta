@@ -173,7 +173,7 @@ public class MenuActivity extends Activity implements OnClickListener {
     }
     @Override
     protected void onStart(){
-        SoundCore.inst().playBackgroungMusic();
+        SoundCore.inst().playMenuBackgroundMusic();
         super.onStart();
     }
     @Override
@@ -207,7 +207,7 @@ public class MenuActivity extends Activity implements OnClickListener {
     }
     @Override
     protected void onStop(){
-        SoundCore.inst().pauseBackgroundMusic();
+        SoundCore.inst().pauseMenuBackgroundMusic();
         super.onStop();
     }
     @Override

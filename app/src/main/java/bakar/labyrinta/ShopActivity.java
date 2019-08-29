@@ -99,14 +99,14 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onStart(){
-        SoundCore.inst().playBackgroungMusic();
+        SoundCore.inst().playMenuBackgroundMusic();
         super.onStart();
     }
 
     @Override
     protected void onStop(){
         super.onStop();
-        SoundCore.inst().pauseBackgroundMusic();
+        SoundCore.inst().pauseMenuBackgroundMusic();
     }
 
     @Override

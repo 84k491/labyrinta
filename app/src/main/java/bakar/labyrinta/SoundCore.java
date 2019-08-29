@@ -20,7 +20,9 @@ enum Sounds{
 public final class SoundCore {
     static private final SoundCore instance = new SoundCore();
     private SoundPool soundPool;
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer_menu;
+    private MediaPlayer mediaPlayer_game;
+    boolean currenPlayerIsGame = false;
 
     boolean doPlayMusic = true;
     boolean doPlaySounds = true;
@@ -53,9 +55,13 @@ public final class SoundCore {
     }
 
     void loadSounds(Context context){
-        mediaPlayer = MediaPlayer.create(context, R.raw.background);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(.8f, .8f);
+        mediaPlayer_menu = MediaPlayer.create(context, R.raw.background);
+        mediaPlayer_menu.setLooping(true);
+        mediaPlayer_menu.setVolume(.8f, .8f);
+
+        mediaPlayer_game = MediaPlayer.create(context, R.raw.in_game_theme);
+        mediaPlayer_game.setLooping(true);
+        mediaPlayer_game.setVolume(.8f, .8f);
 
         for (Sounds sound : Sounds.values()){
             sound_id_map.put(sound,
@@ -78,32 +84,46 @@ public final class SoundCore {
                 1.f);
     }
 
-    void playBackgroungMusic(){
+    void playMenuBackgroundMusic(){
         started_activities_amount++;
         if (doPlayMusic){
-            mediaPlayer.start();
+            mediaPlayer_menu.start();
         }
     }
 
-    void pauseBackgroundMusic(){
+    void playGameBackgroundMusic(){
+        if (doPlayMusic){
+            mediaPlayer_game.start();
+        }
+        currenPlayerIsGame = true;
+    }
+
+    void pauseMenuBackgroundMusic(){
         started_activities_amount--;
-        if (0 >= started_activities_amount && mediaPlayer.isPlaying()){
+        if (0 >= started_activities_amount && mediaPlayer_menu.isPlaying()){
             started_activities_amount = 0;
-            mediaPlayer.pause();
+            mediaPlayer_menu.pause();
         }
     }
 
-    void playBackgroungMusicForced(){
-        mediaPlayer.start();
+    void pauseGameBackgroundMusic(){
+        if (mediaPlayer_game.isPlaying()){
+            mediaPlayer_game.pause();
+        }
+        currenPlayerIsGame = false;
     }
 
-    void pauseBackgroundMusicForced(){
-        if (mediaPlayer.isPlaying()){
-            mediaPlayer.pause();
+    void playMenuBackgroundMusicForced(){
+        mediaPlayer_menu.start();
+    }
+
+    void pauseMenuBackgroundMusicForced(){
+        if (mediaPlayer_menu.isPlaying()){
+            mediaPlayer_menu.pause();
         }
     }
 
     void releaseMP(){
-        mediaPlayer.release();
+        mediaPlayer_menu.release();
     }
 }

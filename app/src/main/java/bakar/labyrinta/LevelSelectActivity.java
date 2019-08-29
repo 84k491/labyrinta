@@ -138,7 +138,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     @Override
     protected void onStart(){
-        SoundCore.inst().playBackgroungMusic();
+        SoundCore.inst().playMenuBackgroundMusic();
         super.onStart();
     }
 
@@ -187,7 +187,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     @Override
     protected void onStop(){
-        SoundCore.inst().pauseBackgroundMusic();
+        SoundCore.inst().pauseMenuBackgroundMusic();
         super.onStop();
     }
 

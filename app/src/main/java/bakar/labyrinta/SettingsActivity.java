@@ -61,10 +61,20 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
                 setState(music, SoundCore.inst().doPlayMusic);
 
                 if (SoundCore.inst().doPlayMusic){
-                    SoundCore.inst().playBackgroungMusicForced();
+                    if (SoundCore.inst().currenPlayerIsGame){
+                        SoundCore.inst().playGameBackgroundMusic();
+                    }
+                    else {
+                        SoundCore.inst().playMenuBackgroundMusicForced();
+                    }
                 }
                 else{
-                    SoundCore.inst().pauseBackgroundMusicForced();
+                    if (SoundCore.inst().currenPlayerIsGame){
+                        SoundCore.inst().pauseGameBackgroundMusic();
+                    }
+                    else{
+                        SoundCore.inst().pauseMenuBackgroundMusicForced();
+                    }
                 }
                 break;
         }
