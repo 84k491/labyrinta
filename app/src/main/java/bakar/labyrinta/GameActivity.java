@@ -35,8 +35,7 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 
 public class GameActivity extends Activity{
 
-    // STEPS-TO-RELEASE
-    // TODO: 7/10/19 add more soundtrack
+    // HIGH PRIORITY
     // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 6/25/19 change scaling speed
@@ -45,7 +44,10 @@ public class GameActivity extends Activity{
     // TODO: 8/24/19 подписи к бонусам в магазине
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
 
-    //after release
+    // TODO: 8/29/19 Сделать комбо с монетами
+    //  (если следующую монету поднять в течении какого-то времени, то она даст больше денех)
+
+    // LOW PRIORITY
     // TODO: 8/26/19 сделать центровку между шариком и выходом
     // TODO: 7/30/19 поменять иконку меню ?
     // TODO: 7/30/19 добавить переворот экрана
@@ -73,6 +75,7 @@ public class GameActivity extends Activity{
     private InterstitialAd mInterstitialAd;
 
     Point difficultyToActualSize(int lvl_difficulty){
+        // TODO: 8/29/19 move to gamelogic
         // от сложности должна зависеть диагональ прямоугольника
         float hypot = Economist.getInstance().getLevelHypotByUpg(lvl_difficulty);
 
@@ -126,13 +129,7 @@ public class GameActivity extends Activity{
         int difficulty = intent.getIntExtra("level_size", 1);
         Point lvl_size = difficultyToActualSize(difficulty);
         gameLogic = new GameLogic(null, intent.getLongExtra("seed", 123456789),
-                Math.min(lvl_size.x, lvl_size.y), Math.max(lvl_size.x, lvl_size.y));
-        gameLogic.level_difficulty = difficulty;
-        if (difficulty < 8){
-            Logger.getAnonymousLogger().info("moving items begin");
-            gameLogic.moveInaccessibleEntities();
-            Logger.getAnonymousLogger().info("moving items end");
-        }
+                Math.min(lvl_size.x, lvl_size.y), Math.max(lvl_size.x, lvl_size.y), difficulty);
         gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", false);
         if (!gameLogic.usesJoystick){
             //tiltController = new TiltController();

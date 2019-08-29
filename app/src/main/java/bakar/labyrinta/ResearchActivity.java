@@ -56,7 +56,7 @@ public class ResearchActivity extends Activity implements View.OnClickListener {
         float dist = 0;
         int iterations_amount = Integer.parseInt(iter.getText().toString());
         long start_time = System.currentTimeMillis();
-        gameLogic = new GameLogic(null, start_time, xSize, ySize);
+        gameLogic = new GameLogic(null, start_time, xSize, ySize, 5);
 
         for (int i = 0; i < iterations_amount; ++i){
             dist += gameLogic.getPathLength(

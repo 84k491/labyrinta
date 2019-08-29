@@ -59,12 +59,13 @@ class GameLogic {
     Queue<CPoint.Field> traces = new LinkedList<>();
     private int tracesSize = 10;
 
-    GameLogic(GameRenderer gameRenderer_, long _seed, int _xsize, int _ysize){
+    GameLogic(GameRenderer gameRenderer_, long _seed, int _xsize, int _ysize, int difficulty){
         Logger.getAnonymousLogger().info("GameLogic.ctor");
         if (gameRenderer_ != null) {
             gameRenderer = gameRenderer_;
             cellSize = GameRenderer.cellSize;
         }
+        level_difficulty = difficulty;
         init(_seed, _xsize, _ysize);
     }
 
@@ -118,6 +119,12 @@ class GameLogic {
 
         eFactory.dropCoins();
         eFactory.dropBonuses();
+
+        if (level_difficulty < 8){
+            Logger.getAnonymousLogger().info("moving items begin");
+            moveInaccessibleEntities();
+            Logger.getAnonymousLogger().info("moving items end");
+        }
 
         isInited = true;
         remote_move_flag = true;
