@@ -160,7 +160,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     private void loadRewardedVideoAd() {
-        mRewardedVideoAd.loadAd(getString(R.string.interstitial_video_test_id),
+        mRewardedVideoAd.loadAd(getString(R.string.interstitial_video_id),
                 new AdRequest.Builder().build());
     }
 
