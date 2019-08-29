@@ -51,6 +51,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         @Override
         public void onRewardedVideoAdLoaded() {
             Logger.getAnonymousLogger().info("Video ad loaded!");
+            getVideoShopItem().setVideoIcon();
         }
 
         @Override
@@ -81,6 +82,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             runOnUiThread(()->{
                 ((TextView)findViewById(R.id.tw_gold_amount_shop)).
                         setText(StoredProgress.getInstance().getGoldAmount());
+                getVideoShopItem().setLoadingIcon();
             });
         }
 
@@ -247,7 +249,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         layout.addView(getSpace());
 
         for (ShopItem item : items){
-            //item.resetValue();
             layout.addView(item.spacesDecorator(item.getMainLayout()));
             layout.addView(getSpace());
             item.getMainLayout().setOnClickListener(this);
@@ -283,6 +284,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     private int getRandomId(){
+        // fixme
         return random.nextInt();
     }
 
@@ -329,6 +331,15 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 50));
         return space;
+    }
+
+    RewardedVideoShopItem getVideoShopItem(){
+        for (ShopItem item : items){
+            if (item instanceof RewardedVideoShopItem){
+                return (RewardedVideoShopItem)item;
+            }
+        }
+        return null;
     }
 
     abstract class ShopItem{
@@ -410,7 +421,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 ex.printStackTrace();
             }
 
-            assosiatedLayout.setId(getRandomId()); // fix
+            assosiatedLayout.setId(getRandomId());
 
             return assosiatedLayout;
         }
@@ -570,17 +581,48 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
     class RewardedVideoShopItem extends ShopItem{
 
+        int loadingIconResource = -1;
+        int videoIconResource = -1;
+
         RewardedVideoShopItem(){
-            mainIconResource = R.drawable.video_ad;
+            videoIconResource = R.drawable.video_ad;
+            loadingIconResource = R.drawable.loading_ad;
+            mainIconResource = loadingIconResource;
         }
+
+        @Override
+        ConstraintLayout getFinalIconLayout(){
+            ConstraintLayout layout = getMainIconLayout();
+            setLoadingIcon();
+            return layout;
+        }
+
         @Override
         int getCost(){
-            return 10;
+            return 400;
+        }
+
+        @Override
+        void updateCostText(){
+            cost_tw.setText(" +" + getCost());
+            cost_tw.setTextColor(Color.rgb(122, 251, 122));
         }
 
         @Override
         void onTrigger() {
             showVideoAd();
+        }
+
+        void setLoadingIcon(){
+            mainIcon.setBackgroundResource(loadingIconResource);
+            mainIcon.startAnimation(
+                    AnimationUtils.loadAnimation(ShopActivity.this, R.anim.rotate_around_center)
+            );
+        }
+
+        void setVideoIcon(){
+            mainIcon.setBackgroundResource(videoIconResource);
+            mainIcon.clearAnimation();
         }
     }
 
