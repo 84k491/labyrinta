@@ -224,6 +224,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
         TextView bgTextView = new TextView(this);
 
+        bgTextView.setId(getRandomId());
         bgTextView.setText(String.valueOf(buying_level_number));
         bgTextView.setTypeface(
                 StoredProgress.getInstance().getTrenchFont(getAssets())
@@ -392,6 +393,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
         Space[] spaces = {new Space(this), new Space(this)};
 
         ImageView imageView = new ImageView(this);
+        // FIXME: 9/3/19 OOM here
         imageView.setImageResource(Objects.requireNonNull(imageMap.get(item)));
 
         TextView someText = new TextView(this);

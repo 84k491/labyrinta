@@ -1,5 +1,6 @@
 package bakar.labyrinta;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.Xml;
 import android.view.Display;
 import android.view.Gravity;
@@ -155,11 +155,6 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
     }
 
     @Override
-    protected void onResume(){
-        super.onResume();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -246,14 +241,14 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         mainLayout.addView(getSpace());
     }
 
-    class NumeratedTextView extends AppCompatTextView{
+    class NumeratedTextView extends TextView{
 
         final int number;
         NumeratedTextView(Context c, int _number){
             super(c);
             number = _number;
             setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
-            setGravity(Gravity.RIGHT);
+            setGravity(Gravity.END);
         }
     }
 
@@ -273,6 +268,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
             return id;
         }
     }
+    @SuppressLint("SetTextI18n")
     private NumeratedTextView generateTV(int num){
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(

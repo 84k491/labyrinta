@@ -1,6 +1,6 @@
 package bakar.labyrinta;
 
-import android.arch.core.util.Function;
+import androidx.arch.core.util.Function;
 import android.graphics.Point;
 
 import java.util.HashMap;

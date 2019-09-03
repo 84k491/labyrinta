@@ -1,12 +1,13 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
-import android.arch.core.util.Function;
+import androidx.arch.core.util.Function;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.support.annotation.Nullable;
 import android.util.ArrayMap;
+
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -8,7 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.util.Xml;
@@ -161,7 +161,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     private void loadRewardedVideoAd() {
-        mRewardedVideoAd.loadAd(getString(R.string.interstitial_video_id),
+        mRewardedVideoAd.loadAd(getString(R.string.interstitial_video_test_id),
                 new AdRequest.Builder().build());
     }
 
