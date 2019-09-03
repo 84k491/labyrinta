@@ -5,17 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 public class LevelBuyActivity extends Activity implements View.OnClickListener {
 
-    int level_number = 0;
-    int level_cost = 0;
+    private int level_number = 0;
+    private int level_cost = 0;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -36,8 +34,8 @@ public class LevelBuyActivity extends Activity implements View.OnClickListener {
         level_number = getIntent().getIntExtra("level_number", 2);
         level_cost = getIntent().getIntExtra("level_cost", 0);
 
-        ((Button)findViewById(R.id.bt_level_buy_no)).setOnClickListener(this);
-        ((Button)findViewById(R.id.bt_level_buy_yes)).setOnClickListener(this);
+        findViewById(R.id.bt_level_buy_no).setOnClickListener(this);
+        findViewById(R.id.bt_level_buy_yes).setOnClickListener(this);
 
         ((TextView)findViewById(R.id.tw_level_buy_title)).setText(
                 getString(R.string.level_buy_confirmation, level_number)

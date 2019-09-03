@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.Display;
@@ -28,7 +27,7 @@ import java.util.TimerTask;
 
 public class MenuActivity extends Activity implements OnClickListener {
 
-    boolean justLoadedState;
+    private boolean justLoadedState;
 
     private TranslateAnimation keep_offset_anim;
     private AlphaAnimation keep_inv_anim;
@@ -37,15 +36,15 @@ public class MenuActivity extends Activity implements OnClickListener {
 
     private int touched_view_id;
 
-    SharedPreferences sPref;
-    ConstraintLayout layout;
-    Button start;
-    Button settings;
-    Button shop;
-    TextView title;
+    private SharedPreferences sPref;
+    private ConstraintLayout layout;
+    private Button start;
+    private Button settings;
+    private Button shop;
+    private TextView title;
 
-    Animation on_click_anim;
-    Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+    private Animation on_click_anim;
+    private final Animation.AnimationListener animationListener = new Animation.AnimationListener() {
         @Override
         public void onAnimationStart(Animation animation) {
             switch (touched_view_id){
@@ -96,19 +95,19 @@ public class MenuActivity extends Activity implements OnClickListener {
         }
     }
 
-    void startLevelSelectActivity(){
+    private void startLevelSelectActivity(){
         Intent intent = new Intent(this, LevelSelectActivity.class);
         intent.putExtra("max_level_allowed", sPref.getInt("level_upg", 1)); //fixme
         startActivityForResult(intent, 42);
     }
-    void startGameActivity(int level_size){
+    private void startGameActivity(int level_size){
         long seed = System.currentTimeMillis();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("seed", seed);
         intent.putExtra("level_size", level_size);
         startActivityForResult(intent, 42);
     }
-    void startSettingsActivity(){
+    private void startSettingsActivity(){
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
@@ -116,7 +115,7 @@ public class MenuActivity extends Activity implements OnClickListener {
         Intent intent = new Intent(this, ResearchActivity.class);
         startActivity(intent);
     }
-    void startShopActivity(){
+    private void startShopActivity(){
         Intent intent = new Intent(this, ShopActivity.class);
         startActivity(intent);
     }
@@ -190,12 +189,7 @@ public class MenuActivity extends Activity implements OnClickListener {
                     new TimerTask() {
                         @Override
                         public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MenuActivity.this.startOnTimerAnimations();
-                                }
-                            });
+                            runOnUiThread(MenuActivity.this::startOnTimerAnimations);
                         }
                     }, 500
             );
@@ -216,11 +210,11 @@ public class MenuActivity extends Activity implements OnClickListener {
         SoundCore.inst().releaseMP();
     }
 
-    void loadData() {
+    private void loadData() {
         sPref = getSharedPreferences("global", MODE_PRIVATE);
     }
 
-    void setAnimations(){
+    private void setAnimations(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -250,14 +244,14 @@ public class MenuActivity extends Activity implements OnClickListener {
         appear_anim.setStartOffset(700);
     }
 
-    void startWelcomingAnimations(){
+    private void startWelcomingAnimations(){
         title.startAnimation(keep_offset_anim);
 
         start.startAnimation(keep_inv_anim);
         shop.startAnimation(keep_inv_anim);
         settings.startAnimation(keep_inv_anim);
     }
-    void startOnTimerAnimations(){
+    private void startOnTimerAnimations(){
         title.startAnimation(title_move_anim);
 
         start.startAnimation(appear_anim);

@@ -12,24 +12,22 @@ import static bakar.labyrinta.GameRenderer.cellSize;
 
 public class ResearchActivity extends Activity implements View.OnClickListener {
 
-    Button start;
-    TextView settings;
-    TextView results;
-    SharedPreferences prefs;
-    EditText iter;
-    float previous_dist = 0;
+    private Button start;
+    private TextView settings;
+    private TextView results;
+    private SharedPreferences prefs;
+    private EditText iter;
+    private float previous_dist = 0;
 
-    int xSize, ySize;
+    private int xSize;
+    private int ySize;
 
-    GameLogic gameLogic;
+    private GameLogic gameLogic;
 
     @Override
     public void onClick(View view){
-        switch (view.getId()){
-            case R.id.res_start_bt:
-                startResearch();
-                break;
-            default: break;
+        if (view.getId() == R.id.res_start_bt) {
+            startResearch();
         }
     }
 
@@ -47,14 +45,14 @@ public class ResearchActivity extends Activity implements View.OnClickListener {
         loadData();
     }
 
-    void loadData() {
+    private void loadData() {
         prefs = getSharedPreferences("global", MODE_PRIVATE);
 
         xSize = prefs.getInt("xsize", 42);
         ySize = prefs.getInt("ysize", 42);
     }
 
-    void startResearch(){
+    private void startResearch(){
         float dist = 0;
         int iterations_amount = Integer.parseInt(iter.getText().toString());
         long start_time = System.currentTimeMillis();

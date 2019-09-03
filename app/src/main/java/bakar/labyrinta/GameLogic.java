@@ -5,12 +5,14 @@ import android.arch.core.util.Function;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.support.annotation.Nullable;
 import android.util.ArrayMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -56,8 +58,8 @@ class GameLogic {
 
     CPoint.Game debugTouchGameCoord = new CPoint.Game(0, 0);
 
-    Queue<CPoint.Field> traces = new LinkedList<>();
-    private int tracesSize = 10;
+    final Queue<CPoint.Field> traces = new LinkedList<>();
+    private final int tracesSize = 10;
 
     GameLogic(GameRenderer gameRenderer_, long _seed, int difficulty){
         Logger.getAnonymousLogger().info("GameLogic.ctor");
@@ -84,7 +86,7 @@ class GameLogic {
         }
         return true;
     }
-    public CPoint.Field game2field(CPoint.Game value){
+    private CPoint.Field game2field(CPoint.Game value){
         CPoint.Field result = new CPoint.Field();
         double x, y;
         x = Math.floor(value.x / cellSize);
@@ -92,13 +94,13 @@ class GameLogic {
         result.set((int)x, (int)y);
         return result;
     }
-    public CPoint.Game field2game(CPoint.Field value){
+    private CPoint.Game field2game(CPoint.Field value){
         CPoint.Game result = new CPoint.Game();
         result.set(value.x * cellSize + cellSize / 2, value.y * cellSize + cellSize / 2);
         return result;
     }
 
-    Point difficultyToActualSize(int lvl_difficulty){
+    private Point difficultyToActualSize(int lvl_difficulty){
         // от сложности должна зависеть диагональ прямоугольника
         float hypot = Economist.getInstance().getLevelHypotByUpg(lvl_difficulty);
 
@@ -141,11 +143,13 @@ class GameLogic {
         goldEarnedByCoins = 0;
         goldEarnedByLevel = 0;
 
-        eFactory.reset();
-        eFactory.makeExit(field.exitPos);
+        synchronized (eFactory){
+            eFactory.reset();
+            eFactory.makeExit(field.exitPos);
 
-        eFactory.dropCoins();
-        eFactory.dropBonuses();
+            eFactory.dropCoins();
+            eFactory.dropBonuses();
+        }
 
         if (level_difficulty < 8){
             Logger.getAnonymousLogger().info("moving items begin");
@@ -157,11 +161,11 @@ class GameLogic {
         remote_move_flag = true;
     }
 
-    void moveInaccessibleEntities(){
+    private void moveInaccessibleEntities(){
         eFactory.moveInaccessibleEntities();
     }
 
-    void init(long _seed, int xsize, int ysize){
+    private void init(long _seed, int xsize, int ysize){
         seed = _seed;
         init(xsize, ysize);
     }
@@ -191,7 +195,7 @@ class GameLogic {
         ((Activity)gameRenderer.getContext()).startActivityForResult(intent, 42);
     }
 
-    void startTutorialActivity(TutorialKey key){
+    private void startTutorialActivity(TutorialKey key){
         Intent intent = new Intent(gameRenderer.getContext(), TutorialActivity.class);
         intent.putExtra(TutorialKey.class.toString(), String.valueOf(key));
         ((Activity)gameRenderer.getContext()).startActivityForResult(intent, 42);
@@ -210,7 +214,9 @@ class GameLogic {
         currentNode = new Node(game2field(playerCoords()));
         currentNode.updateLinks();
         gameRenderer.lightFog(playerCoords());
-        eFactory.intersectsWith(game2field(playerCoords()));
+        synchronized (eFactory){
+            eFactory.intersectsWith(game2field(playerCoords()));
+        }
         teleportAmount--;
     }
     float getTeleportRadius(){
@@ -219,7 +225,7 @@ class GameLogic {
     float getPathfinderRadius(){
         return cellSize * (8 + 1.3f * StoredProgress.getInstance().getPathfinderUpg()); // game
     }
-    CPoint.Game getClosestFloorCoord(CPoint.Game gm){
+    private CPoint.Game getClosestFloorCoord(CPoint.Game gm){
         CPoint.Field fi = game2field(gm);
         if (field.get(fi))
             return field2game(game2field(gm)); // получаем центр клетки
@@ -232,7 +238,7 @@ class GameLogic {
         return field2game(new CPoint.Field(1, 1));
     }
 
-    void onExitReached(){
+    private void onExitReached(){
         remote_move_flag = false;
         playerPt = exitCoords();
         goldEarnedByLevel =
@@ -251,7 +257,14 @@ class GameLogic {
 
             String dataKey = StoredProgress.levelUpgKey;
             int level_value = getInstance().getValue(dataKey);
-            int level_cost = Economist.getInstance().price_map.get(dataKey).apply(level_value);
+            int level_cost = 0;
+            try{
+                level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(level_value);
+            }
+            catch (NullPointerException e){
+                e.printStackTrace();
+            }
+
 
             if ((StoredProgress.getInstance().getGoldAmount() + goldEarnedByLevel + goldEarnedByCoins) >= level_cost){
                 flag = true;
@@ -268,13 +281,13 @@ class GameLogic {
         }
 
     }
-    void onCoinPickedUp(){
+    private void onCoinPickedUp(){
         int pickedUpCoinCost = Economist.getInstance().getCoinCostRand();
         goldEarnedByCoins += pickedUpCoinCost;
-        gameRenderer.addPickUpAnimation(playerCoords(), "+" + String.valueOf(pickedUpCoinCost));
+        gameRenderer.addPickUpAnimation(playerCoords(), "+" + pickedUpCoinCost);
         SoundCore.inst().playSound(Sounds.coinPickedUp);
     }
-    void onPointerPickedUp(){
+    private void onPointerPickedUp(){
         pointerAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
         SoundCore.inst().playSound(Sounds.bonusPickedUp);
@@ -291,7 +304,7 @@ class GameLogic {
                     switchValueBoolean(StoredProgress.isNeedToShowTutorialPointer);
         }
     }
-    void onTeleportPickedUp(){
+    private void onTeleportPickedUp(){
         teleportAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
         SoundCore.inst().playSound(Sounds.bonusPickedUp);
@@ -309,7 +322,7 @@ class GameLogic {
         }
 
     }
-    void onPathfinderPickedUp(){
+    private void onPathfinderPickedUp(){
         pathfinderAmount++;
         gameRenderer.addPickUpAnimation(playerCoords(), "+1");
         SoundCore.inst().playSound(Sounds.bonusPickedUp);
@@ -326,11 +339,11 @@ class GameLogic {
                     switchValueBoolean(StoredProgress.isNeedToShowTutorialPathfinder);
         }
     }
-    void onCellChanged(){
+    private void onCellChanged(){
         gameRenderer.lightFog(playerCoords());
     }
 
-    void updateTraces(CPoint.Game pointF){
+    private void updateTraces(CPoint.Game pointF){
 
         if ((((LinkedList<CPoint.Field>)traces).getLast().x != game2field(pointF).x) ||
                 (((LinkedList<CPoint.Field>)traces).getLast().y != game2field(pointF).y)){
@@ -358,7 +371,7 @@ class GameLogic {
             movePlayerTo(l_playerPt);
         }
     }
-    void movePlayerTo(CPoint.Game pointF){
+    private void movePlayerTo(CPoint.Game pointF){
         if (usesJoystick){
             gameRenderer.buttons.get(0).lightAnimationEnabled = false;
             if (!gameRenderer.isPlayerInSight())
@@ -385,9 +398,9 @@ class GameLogic {
         PointF newPlayerPt = new PointF();//nearestRail.projection(pointF);
 
         for (int i = 0; i < currentNode.availableDirections.size(); ++i){
-            // FIXME: 4/24/19 java.lang.NullPointerException
-            nearestRail.set(field2game(currentNode.pos),
-                    field2game(currentNode.links.get(currentNode.availableDirections.get(i)).pos));
+            Direction dir = Objects.requireNonNull(currentNode.availableDirections.get(i));
+            Node link = Objects.requireNonNull(currentNode.links.get(dir));
+            nearestRail.set(field2game(currentNode.pos), field2game(link.pos));
 
             if (distance(nearestRail.projection(input), input) < distanceToRail){
 
@@ -410,10 +423,12 @@ class GameLogic {
         }
 
         for (int i = 0; i < currentNode.availableDirections.size(); ++i){
+            Direction dir = Objects.requireNonNull(currentNode.availableDirections.get(i));
+            Node link = Objects.requireNonNull(currentNode.links.get(dir));
+
             if (distance(newPlayerPt,
-                    field2game(currentNode.links.get(currentNode.availableDirections.get(i)).pos)) <
-                    cellSize * (3 / 2)){
-                currentNode = currentNode.links.get(currentNode.availableDirections.get(i));
+                    field2game(link.pos)) < cellSize * (3 / 2)){
+                currentNode = link;
                 currentNode.updateLinks();
             }
         }
@@ -436,8 +451,8 @@ class GameLogic {
 
     class Node {
         CPoint.Field pos;
-        ArrayMap<Direction, Node> links = new ArrayMap<>();
-        ArrayList<Direction> availableDirections = new ArrayList<>();
+        final ArrayMap<Direction, Node> links = new ArrayMap<>();
+        final ArrayList<Direction> availableDirections = new ArrayList<>();
 
         Node(){
             pos = new CPoint.Field(0, 0);
@@ -464,8 +479,11 @@ class GameLogic {
                 }
 
                 links.put(Direction.values()[i], new Node(node_pos));
-                links.get(Direction.values()[i]).availableDirections.add(Direction.values()[i].getOpposite());
-                links.get(Direction.values()[i]).links.put(Direction.values()[i].getOpposite(), this);
+                Objects.requireNonNull(links.get(Direction.values()[i])).
+                        availableDirections.add(Direction.values()[i].getOpposite());
+
+                Objects.requireNonNull(links.get(Direction.values()[i])).
+                        links.put(Direction.values()[i].getOpposite(), this);
             }
         }
         LinkedList<Node> getLinkedNodes(){
@@ -473,8 +491,8 @@ class GameLogic {
             LinkedList<Node> ret = new LinkedList<>();
             for (Direction dir : availableDirections){
                 ret.add(links.get(dir));
-                links.get(dir).availableDirections.add(dir.getOpposite());
-                links.get(dir).links.put(dir.getOpposite(), this);
+                Objects.requireNonNull(links.get(dir)).availableDirections.add(dir.getOpposite());
+                Objects.requireNonNull(links.get(dir)).links.put(dir.getOpposite(), this);
             }
             return ret;
         }
@@ -538,7 +556,7 @@ class GameLogic {
         }
     }
     class Joystick {
-        CPoint.Screen mainPos;
+        final CPoint.Screen mainPos;
         CPoint.Screen curPos;
         CPoint.Game lastTouch = new CPoint.Game(0, 0);
         final float mainRadius;
@@ -590,10 +608,10 @@ class GameLogic {
     }
     class AStarAlg{
         //Todo: сделать отдельным потоком
-        private Node starNode;
-        private Node crossNode;
-        private CPoint.Field star;
-        private CPoint.Field cross;
+        private final Node starNode;
+        private final Node crossNode;
+        private final CPoint.Field star;
+        private final CPoint.Field cross;
         private final LinkedList<AStarNode> open = new LinkedList<>();
         private final LinkedList<AStarNode> closed = new LinkedList<>();
 
@@ -703,7 +721,7 @@ class GameLogic {
         }
 
         class AStarNode extends Node{
-            AStarNode cameFrom;
+            final AStarNode cameFrom;
 
             AStarNode(Node node, AStarNode cameFrom_){
                 pos = node.pos;
@@ -757,9 +775,9 @@ class GameLogic {
     class EntityFactory{
         // TODO check Glide
         final LinkedList<Entity> entities = new LinkedList<>();
-        Random random = new Random(seed);
+        final Random random = new Random(seed);
 
-        Map<String, Function<CPoint.Field, Entity>> entityMap = new HashMap<>();
+        final Map<String, Function<CPoint.Field, Entity>> entityMap = new HashMap<>();
 
         EntityFactory(){
             entityMap.put("Coin", this::makeCoin);
@@ -823,7 +841,7 @@ class GameLogic {
         }
         Entity makeEntity(String key, CPoint.Field point){
             try {
-                entityMap.get(key).apply(point);
+                Objects.requireNonNull(entityMap.get(key)).apply(point);
             }
             catch (NullPointerException e){
                 e.printStackTrace();
@@ -869,6 +887,8 @@ class GameLogic {
                 }
             }
         }
+
+        @Nullable
         Entity intersectsWith(CPoint.Field point){
             Entity ret = null;
             for (Entity entity : entities
@@ -879,7 +899,7 @@ class GameLogic {
                 }
             }
             if (ret == null)
-                return ret;
+                return null;
 
             if ("Exit".equals(ret.whoami))
                 onExitReached();
@@ -921,20 +941,17 @@ class GameLogic {
                 }
             }
             if (ret == null)
-                return ret;
+                return null;
             return intersectsWith(ret.pos);
         }
 
-        void makeRandom(){
-
-        }
     }
 }
 
 abstract class Entity{
-    CPoint.Field pos;
+    final CPoint.Field pos;
     String whoami;
-    int anim_frame = 0;
+    private int anim_frame = 0;
     boolean isLarge = false;
 
     int incrAnimFrame(int max){

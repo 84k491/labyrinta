@@ -35,13 +35,13 @@ class StoredProgress {
     static final String pointerUpgKey = "pt_upg";
     static final String levelUpgKey = "level_upg";
 
-    static final String goldKey = "gold";
-    static final String cameraZKey = "cameraZ";
+    private static final String goldKey = "gold";
+    private static final String cameraZKey = "cameraZ";
 
     static final String usesJoystickKey = "uses_joystick";
-    static final String isDebugKey = "is_debug";
-    static final String isMusicOnKey = "isMusicOn";
-    static final String isSoundsOnKey = "isSoundsOn";
+    private static final String isDebugKey = "is_debug";
+    private static final String isMusicOnKey = "isMusicOn";
+    private static final String isSoundsOnKey = "isSoundsOn";
 
     static final String isNeedToShowTutorialFirst = "isNeedToShowTutorialFirst";
     static final String isNeedToShowTutorialPathfinder = "isNeedToShowTutorialPathfinder";
@@ -101,7 +101,7 @@ class StoredProgress {
 
         reset(goldKey);
     }
-    void reset(String key){
+    private void reset(String key){
         setValue(key, 0);
     }
     void setValue(String key, int value){
@@ -114,7 +114,7 @@ class StoredProgress {
         ed.putBoolean(key, value);
         ed.apply();
     }
-    void setValue(String key, float value){
+    private void setValue(String key, float value){
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putFloat(key, value);
         ed.apply();

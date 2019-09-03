@@ -15,16 +15,16 @@ import android.widget.TextView;
 
 public class BonusActivity extends Activity implements View.OnClickListener{
 
-    Button pointer;
-    Button teleport;
-    Button path;
-    int pointerAmount;
-    int teleportAmount;
-    int pathfinderAmount;
-    ImageView imageView;
-    TextView t_pointerAmount;
-    TextView t_pathfinderAmount;
-    TextView t_teleportAmount;
+    private Button pointer;
+    private Button teleport;
+    private Button path;
+    private int pointerAmount;
+    private int teleportAmount;
+    private int pathfinderAmount;
+    private ImageView imageView;
+    private TextView t_pointerAmount;
+    private TextView t_pathfinderAmount;
+    private TextView t_teleportAmount;
 
     @Override
     protected void attachBaseContext(Context newBase) {

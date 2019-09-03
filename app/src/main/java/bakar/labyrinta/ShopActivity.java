@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.util.Xml;
@@ -34,24 +34,30 @@ import org.xmlpull.v1.XmlPullParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Logger;
 
 public class ShopActivity extends Activity implements View.OnClickListener {
 
     // static //
-    int s_level_upg = 0;
-    int s_teleport_upg = 0;
-    int s_pathfinder_upg = 0;
+    private int s_level_upg = 0;
+    private int s_teleport_upg = 0;
+    private int s_pathfinder_upg = 0;
     ////////////
 
     // VIDEO ADS //
     private RewardedVideoAd mRewardedVideoAd;
-    RewardedVideoAdListener mRewardedVideoAdListener = new RewardedVideoAdListener() {
+    private final RewardedVideoAdListener mRewardedVideoAdListener = new RewardedVideoAdListener() {
         @Override
         public void onRewardedVideoAdLoaded() {
             Logger.getAnonymousLogger().info("Video ad loaded!");
-            getVideoShopItem().setVideoIcon();
+            try{
+                Objects.requireNonNull(getVideoShopItem()).setVideoIcon();
+            }
+            catch (NullPointerException e){
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -98,16 +104,16 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
     };
 
-    LinearLayout layout;
-    ArrayList<ShopItem> items = new ArrayList<>();
-    Random random = new Random(6654345);
-    final int layoutHeight = 250; // FIXME: 3/27/19
-    TextView gold;
-    Animation on_click_anim;
-    Map<String, Integer> id_map;
-    Drawable coinIcon;
+    private LinearLayout layout;
+    private final ArrayList<ShopItem> items = new ArrayList<>();
+    private final Random random = new Random(6654345);
+    private final int layoutHeight = 250; // FIXME: 3/27/19
+    private TextView gold;
+    private Animation on_click_anim;
+    private Map<String, Integer> id_map;
+    private Drawable coinIcon;
 
-    void setIdMap(){
+    private void setIdMap(){
         id_map = new HashMap<>();
 
         id_map.put(StoredProgress.levelUpgKey, R.drawable.green_arrow);
@@ -139,11 +145,11 @@ public class ShopActivity extends Activity implements View.OnClickListener {
                 BitmapFactory.decodeResource(getResources(), R.drawable.coin_anim1));
         on_click_anim = AnimationUtils.loadAnimation(this, R.anim.on_button_tap);
 
-        gold = (TextView)findViewById(R.id.tw_gold_amount_shop);
+        gold = findViewById(R.id.tw_gold_amount_shop);
         gold.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
         gold.setTextColor(Color.WHITE);
 
-        layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
+        layout = findViewById(R.id.ll_scroll_layout);
 
         rebuildLayout();
 
@@ -214,18 +220,28 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         {
             if (mRewardedVideoAd.isLoaded())
             {
-                getVideoShopItem().setVideoIcon();
+                try{
+                    Objects.requireNonNull(getVideoShopItem()).setVideoIcon();
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
             }
             else
             {
-                getVideoShopItem().setLoadingIcon();
+                try{
+                    Objects.requireNonNull(getVideoShopItem()).setLoadingIcon();
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
             }
         }
 
         updateGoldLabel();
     }
 
-    boolean checkIfNeedToRebuild(){
+    private boolean checkIfNeedToRebuild(){
         int loc_level_upg = StoredProgress.getInstance().getValue(
                 StoredProgress.levelUpgKey);
         int loc_teleport_upg = StoredProgress.getInstance().getValue(
@@ -249,14 +265,12 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         if (loc_teleport_upg != s_teleport_upg){
             s_teleport_upg = loc_teleport_upg;
-            if (loc_teleport_upg >= Economist.maxUpgTeleport){
-                return true;
-            }
+            return loc_teleport_upg >= Economist.maxUpgTeleport;
         }
 
         return false;
     }
-    void rebuildLayout(){
+    private void rebuildLayout(){
         if (null == layout){
             return;
         }
@@ -299,7 +313,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    void updateGoldLabel(){
+    private void updateGoldLabel(){
         if (gold != null) {
             gold.setText(String.valueOf(StoredProgress.getInstance().getGoldAmount()));
         }
@@ -310,7 +324,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         return random.nextInt();
     }
 
-    void setItems(){
+    private void setItems(){
         items.add(new RewardedVideoShopItem());
 
         if (StoredProgress.getInstance().getValue(
@@ -347,7 +361,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 //        items.add(new GoldBuyItem(5,300));
         //items.add(new GoldBuyItem(10,1000));
     }
-    Space getSpace(){
+    private Space getSpace(){
         Space space = new Space(ShopActivity.this);
         space.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -355,7 +369,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         return space;
     }
 
-    RewardedVideoShopItem getVideoShopItem(){
+    @Nullable
+    private RewardedVideoShopItem getVideoShopItem(){
         for (ShopItem item : items){
             if (item instanceof RewardedVideoShopItem){
                 return (RewardedVideoShopItem)item;
@@ -370,7 +385,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         ImageView costIcon = null;
         int mainIconResource = -1;
         View mainIcon = null;
-        float iconSizeCoef = .7f;
+        final float iconSizeCoef = .7f;
         TextView label_tw = null; // TODO: 3/27/19 rename
         TextView cost_tw = null;
 
@@ -381,7 +396,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
 
         void updateLabelText(){label_tw.setText(label);}
-        void updateCostText(){cost_tw.setText(" " + String.valueOf(getCost()));}
+        void updateCostText(){cost_tw.setText(" " + getCost());}
         abstract int getCost();
         abstract void onTrigger();
 
@@ -569,7 +584,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
         @Override
         int getCost(){
-            return Economist.getInstance().price_map.get(dataKey).apply(getValue());
+            return Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(getValue());
         }
 
         ConstraintLayout addAmountToLayout(ConstraintLayout constraintLayout){
@@ -603,8 +618,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
     class RewardedVideoShopItem extends ShopItem{
 
-        int loadingIconResource = -1;
-        int videoIconResource = -1;
+        final int loadingIconResource;
+        final int videoIconResource;
 
         RewardedVideoShopItem(){
             videoIconResource = R.drawable.video_ad;
@@ -652,7 +667,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         UpgrageItem(String _dataKey){
             dataKey = _dataKey;
             if (dataKey != null){
-                mainIconResource = id_map.get(dataKey);
+                mainIconResource = Objects.requireNonNull(id_map.get(dataKey));
             }
         }
         @Override
@@ -736,8 +751,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         }
     }
     class GoldBuyItem extends ShopItem{
-        int gold;
-        int startCost;
+        final int gold;
+        final int startCost;
 
         GoldBuyItem(int _cost, int _gold){
             mainIconResource = R.drawable.coin_anim1;
@@ -764,7 +779,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         BonusBuyItem(String _dataKey){
             dataKey = _dataKey;
             if (dataKey != null)
-                mainIconResource = id_map.get(dataKey);
+                mainIconResource = Objects.requireNonNull(id_map.get(dataKey));
         }
 
         @Override

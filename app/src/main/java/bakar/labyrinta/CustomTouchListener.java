@@ -8,15 +8,15 @@ import android.view.View;
  * Created by Bakar on 10.03.2018.
  */
 
-public class CustomTouchListener implements View.OnTouchListener {
+class CustomTouchListener implements View.OnTouchListener {
 
     private GameRenderer gameRenderer;
 
-    private MotionEvent.PointerCoords first_single_touch = new MotionEvent.PointerCoords();
-    private MotionEvent.PointerCoords first_multi_touch = new MotionEvent.PointerCoords();;
-    private MotionEvent.PointerCoords second_multi_touch = new MotionEvent.PointerCoords();;
+    private final MotionEvent.PointerCoords first_single_touch = new MotionEvent.PointerCoords();
+    private final MotionEvent.PointerCoords first_multi_touch = new MotionEvent.PointerCoords();
+    private final MotionEvent.PointerCoords second_multi_touch = new MotionEvent.PointerCoords();
 
-    private float minimumOffsetModule = 10.f; // FIXME: 05.05.2018 сделать зависимость от размеров экрана
+    private final float minimumOffsetModule = 10.f; // FIXME: 05.05.2018 сделать зависимость от размеров экрана
     private boolean offsedAlreadyChanged = false;
 
     public void setRenderer(GameRenderer renderer){
@@ -37,6 +37,7 @@ public class CustomTouchListener implements View.OnTouchListener {
                 motionEvent.getPointerCoords(1, second_multi_touch);
                 break;
             case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_CANCEL:
                 break;
             case MotionEvent.ACTION_UP:
                 offsedAlreadyChanged = false;
@@ -82,8 +83,6 @@ public class CustomTouchListener implements View.OnTouchListener {
                     }
                     motionEvent.getPointerCoords(0, first_single_touch);
                 }
-                break;
-            case MotionEvent.ACTION_CANCEL:
                 break;
         }
         return true;

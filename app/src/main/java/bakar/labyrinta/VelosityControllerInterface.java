@@ -1,5 +1,5 @@
 package bakar.labyrinta;
 
-public interface VelosityControllerInterface {
+interface VelosityControllerInterface {
     CPoint.Game getCurrentVelocity();
 }

@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +26,7 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 enum EndMenuItems{
@@ -37,36 +37,42 @@ enum EndMenuItems{
 
 public class EndActivity extends Activity implements View.OnClickListener{
 
-    Button next;
-    Button menu;
-    ConstraintLayout next_level_buy;
+    private Button next;
+    private Button menu;
+    private ConstraintLayout next_level_buy;
 
-    LinearLayout mainLayout;
-    int startGoldAmount;
-    int goldEarnedByCoins;
-    int goldEarnedByLevel;
+    private LinearLayout mainLayout;
+    private int startGoldAmount;
+    private int goldEarnedByCoins;
+    private int goldEarnedByLevel;
 
-    boolean loadMaxLevelOnResult = false;
+    private boolean loadMaxLevelOnResult = false;
 
-    Random random = new Random(24931875);
+    private final Random random = new Random(24931875);
 
-    int itemSizePx = 0;
+    private int itemSizePx = 0;
 
-    final HashMap<EndMenuItems, Integer> imageMap = new HashMap<>();
-    final HashMap<EndMenuItems, TextView> textViewMap = new HashMap<>();
+    private final HashMap<EndMenuItems, Integer> imageMap = new HashMap<>();
+    private final HashMap<EndMenuItems, TextView> textViewMap = new HashMap<>();
 
-    void setMap(){
+    private void setMap(){
         imageMap.put(EndMenuItems.levelFinished, R.drawable.exit_icon_glow);
         imageMap.put(EndMenuItems.coinsPicked, R.drawable.coin_anim1);
         imageMap.put(EndMenuItems.goldTotal, R.drawable.gold_pile);
     }
 
-    void startConfirmationActivity(){
+    private void startConfirmationActivity(){
         String dataKey = StoredProgress.levelUpgKey;
         int level_value = StoredProgress.getInstance().getValue(dataKey);
-        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                level_value
-        );
+        int level_cost = 0;
+        try {
+            level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(
+                    level_value
+            );
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
 
         Intent intent = new Intent(this, LevelBuyActivity.class);
         intent.putExtra("level_number", level_value + 1);
@@ -90,9 +96,14 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 SoundCore.inst().playSound(Sounds.correct);
                 String dataKey = StoredProgress.levelUpgKey;
                 int level_value = StoredProgress.getInstance().getValue(dataKey);
-                int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                        level_value
-                );
+                int level_cost = 0;
+                try {
+                    level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).
+                            apply(level_value);
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
 
                 StoredProgress.getInstance().
                         setGold(StoredProgress.getInstance().getGoldAmount() - level_cost);
@@ -102,7 +113,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
                 next_level_buy.removeAllViews();
                 makeNextLevelSizeButton();
 
-                textViewMap.get(EndMenuItems.goldTotal).setText(
+                Objects.requireNonNull(textViewMap.get(EndMenuItems.goldTotal)).setText(
                         String.valueOf(StoredProgress.getInstance().getGoldAmount())
                 );
             }
@@ -129,7 +140,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    LinearLayout generateCostLabel(){
+    private LinearLayout generateCostLabel(){
         LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -163,9 +174,15 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
         String dataKey = StoredProgress.levelUpgKey;
         int level_value = StoredProgress.getInstance().getValue(dataKey);
-        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                level_value
-        );
+        int level_cost = 0;
+        try{
+            level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(
+                    level_value
+            );
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+        }
         costLabel.setText(String.valueOf(level_cost));
         costLabel.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
         costLabel.setTextColor(Color.WHITE);
@@ -182,12 +199,12 @@ public class EndActivity extends Activity implements View.OnClickListener{
         return wraping_lo;
     }
 
-    public int convertDpToPixels(float dp) {
+    private int convertDpToPixels(float dp) {
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, this.getResources().getDisplayMetrics());
         return px;
     }
 
-    void makeNextLevelSizeButton(){
+    private void makeNextLevelSizeButton(){
         int buying_level_number = 1 + StoredProgress.getInstance().getValue(
                 StoredProgress.levelUpgKey);
 
@@ -218,8 +235,15 @@ public class EndActivity extends Activity implements View.OnClickListener{
         int resource_id = R.xml.level_select_bg_cannot_buy;
         bgTextView.setTextColor(Color.parseColor("#999999"));
 
-        int cost = Economist.getInstance().
-                price_map.get(StoredProgress.levelUpgKey).apply(buying_level_number - 1);
+        int cost = 0;
+        try {
+            cost = Objects.requireNonNull(Economist.getInstance().
+                    price_map.get(StoredProgress.levelUpgKey)).apply(buying_level_number - 1);
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
         int stored_gold = StoredProgress.getInstance().getGoldAmount() +
                 goldEarnedByCoins + goldEarnedByLevel;
 
@@ -338,7 +362,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
         new TextChanger().start();
     }
 
-    LinearLayout getChangingTextWithIcon(EndMenuItems item){
+    private LinearLayout getChangingTextWithIcon(EndMenuItems item){
         float size_coef = 1.f;
         if (EndMenuItems.goldTotal == item){
             size_coef = 1.5f;
@@ -365,11 +389,10 @@ public class EndActivity extends Activity implements View.OnClickListener{
         LinearLayout resultLo = new LinearLayout(this);
         resultLo.setOrientation(LinearLayout.HORIZONTAL);
 
-        Space spaces[] = {new Space(this), new Space(this)};
+        Space[] spaces = {new Space(this), new Space(this)};
 
         ImageView imageView = new ImageView(this);
-        imageView.setImageResource(imageMap.get(item));
-        //imageView.setBackgroundColor(Color.RED);
+        imageView.setImageResource(Objects.requireNonNull(imageMap.get(item)));
 
         TextView someText = new TextView(this);
         someText.setText(String.valueOf(item));
@@ -396,7 +419,7 @@ public class EndActivity extends Activity implements View.OnClickListener{
 
         return resultLo;
     }
-    Space getSpace(){
+    private Space getSpace(){
         Space space = new Space(this);
         LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
                 100,
@@ -442,9 +465,14 @@ public class EndActivity extends Activity implements View.OnClickListener{
             case R.id.cl_end_level_next:
                 final String dataKey = StoredProgress.levelUpgKey;
                 final int level_value = StoredProgress.getInstance().getValue(dataKey);
-                final int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                        level_value
-                );
+                int level_cost = 0;
+                try{
+                    level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(
+                            level_value);
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
 
                 final int buying_level_number = 1 + level_value;
 
@@ -472,17 +500,17 @@ public class EndActivity extends Activity implements View.OnClickListener{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            textViewMap.get(EndMenuItems.levelFinished).
+                            Objects.requireNonNull(textViewMap.get(EndMenuItems.levelFinished)).
                                     setText('+' + String.valueOf(
                                             goldEarnedByLevel
                                                     * (getTime() - startTime) / animTimeMs));
                             if (goldEarnedByCoins != 0){
-                                textViewMap.get(EndMenuItems.coinsPicked).
+                                Objects.requireNonNull(textViewMap.get(EndMenuItems.coinsPicked)).
                                         setText('+' + String.valueOf(
                                                 goldEarnedByCoins
                                                         * (getTime() - startTime) / animTimeMs));
                             }
-                            textViewMap.get(EndMenuItems.goldTotal).
+                            Objects.requireNonNull(textViewMap.get(EndMenuItems.goldTotal)).
                                     setText(String.valueOf(
                                             startGoldAmount + (goldEarnedByCoins + goldEarnedByLevel)
                                                     * (getTime() - startTime) / animTimeMs));
@@ -497,13 +525,13 @@ public class EndActivity extends Activity implements View.OnClickListener{
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    textViewMap.get(EndMenuItems.levelFinished).
+                    Objects.requireNonNull(textViewMap.get(EndMenuItems.levelFinished)).
                             setText('+' + String.valueOf(goldEarnedByLevel));
                     if (goldEarnedByCoins != 0){
-                        textViewMap.get(EndMenuItems.coinsPicked).
+                        Objects.requireNonNull(textViewMap.get(EndMenuItems.coinsPicked)).
                                 setText('+' + String.valueOf(goldEarnedByCoins));
                     }
-                    textViewMap.get(EndMenuItems.goldTotal).
+                    Objects.requireNonNull(textViewMap.get(EndMenuItems.goldTotal)).
                             setText(String.valueOf(startGoldAmount +
                                     goldEarnedByCoins +
                                     goldEarnedByLevel));

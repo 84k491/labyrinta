@@ -20,7 +20,7 @@ Direction getOpposite(){
 }
 
 class Field {
-    private boolean[][] cells;
+    private final boolean[][] cells;
     private int xSize;
     private int ySize;
     private static final int persOfDeadEnds = 70;
@@ -78,10 +78,8 @@ class Field {
          boolean isWallUp = !get(ptAt(pt, Direction.Up));
          boolean isWallDown = !get(ptAt(pt, Direction.Down));
 
-         if (((isWallLeft && isWallRight) && (isWallUp == isWallDown)) ||
-                 ((isWallDown && isWallUp) && (isWallLeft == isWallRight)))
-             return false;
-         else return true;
+         return ((!isWallLeft || !isWallRight) || (isWallUp != isWallDown)) &&
+                 ((!isWallDown || !isWallUp) || (isWallLeft != isWallRight));
      }
 
      boolean get(CPoint.Field point){
@@ -94,10 +92,10 @@ class Field {
      boolean get(int x, int y){
          return cells[x][y];
      }
-     void set(CPoint.Field point, boolean value){
+     private void set(CPoint.Field point, boolean value){
          cells[point.x][point.y] = value;
      }
-     void set(int x, int y, boolean value){cells[x][y] = value;}
+     private void set(int x, int y, boolean value){cells[x][y] = value;}
      int getxSize(){return xSize;}
      int getySize(){return ySize;}
      float getHypot(){
@@ -106,9 +104,9 @@ class Field {
 
      class Architect{
          CPoint.Field cursor;
-         Stack<CPoint.Field> path = new Stack<>();
+         final Stack<CPoint.Field> path = new Stack<>();
 
-         Random random;
+         final Random random;
 
          Architect(long seed){
              cursor = new CPoint.Field(1, 1);
@@ -117,7 +115,7 @@ class Field {
              set(cursor, true);
          }
 
-         public void createLabyrinth(){
+         void createLabyrinth(){
              while (path.size() == 1)
                  goTo(Direction.values()[random.nextInt(Direction.values().length)]);
              while (path.size() > 1)
@@ -158,6 +156,7 @@ class Field {
                  return false;
          }
 
+         @SuppressWarnings("unused")
          private void removeSingleColumns(){
              //отступ, чтобы случайно не перекрылся единственный проход у края
              for (int x = 2; x < getxSize() - 2; ++x){

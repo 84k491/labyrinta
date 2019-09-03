@@ -5,11 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 public class ConfirmationActivity extends Activity implements View.OnClickListener{
@@ -30,8 +28,8 @@ public class ConfirmationActivity extends Activity implements View.OnClickListen
         }
         setContentView(R.layout.activity_confirmation);
 
-        ((Button)findViewById(R.id.bt_confirm_no)).setOnClickListener(this);
-        ((Button)findViewById(R.id.bt_confirm_yes)).setOnClickListener(this);
+        findViewById(R.id.bt_confirm_no).setOnClickListener(this);
+        findViewById(R.id.bt_confirm_yes).setOnClickListener(this);
         findViewById(R.id.confirmation_bg).setOnClickListener(this);
 
         ((TextView)findViewById(R.id.tw_confirm_title)).setTypeface(

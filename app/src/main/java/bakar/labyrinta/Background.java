@@ -4,12 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
-import android.graphics.Shader;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -26,8 +24,8 @@ import java.util.logging.Logger;
 
 public class Background extends SurfaceView{
 
-    BgRenderThread renderThread;
-    SurfaceHolder.Callback callback = new SurfaceHolder.Callback() {
+    private BgRenderThread renderThread;
+    private final SurfaceHolder.Callback callback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             Logger.getAnonymousLogger().info("Background surfaceChanged()");
@@ -49,18 +47,19 @@ public class Background extends SurfaceView{
                 try {
                     renderThread.join();
                     retry = false;
-                } catch (InterruptedException e) {
+                } catch (InterruptedException e){
+                    e.printStackTrace();
                 }
             }
         }
     };
 
     public static final int dotDepthLevelAmount = 10;
-    public static final float maxDotBlurRadius = 24.f;
+    private static final float maxDotBlurRadius = 24.f;
 
     private static final boolean doNothing = false;
 
-    private RenderScript rs = RenderScript.create(getContext());
+    private final RenderScript rs = RenderScript.create(getContext());
 
     public Background(Context _context){
         super(_context);
@@ -86,14 +85,14 @@ public class Background extends SurfaceView{
 
         boolean running = false;
         private SurfaceHolder surfaceHolder;
-        Random random;
+        final Random random;
 
         private long prevDrawTime = 0;
-        private long redrawPeriod = 30; // milliS // microS
+        private final long redrawPeriod = 30; // milliS // microS
 
-        Paint dotPaint = new Paint();
+        final Paint dotPaint = new Paint();
         final Matrix translate_matrix = new Matrix();
-        ArrayList<TheDot> dotPool = new ArrayList<>();
+        final ArrayList<TheDot> dotPool = new ArrayList<>();
         private final Map<Long, Bitmap> dotBitmaps = new HashMap<>();
 
         private long getTime(){
@@ -155,18 +154,17 @@ public class Background extends SurfaceView{
                 if (getTime() - prevDrawTime > redrawPeriod) {
                     prevDrawTime = getTime();
                     try {
-                        //Logger.getAnonymousLogger().info("Locking canvas @ " + this);
                         canvas = surfaceHolder.lockCanvas();
                         if (canvas == null){
                             continue;
                         }
+                        //noinspection SynchronizeOnNonFinalField
                         synchronized (surfaceHolder){
                             onDraw(canvas);
                         }
                     } finally {
                         if (canvas != null) {
                             surfaceHolder.unlockCanvasAndPost(canvas);
-                            //Logger.getAnonymousLogger().info("Unlocking canvas" + this);
                         }
                     }
                 }
@@ -245,15 +243,15 @@ public class Background extends SurfaceView{
 }
 
 class TheDot{
-    Random random;
-    CPoint.Screen pos = new CPoint.Screen();
+    private final Random random;
+    final CPoint.Screen pos = new CPoint.Screen();
     int radius;
     int depth;
-    PointF moveVector = new PointF();
-    int alpha;
-    int alphaStep = 1;
-    int max_x = 500;
-    int max_y = 500;
+    private final PointF moveVector = new PointF();
+    private int alpha;
+    private static final int alphaStep = 1;
+    private final int max_x;
+    private final int max_y;
 
     TheDot(int _max_x, int _max_y, Random _random){
         random = _random;
@@ -262,7 +260,7 @@ class TheDot{
         randomValues();
         alpha = random.nextInt(200) - 100;
     }
-    void randomValues(){
+    private void randomValues(){
         pos.x = random.nextFloat() * max_x;
         pos.y = random.nextFloat() * max_y;
 
@@ -272,7 +270,7 @@ class TheDot{
         radius = random.nextInt(3) + 1;
         depth = random.nextInt(Background.dotDepthLevelAmount);
     }
-    void moveByVector(){
+    private void moveByVector(){
         pos.offset(moveVector.x, moveVector.y);
     }
 

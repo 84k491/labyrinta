@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,13 +22,13 @@ import org.xmlpull.v1.XmlPullParser;
 
 public class SettingsActivity extends Activity implements View.OnClickListener {
 
-    Button joystick;
-    Button sounds;
-    Button music;
+    private Button joystick;
+    private Button sounds;
+    private Button music;
 
-    TextView joystick_TextView;
-    TextView sounds_TextView;
-    TextView music_TextView;
+    private TextView joystick_TextView;
+    private TextView sounds_TextView;
+    private TextView music_TextView;
     ConstraintLayout layout;
 
     @Override
@@ -130,9 +129,9 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
 
         float text_size = 25.f;
 
-        joystick_TextView = ((TextView)findViewById(R.id.joystick_tw));
-        music_TextView = ((TextView)findViewById(R.id.music_tw));
-        sounds_TextView = ((TextView)findViewById(R.id.sounds_tw));
+        joystick_TextView = findViewById(R.id.joystick_tw);
+        music_TextView = findViewById(R.id.music_tw);
+        sounds_TextView = findViewById(R.id.sounds_tw);
 
         joystick_TextView.setGravity(Gravity.FILL_VERTICAL | Gravity.START);
         sounds_TextView.setGravity(Gravity.FILL_VERTICAL | Gravity.START);
@@ -160,27 +159,22 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.settings_imageview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (v.getId() == R.id.settings_imageview){
-                    return;
-                }
+
             }
         });
 
-        findViewById(R.id.settings_bg_image).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v.getId() == R.id.settings_bg_image){
-                    Intent intent = new Intent(SettingsActivity.this, GameActivity.class);
-                    intent.putExtra("what_from", SettingsActivity.class.toString());
-                    intent.putExtra("result", "settings_finished");
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
+        findViewById(R.id.settings_bg_image).setOnClickListener(v -> {
+            if (v.getId() == R.id.settings_bg_image){
+                Intent intent = new Intent(SettingsActivity.this, GameActivity.class);
+                intent.putExtra("what_from", SettingsActivity.class.toString());
+                intent.putExtra("result", "settings_finished");
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
     }
 
-    void setState(Button bt, boolean is_on){
+    private void setState(Button bt, boolean is_on){
 
         int id = is_on
                 ?

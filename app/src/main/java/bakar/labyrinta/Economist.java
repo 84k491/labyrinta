@@ -41,38 +41,38 @@ public class Economist {
     private final LinearFunction teleportPropabilityOfSquare;
     private final LinearFunction pathfinderPropabilityOfSquare;
 
-    Map<String, Function<Integer, Integer> > price_map = new HashMap<>();
+    final Map<String, Function<Integer, Integer> > price_map = new HashMap<>();
 
     public static Economist getInstance() {
         return ourInstance;
     }
-    void priceMapSetUp(){
+    private void priceMapSetUp(){
         price_map.put(StoredProgress.teleportUpgKey,
-                (Integer upgLevel) -> {return Math.round(teleportUpgCostOfUpgLevel.calc(upgLevel));});
+                (Integer upgLevel) -> Math.round(teleportUpgCostOfUpgLevel.calc(upgLevel)));
 
         price_map.put(StoredProgress.pointerUpgKey,
-                (Integer upgLevel) -> {return Math.round(pointerUpgCostOfUpgLevel.calc(upgLevel));});
+                (Integer upgLevel) -> Math.round(pointerUpgCostOfUpgLevel.calc(upgLevel)));
 
         price_map.put(StoredProgress.pathfinderUpgKey,
-                (Integer upgLevel) -> {return Math.round(pathfinderUpgCostOfUpgLevel.calc(upgLevel));});
+                (Integer upgLevel) -> Math.round(pathfinderUpgCostOfUpgLevel.calc(upgLevel)));
 
         price_map.put(StoredProgress.pathfinderAmountKey,
-                (Integer upgLevel) -> {return Math.round(
+                (Integer upgLevel) -> Math.round(
                         pathfinderCostOfUpgLevel.calc(StoredProgress.getInstance().getValue(
-                                StoredProgress.pathfinderUpgKey)));});
+                                StoredProgress.pathfinderUpgKey))));
 
         price_map.put(StoredProgress.teleportAmountKey,
-                (Integer upgLevel) -> {return Math.round(
+                (Integer upgLevel) -> Math.round(
                         teleportCostOfUpgLevel.calc(StoredProgress.getInstance().getValue(
-                                StoredProgress.teleportUpgKey)));});
+                                StoredProgress.teleportUpgKey))));
 
         price_map.put(StoredProgress.pointerAmountKey,
-                (Integer upgLevel) -> {return Math.round(
+                (Integer upgLevel) -> Math.round(
                         pointerCostOfUpgLevel.calc(StoredProgress.getInstance().getValue(
-                                StoredProgress.pointerUpgKey)));});
+                                StoredProgress.pointerUpgKey))));
 
         price_map.put(StoredProgress.levelUpgKey,
-                (Integer upgLevel) -> {return getNextLevelCost(getLevelHypotByUpg(upgLevel));});
+                (Integer upgLevel) -> getNextLevelCost(getLevelHypotByUpg(upgLevel)));
     }
 
     private Economist(){
@@ -109,11 +109,11 @@ public class Economist {
     float getSquareSide(float hypot){
         return (float)(hypot / Math.sqrt(2));
     }
-    float getSquare(float hypot){
+    private float getSquare(float hypot){
         return getSquareSide(hypot) * getSquareSide(hypot);
     }
 
-    float getAverageLength(float hypot){
+    private float getAverageLength(float hypot){
         return avgLengthOfHypot.calc(hypot);
     }
 
@@ -121,12 +121,12 @@ public class Economist {
         return (float)Math.sqrt(levelSize.x * levelSize.x + levelSize.y * levelSize.y);
     }
 
-    int getNextLevelCost(float currentHypot){
+    private int getNextLevelCost(float currentHypot){
         return Math.round(getNumOfLevelsToUnlockNext(currentHypot) *
                 getLevelTotalIncome(currentHypot, 50.f));
     }
 
-    float getNumOfLevelsToUnlockNext(float hypot){
+    private float getNumOfLevelsToUnlockNext(float hypot){
         return levelAmountOfLength.calc(getAverageLength(hypot));
     }
 
@@ -134,14 +134,14 @@ public class Economist {
         return Math.round(levelRewardOfLength.calc(getAverageLength(hypot)));
     }
 
-    int getLevelTotalIncome(float hypot, float coinsPercent){
+    private int getLevelTotalIncome(float hypot, float coinsPercent){
         float result = 0;
         result += getCoinsAmountAvg(hypot) * coinCostAvg * (coinsPercent / 100.f);
         result += getLevelReward(hypot);
         return Math.round(result);
     }
 
-    float getCoinsAmountAvg(float hypot){
+    private float getCoinsAmountAvg(float hypot){
         return coinsAmountOfSquare.calc(getSquare(hypot));
     }
 

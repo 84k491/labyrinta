@@ -8,6 +8,7 @@ import android.os.Build;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 enum Sounds{
     coinPickedUp,
@@ -17,20 +18,20 @@ enum Sounds{
     incorrect
 }
 
-public final class SoundCore {
+final class SoundCore {
     static private final SoundCore instance = new SoundCore();
-    private SoundPool soundPool;
+    private final SoundPool soundPool;
     private MediaPlayer mediaPlayer_menu;
     private MediaPlayer mediaPlayer_game;
     boolean currenPlayerIsGame = false;
 
-    boolean doPlayMusic = true;
-    boolean doPlaySounds = true;
+    boolean doPlayMusic;
+    boolean doPlaySounds;
 
     private int started_activities_amount = 0;
 
-    private Map<Sounds, Integer> resource_id_map = new HashMap<>();
-    private Map<Sounds, Integer> sound_id_map = new HashMap<>();
+    private final Map<Sounds, Integer> resource_id_map = new HashMap<>();
+    private final Map<Sounds, Integer> sound_id_map = new HashMap<>();
 
     static SoundCore inst(){
         return instance;
@@ -65,7 +66,7 @@ public final class SoundCore {
 
         for (Sounds sound : Sounds.values()){
             sound_id_map.put(sound,
-                soundPool.load(context, resource_id_map.get(sound), 0)
+                soundPool.load(context, Objects.requireNonNull(resource_id_map.get(sound)), 0)
             );
         }
     }
@@ -76,7 +77,7 @@ public final class SoundCore {
             return;
         }
 
-        soundPool.play(sound_id_map.get(sound),
+        soundPool.play(Objects.requireNonNull(sound_id_map.get(sound)),
                 1,
                 1,
                 0,

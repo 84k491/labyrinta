@@ -5,13 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Point;
-import android.graphics.PointF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.VolumeShaper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -24,7 +21,6 @@ import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.logging.Logger;
 
 import static bakar.labyrinta.StoredProgress.getInstance;
@@ -37,7 +33,6 @@ public class GameActivity extends Activity{
 
     // HIGH PRIORITY
     // TODO: 8/29/19 skins
-    // TODO: 3/18/19 gold for video
     // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
     // TODO: 5/5/19 max level gz tutorial
     // TODO: 6/25/19 change scaling speed
@@ -66,12 +61,12 @@ public class GameActivity extends Activity{
     // TODO: 8/5/19 можно открыть настройки и завершение уровня
     // TODO: 19.05.2018 rate this app
 
-    GameRenderer gameRenderer;
-    GameLogic gameLogic;
-    CustomTouchListener touchListener;
-    SharedPreferences sPref;
-    TiltController tiltController;
-    ConstraintLayout gameLayout;
+    private GameRenderer gameRenderer;
+    private GameLogic gameLogic;
+    private CustomTouchListener touchListener;
+    private SharedPreferences sPref;
+    private TiltController tiltController;
+    private ConstraintLayout gameLayout;
     private InterstitialAd mInterstitialAd;
 
     @Override
@@ -98,7 +93,7 @@ public class GameActivity extends Activity{
         }
     }
 
-    void init(){
+    private void init(){
         Logger.getAnonymousLogger().info("GameActivity.init() begin");
 
         Intent intent = getIntent();
@@ -138,7 +133,7 @@ public class GameActivity extends Activity{
 
         Logger.getAnonymousLogger().info("GameActivity.init() changing surface to game_layout");
         setContentView(R.layout.game_layout);
-        gameLayout = ((ConstraintLayout)findViewById(R.id.cl_game));
+        gameLayout = findViewById(R.id.cl_game);
         gameLayout.addView(gameRenderer);
 //        setContentView(gameRenderer);
         Logger.getAnonymousLogger().info("GameActivity.init() end");
@@ -151,7 +146,7 @@ public class GameActivity extends Activity{
             startActivityForResult(tutorialIntent, 42);
         }
     }
-    void reInit(){
+    private void reInit(){
         gameLogic.reInit();
 
         runOnUiThread(()->{
@@ -181,7 +176,7 @@ public class GameActivity extends Activity{
 
             Logger.getAnonymousLogger().info("GameActivity.init() changing surface to game_layout");
             setContentView(R.layout.game_layout);
-            gameLayout = ((ConstraintLayout)findViewById(R.id.cl_game));
+            gameLayout = findViewById(R.id.cl_game);
             gameLayout.addView(gameRenderer);
 //        setContentView(gameRenderer);
             Logger.getAnonymousLogger().info("GameActivity.init() end");
@@ -252,7 +247,7 @@ public class GameActivity extends Activity{
         super.onDestroy();
     }
 
-    void startTutorialActivity(TutorialKey key){
+    private void startTutorialActivity(TutorialKey key){
         Intent intent = new Intent(this, TutorialActivity.class);
         intent.putExtra(TutorialKey.class.toString(), String.valueOf(key));
         this.startActivityForResult(intent, 42);
@@ -296,9 +291,7 @@ public class GameActivity extends Activity{
                         showInterstitial();
                     }
                     else{
-                        new Handler().postDelayed(()->{
-                            goToNextLevel();
-                        }, 200);
+                        new Handler().postDelayed(()-> goToNextLevel(), 200);
                     }
 //                    new Handler().postDelayed(()->{
 //                        goToNextLevel();
@@ -361,7 +354,7 @@ public class GameActivity extends Activity{
         }
     }
 
-    void saveData() {
+    private void saveData() {
         // TODO: 6/13/19 use singleton
         if (null == gameLogic) return;
         sPref = getSharedPreferences("global", MODE_PRIVATE);
@@ -372,7 +365,7 @@ public class GameActivity extends Activity{
         ed.putInt("pathfinderAmount", gameLogic.pathfinderAmount);
         ed.commit(); //ed.apply();
     }
-    void loadData() {
+    private void loadData() {
         // TODO: 6/13/19 use singleton
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         //gameRenderer.globalScale = sPref.getFloat("global_scale", 3);
@@ -381,7 +374,7 @@ public class GameActivity extends Activity{
         gameLogic.teleportAmount = sPref.getInt("teleportAmount", 0);
     }
 
-    void updateSettings(){
+    private void updateSettings(){
         sPref = getSharedPreferences("global", MODE_PRIVATE);
         gameLogic.usesJoystick = StoredProgress.getInstance().getUsesJoystick();
         if (!gameLogic.usesJoystick){
@@ -401,7 +394,7 @@ public class GameActivity extends Activity{
         }
     }
 
-    void goToNextLevel(){
+    private void goToNextLevel(){
         Logger.getAnonymousLogger().info("GameActivity.goToNextLevel() start");
 
         Loader loader = new Loader(false);
@@ -453,7 +446,7 @@ public class GameActivity extends Activity{
         });
         return interstitialAd;
     }
-    void loadInterstitial() {
+    private void loadInterstitial() {
         AdRequest adRequest = new AdRequest.Builder()
                 .setRequestAgent("android_studio:ad_template").build();
         mInterstitialAd.loadAd(adRequest);
@@ -471,7 +464,7 @@ public class GameActivity extends Activity{
     }
 
     class Loader extends Thread{
-        boolean is_first_launch;
+        final boolean is_first_launch;
         boolean is_running = false;
 
         Loader(boolean _is_first_launch){
@@ -489,12 +482,9 @@ public class GameActivity extends Activity{
             }
 
             if (is_first_launch){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Logger.getAnonymousLogger().info("Loader.run() init();");
-                        init();
-                    }
+                runOnUiThread(() -> {
+                    Logger.getAnonymousLogger().info("Loader.run() init();");
+                    init();
                 });
             }
             else{
@@ -509,16 +499,16 @@ public class GameActivity extends Activity{
 
     class TiltController implements VelosityControllerInterface{
 
-        SensorManager sensorManager;
+        final SensorManager sensorManager;
         Sensor sensorAccel;
         Sensor sensorLinAccel;
         Sensor sensorGravity;
         private boolean registered = false;
         boolean isRegistered(){return registered;}
 
-        float[] valuesGravity = new float[3];
+        final float[] valuesGravity = new float[3];
 
-        SensorEventListener listener = new SensorEventListener() {
+        final SensorEventListener listener = new SensorEventListener() {
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -528,14 +518,8 @@ public class GameActivity extends Activity{
             public void onSensorChanged(SensorEvent event) {
                 switch (event.sensor.getType()) {
                     case Sensor.TYPE_ACCELEROMETER:
-                        for (int i = 0; i < 3; i++) {
-                            valuesGravity[i] = event.values[i];
-                        }
-                        break;
                     case Sensor.TYPE_GRAVITY:
-                        for (int i = 0; i < 3; i++) {
-                            valuesGravity[i] = event.values[i];
-                        }
+                        System.arraycopy(event.values, 0, valuesGravity, 0, 3);
                         break;
                 }
             }
@@ -553,11 +537,8 @@ public class GameActivity extends Activity{
 
         void registerSensors(){
             int period = SensorManager.SENSOR_DELAY_GAME;
-            boolean result = false;
-            result = sensorManager.registerListener(listener, sensorGravity,
+            registered = sensorManager.registerListener(listener, sensorGravity,
                     period);
-
-            registered = result;
         }
         void unregisterSensors(){
             sensorManager.unregisterListener(listener);
@@ -567,7 +548,7 @@ public class GameActivity extends Activity{
             valuesGravity[2] = 0.f;
         }
 
-        CPoint.Game speed_vector = new CPoint.Game(0.f, 0.f);
+        final CPoint.Game speed_vector = new CPoint.Game(0.f, 0.f);
         final float coef = 1.7f;
         private long lastCallTime_ms = 0;
 

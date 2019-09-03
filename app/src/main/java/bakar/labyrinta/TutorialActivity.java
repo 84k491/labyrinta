@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
@@ -16,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 enum TutorialKey{
     BeginTutorial_1,
@@ -30,12 +29,12 @@ enum TutorialKey{
 
 public class TutorialActivity extends Activity {
 
-    LinearLayout tutorial_lo;
+    private LinearLayout tutorial_lo;
 
-    Map<TutorialKey, String> text_map = new HashMap<>();
-    Map<TutorialKey, Integer> image_map = new HashMap<>();
+    private final Map<TutorialKey, String> text_map = new HashMap<>();
+    private final Map<TutorialKey, Integer> image_map = new HashMap<>();
 
-    boolean isDetailedTutorial(TutorialKey key){
+    private boolean isDetailedTutorial(TutorialKey key){
         return (key == TutorialKey.PathfinderTutorial ||
                 key == TutorialKey.TeleportTutorial ||
                 key == TutorialKey.PointerTutorial ||
@@ -66,22 +65,19 @@ public class TutorialActivity extends Activity {
 
         setTutorial(passedKey);
 
-        findViewById(R.id.bt_tutorial_ok).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(TutorialActivity.this,
-                        TutorialActivity.class);
+        findViewById(R.id.bt_tutorial_ok).setOnClickListener(v -> {
+            Intent intent = new Intent(TutorialActivity.this,
+                    TutorialActivity.class);
 
-                intent.putExtra(TutorialKey.class.toString(), String.valueOf(passedKey));
-                intent.putExtra("what_from", TutorialKey.class.toString());
+            intent.putExtra(TutorialKey.class.toString(), String.valueOf(passedKey));
+            intent.putExtra("what_from", TutorialKey.class.toString());
 
-                setResult(RESULT_OK, intent);
-                finish();
-            }
+            setResult(RESULT_OK, intent);
+            finish();
         });
     }
 
-    void setMaps(){
+    private void setMaps(){
         text_map.put(TutorialKey.BeginTutorial_1,
                 getString(R.string.begin_tutorial_1)
                 );
@@ -133,7 +129,7 @@ public class TutorialActivity extends Activity {
 
     }
 
-    void setTutorial(TutorialKey key){
+    private void setTutorial(TutorialKey key){
 
         LinearLayout.LayoutParams space_params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -157,7 +153,7 @@ public class TutorialActivity extends Activity {
 
         textView.setText(text_map.get(key));
         if (image_map.get(key) != null) {
-            imageView.setImageResource(image_map.get(key));
+            imageView.setImageResource(Objects.requireNonNull(image_map.get(key)));
         }
 
         Space[] spaces = {new Space(this), new Space(this)};

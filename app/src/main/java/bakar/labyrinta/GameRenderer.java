@@ -20,8 +20,7 @@ import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.Typeface;
-import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -42,12 +41,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
     private static final boolean isDebug = false;
 
-    CPoint.Game lastToushGc = new CPoint.Game();
-    CPoint.Screen lastToushSc = new CPoint.Screen();
+    private CPoint.Game lastToushGc = new CPoint.Game();
+    private final CPoint.Screen lastToushSc = new CPoint.Screen();
 
     boolean fogEnabled = false;
 
-    boolean registerBonusTouch = false;
+    private boolean registerBonusTouch = false;
 
     private static final float smallSquareScale = 0.5f;
     private static final float bigSquareScale = 2.f - smallSquareScale;
@@ -55,29 +54,29 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     public static final float cellSize = 10; // gameCoords side
 
     ///// это костыль. позволяет сделать уменьшенную бмп уровня, не затрагивая остальное ///
-    final float labBitmapcellSize = 4;
+    private final float labBitmapcellSize = 4;
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    final Camera camera = new Camera();
+    private final Camera camera = new Camera();
     public float playerHitbox = 0; // screenCoord // in surfaceCreated();
 
-    float max_scale = 6;
-    float min_scale;
+    private float max_scale = 6;
+    private float min_scale;
 
     public boolean needToDestroyRenderer = false;
     public boolean isMovingOffset = false;
     public boolean isMovingPlayer = false;
-    float enlightenRadius = cellSize * 200 / 70; // gamecoord
+    private final float enlightenRadius = cellSize * 200 / 70; // gamecoord
 
     private GameLogic gameLogic;
     private RenderThread renderThread;
 
     private Context context;
 
-    ArrayList<Button> buttons = new ArrayList<>();
-    ArrayList<PickUpAnimation> pickUpAnimations = new ArrayList<>();
+    final ArrayList<Button> buttons = new ArrayList<>();
+    private final ArrayList<PickUpAnimation> pickUpAnimations = new ArrayList<>();
 
-    void constructor(Context _context){
+    private void constructor(Context _context){
         Logger.getAnonymousLogger().info("GameRenderer.ctor p begin");
         setZOrderOnTop(true);
         context = _context;
@@ -112,19 +111,19 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     public void setGameLogic(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
     }
-    void startBonusActivity(){
+    private void startBonusActivity(){
         Intent intent = new Intent(getContext(), BonusActivity.class);
         intent.putExtra("pathfinderAmount", gameLogic.pathfinderAmount);
         intent.putExtra("teleportAmount", gameLogic.teleportAmount);
         intent.putExtra("pointerAmount", gameLogic.pointerAmount);
         ((Activity)getContext()).startActivityForResult(intent, 42);
     }
-    void startSettingsActivity(){
+    private void startSettingsActivity(){
         Intent intent = new Intent(getContext(), SettingsActivity.class);
         ((Activity)getContext()).startActivityForResult(intent, 42);
     }
 
-    boolean isFieldAtScreen(){
+    private boolean isFieldAtScreen(){
         float margin = playerHitbox / 2;
         CPoint.Screen left_top_of_scr = new CPoint.Screen(margin, margin);
         CPoint.Game left_top_of_scr_g = screen2game(left_top_of_scr);
@@ -148,7 +147,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         return screen.intersect(field);
     }
-    boolean bonusTouch(CPoint.Screen screenCoord){
+    private boolean bonusTouch(CPoint.Screen screenCoord){
         CPoint.Game gc = screen2game(screenCoord);
         if (!gameLogic.isCoordIsWithinField(gc)){
             return false;
@@ -249,7 +248,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         gameLogic.createJoystick(pos, rad);
     }
 
-    float getGlobalScale(){
+    private float getGlobalScale(){
         // TODO: 8/4/19 можно и покороче сделать
         final Matrix matrix = new Matrix();
         camera.getMatrix(matrix);
@@ -257,7 +256,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         matrix.getValues(values);
         return values[0];
     }
-    PointF getGlobalOffset(){
+    private PointF getGlobalOffset(){
         final Matrix matrix = new Matrix(); //TODO убрать генерацию. очень часто вызывается
         camera.getMatrix(matrix);
         float[] values = new float[9];
@@ -265,12 +264,12 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         return new PointF(values[2], values[5]);
     }
 
-    void spawnCenteringCircles(CPoint.Game pt){
+    private void spawnCenteringCircles(CPoint.Game pt){
         synchronized (renderThread.centeringCircles){
             renderThread.centeringCircles.add(new CenteringCircle(pt));
         }
     }
-    void centerCameraTo(CPoint.Game pt){
+    private void centerCameraTo(CPoint.Game pt){
         CPoint.Game old_center = screen2game(new CPoint.Screen(getWidth() / 2.f,
                 getHeight() / 2.f));
 
@@ -293,7 +292,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         centerCameraTo(result);
     }
 
-    boolean isWholeFieldInScreen(){
+    private boolean isWholeFieldInScreen(){
         final CPoint.Field bot_right_field = new CPoint.Field(gameLogic.field.getxSize(),
                 gameLogic.field.getySize());
         final CPoint.Screen bot_right_screen = field2screen(bot_right_field);
@@ -325,7 +324,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 (value.y - getGlobalOffset().y) / getGlobalScale());
         return result;
     }
-    public CPoint.Field game2field(CPoint.Game value){
+    private CPoint.Field game2field(CPoint.Game value){
         CPoint.Field result = new CPoint.Field();
         double x, y;
         x = Math.floor(value.x / cellSize);
@@ -337,7 +336,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         return game2field(screen2game(value));
     }
     //
-    public CPoint.Game field2game(CPoint.Field value){
+    private CPoint.Game field2game(CPoint.Field value){
         CPoint.Game result = new CPoint.Game();
         result.set(value.x * cellSize + cellSize / 2, value.y * cellSize + cellSize / 2);
         return result;
@@ -349,7 +348,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                 value.y * getGlobalScale() + getGlobalOffset().y);
         return result;
     }
-    public CPoint.Screen field2screen(CPoint.Field value){
+    private CPoint.Screen field2screen(CPoint.Field value){
         return game2screen(field2game(value));
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -530,6 +529,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
                     renderThread.join();
                     retry = false;
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -544,14 +544,14 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         private boolean running = false;
         private SurfaceHolder surfaceHolder;
-        private Profiler profiler = new Profiler();
+        private final Profiler profiler = new Profiler();
         final Matrix Ematrix = new Matrix();
         final Matrix fogMatrix = new Matrix();
         final Matrix translate_matrix = new Matrix();
         final ArrayList<CenteringCircle> centeringCircles = new ArrayList<>();
 
         private long prevDrawTime = 0;
-        private long redrawPeriod = 30; // milliS // microS
+        private final long redrawPeriod = 30; // milliS // microS
         private long fpsTimer = 0;
 
         private Bitmap labBitmap;
@@ -574,29 +574,29 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             fogBmpScale = getGlobalScale();
         }
 
-        AnimationBitmaps bitmaps = new AnimationBitmaps();
+        final AnimationBitmaps bitmaps = new AnimationBitmaps();
 
         //Todo: перенести Paint в ресурсы цвета
-        private Paint common = new Paint();
-        private Paint floor = new Paint();
-        private Paint wall = new Paint();
-        private Paint node = new Paint();
-        private Paint centeringCircle = new Paint();
-        private Paint player = new Paint();
-        private Paint hitbox = new Paint();
-        private Paint trace = new Paint();
-        private Paint text = new Paint();
-        private Paint joystickMain = new Paint();
-        private Paint joystickCurrent = new Paint();
-        private Paint exit = new Paint();
-        private Paint button = new Paint();
-        private Paint path = new Paint();
-        private Paint fog = new Paint();
-        private Paint enlighten = new Paint();
-        private Paint puanim = new Paint();
-        private Paint levelNumber = new Paint();
-        private Paint bonusRadius = new Paint();
-        private ExitDrawer exitDrawer = new ExitDrawer();
+        private final Paint common = new Paint();
+        private final Paint floor = new Paint();
+        private final Paint wall = new Paint();
+        private final Paint node = new Paint();
+        private final Paint centeringCircle = new Paint();
+        private final Paint player = new Paint();
+        private final Paint hitbox = new Paint();
+        private final Paint trace = new Paint();
+        private final Paint text = new Paint();
+        private final Paint joystickMain = new Paint();
+        private final Paint joystickCurrent = new Paint();
+        private final Paint exit = new Paint();
+        private final Paint button = new Paint();
+        private final Paint path = new Paint();
+        private final Paint fog = new Paint();
+        private final Paint enlighten = new Paint();
+        private final Paint puanim = new Paint();
+        private final Paint levelNumber = new Paint();
+        private final Paint bonusRadius = new Paint();
+        private final ExitDrawer exitDrawer = new ExitDrawer();
 
         RenderThread(){
             Logger.getAnonymousLogger().info("RenderThread.ctor begin");
@@ -771,7 +771,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             canvas.drawPath(poly, wall);
         }
 
-        Random random;
+        final Random random;
 
         void drawTile(Canvas canvas, Bitmap bmp, CPoint.Game pos, boolean isLarge, boolean is_coin){
             translate_matrix.reset();
@@ -967,8 +967,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
         void drawLabyrinth(Canvas canvas){
-            if (labBitmap == null)
+            if (labBitmap == null){
                 updateLabyrinthBmp();
+            }
             Matrix matrix = new Matrix();
             matrix.postScale(cellSize / labBitmapcellSize, cellSize / labBitmapcellSize);
             canvas.drawBitmap(labBitmap, matrix, common);
@@ -1206,7 +1207,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     abstract class BitmapContainer{
-        String whoami;
+        final String whoami;
 
         BitmapContainer(String name){
             whoami = name;
@@ -1260,7 +1261,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         abstract void rescale();
     }
     class BitmapList extends BitmapContainer{
-        ArrayList<Bitmap> list = new ArrayList<>();
+        final ArrayList<Bitmap> list = new ArrayList<>();
 
         BitmapList(String name){
             super(name);
@@ -1337,7 +1338,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     class AnimationBitmaps extends ArrayList<BitmapContainer>{
         AnimationBitmaps(){
             setCoin();
-            setExit();
+            //setExit();
 
             setPathfinder();
             setTeleport();
@@ -1365,8 +1366,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             add(list);
         }
         void setExit(){
-            if (null != getListByName("Exit"))
-                return;
+//            if (null != getListByName("Exit"))
+//                return;
 
 //            BitmapList list = new BitmapList("Exit");
 //
@@ -1406,8 +1407,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             add(list);
         }
         void setFloor(){
-            if (null != getListByName("Floor"))
-                return;
+//            if (null != getListByName("Floor"))
+//                return;
 //            BitmapList list = new BitmapList("Floor");
 //
 //            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.floor));
@@ -1415,8 +1416,8 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 //            add(list);
         }
         void setWall(){
-            if (null != getListByName("Wall"))
-                return;
+//            if (null != getListByName("Wall"))
+//                return;
 //            BitmapList list = new BitmapList("Wall");
 //
 //            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.wall));
@@ -1471,6 +1472,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             add(bmp);
         }
 
+        @Nullable
         BitmapContainer getListByName(String name){
             for (BitmapContainer list : this
                     ) {
@@ -1479,6 +1481,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             }
             return null;
         }
+
         Bitmap getByEntity(Entity entity){
             BitmapContainer list = getListByName(entity.whoami);
             return list.get(entity.incrAnimFrame(list.size()));
@@ -1495,11 +1498,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     class PickUpAnimation{
-        private CPoint.Game pos;
-        String text;
+        private final CPoint.Game pos;
+        final String text;
         int animStep = 0;
-        float step = -1.f;
-        int animDuration = 10;
+        final float step = -1.f;
+        final int animDuration = 10;
 
         PickUpAnimation(CPoint.Game startPos, String _text){
             pos = startPos;
@@ -1523,7 +1526,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             float percent;
         }
 
-        ArrayList<Element> elements = new ArrayList<>();
+        final ArrayList<Element> elements = new ArrayList<>();
 
         Element find(String name){
             for (int i = 0; i < elements.size(); ++i){
@@ -1593,13 +1596,13 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     class ExitDrawer{
-        Paint exit_paint = new Paint();
-        Paint line_paint = new Paint();
+        final Paint exit_paint = new Paint();
+        final Paint line_paint = new Paint();
         final Random ed_random = new Random(System.currentTimeMillis());
         final ArrayList<Sector> sectors = new ArrayList<>();
         final ArrayList<Line> lines = new ArrayList<>();
 
-        int colors[] = {
+        final int[] colors = {
                 Color.parseColor("#a101a6"),
                 Color.parseColor("#ff5900"),
                 Color.parseColor("#a3f400"),
@@ -1721,9 +1724,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             private static final float max_radius = cellSize * 1.2f;
             private static final float min_radius = cellSize / 3;
 
-            float radial_speed_deg;
-            float radius_gc;
-            float width_deg;
+            final float radial_speed_deg;
+            final float radius_gc;
+            final float width_deg;
             float direction_deg;
             final Paint sector_paint_fill = new Paint();
             final Paint sector_paint_stroke = new Paint();
@@ -1780,7 +1783,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
             float angle_deg;
             float length;
-            float speed = 0.4f;
+            final float speed = 0.4f;
             float radius;
             //float iteration;
 
@@ -1846,7 +1849,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     class CenteringCircle{
-        private CPoint.Game m_pos;
+        private final CPoint.Game m_pos;
         private float m_radius = 5.f;
         private static final float step = 10.f;
         private static final float maxRange = 100.f;
@@ -1855,11 +1858,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             m_pos = pos;
         }
 
-        public CPoint.Game getPos() {
+        CPoint.Game getPos() {
             return m_pos;
         }
 
-        public float getRadius() {
+        float getRadius() {
             m_radius += step;
             return m_radius;
         }
@@ -1875,9 +1878,9 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         String whoami;
 
         boolean lightAnimationEnabled = false;
-        private float maxAnimationState = 100;
+        private final float maxAnimationState = 100;
         private float animationState = 0;
-        private float animationStep = 2.f;
+        private final float animationStep = 2.f;
 
         float getAnimtionPercent(){
             if (!lightAnimationEnabled) return 0.f;
@@ -1909,7 +1912,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
     class PlayerFinder extends Button{
         private boolean animationEnabled = false;
         private CPoint.Screen newOffset = new CPoint.Screen(0, 0);
-        private int animationSpeed = 150;
+        private final int animationSpeed = 150;
 
         PlayerFinder(CPoint.Screen position, float radius){
             whoami = "CenterButton";
@@ -1951,7 +1954,7 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
         void remoteAnimation(){
             if (animationEnabled){
 
-                if (gameLogic.distance(newOffset, getGlobalOffset()) < animationSpeed){ //gameCoords
+                if (GameLogic.distance(newOffset, getGlobalOffset()) < animationSpeed){ //gameCoords
                     instantAnimation();
                 }
                 else {

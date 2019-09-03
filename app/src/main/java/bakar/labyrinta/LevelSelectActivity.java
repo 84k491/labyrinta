@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -28,19 +27,20 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 public class LevelSelectActivity extends Activity implements View.OnClickListener {
 
-    Random random = new Random(274412536);
-    LinearLayout mainLayout;
-    TextView gold;
-    Animation on_click_anim;
-    final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
+    private final Random random = new Random(274412536);
+    private LinearLayout mainLayout;
+    private TextView gold;
+    private Animation on_click_anim;
+    private final ArrayList<NumeratedTextView> textViews = new ArrayList<>();
 
     private int touched_view_id;
 
-    Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+    private final Animation.AnimationListener animationListener = new Animation.AnimationListener() {
         @Override
         public void onAnimationStart(Animation animation) {
             for (NumeratedTextView tv:textViews){
@@ -51,9 +51,15 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                     if (tv.number == 0){
                         String dataKey = StoredProgress.levelUpgKey;
                         int level_value = StoredProgress.getInstance().getValue(dataKey);
-                        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                                level_value
-                        );
+                        int level_cost = 0;
+                        try{
+                            level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(
+                                    level_value
+                            );
+                        }
+                        catch (NullPointerException e){
+                            e.printStackTrace();
+                        }
 
                         if (StoredProgress.getInstance().getGoldAmount() >= level_cost){
 
@@ -82,7 +88,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         public void onAnimationRepeat(Animation animation) {}
     };
 
-    int itemSizePx = 0; // FIXME: 7/30/19 remove?
+    private int itemSizePx = 0; // FIXME: 7/30/19 remove?
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -99,9 +105,15 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 SoundCore.inst().playSound(Sounds.correct);
                 String dataKey = StoredProgress.levelUpgKey;
                 int level_value = StoredProgress.getInstance().getValue(dataKey);
-                int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                        level_value
-                );
+                int level_cost = 0;
+                try{
+                    level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(
+                            level_value
+                    );
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
 
                 StoredProgress.getInstance().
                         setGold(StoredProgress.getInstance().getGoldAmount() - level_cost);
@@ -191,13 +203,13 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         super.onStop();
     }
 
-    void updateGoldLabel(){
+    private void updateGoldLabel(){
         if (gold != null) {
             gold.setText(String.valueOf(StoredProgress.getInstance().getGoldAmount()));
         }
     }
 
-    void fillLayout(int lvl_amount){
+    private void fillLayout(int lvl_amount){
         final int row_volume = 4;
         int row_amount = 1 + lvl_amount / row_volume;
         int iter = 0;
@@ -215,8 +227,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
                 else
                     if (iter++ == lvl_amount){
 //                        NumeratedTextView tw = generateTV(0);
-                        ConstraintLayout tw = null;
-                        tw = generateBuyingTV();
+                        ConstraintLayout tw = generateBuyingTV();
                         if (tw != null) {
                             hlo.addView(tw);
                         }
@@ -237,7 +248,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     class NumeratedTextView extends AppCompatTextView{
 
-        int number;
+        final int number;
         NumeratedTextView(Context c, int _number){
             super(c);
             number = _number;
@@ -246,7 +257,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         }
     }
 
-    Space getSpace(){
+    private Space getSpace(){
         Space space = new Space(this);
         space.setLayoutParams(new LinearLayout.LayoutParams(
                 50,
@@ -262,7 +273,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
             return id;
         }
     }
-    NumeratedTextView generateTV(int num){
+    private NumeratedTextView generateTV(int num){
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 itemSizePx,
@@ -306,8 +317,8 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         if (num == 0){
             resource_id = R.xml.level_select_bg_cannot_buy;
             res.setTextColor(Color.parseColor("#555555"));
-            if (StoredProgress.getInstance().getGoldAmount() >= Economist.getInstance().
-                    price_map.get(StoredProgress.levelUpgKey).apply(buying_level_number - 1)){
+            if (StoredProgress.getInstance().getGoldAmount() >= Objects.requireNonNull(Economist.getInstance().
+                    price_map.get(StoredProgress.levelUpgKey)).apply(buying_level_number - 1)){
                 resource_id = R.xml.level_select_bg_can_buy;
                 res.setTextColor(Color.parseColor("#005500"));
             }
@@ -331,7 +342,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         return res;
     }
 
-    ConstraintLayout constraintLayoutWrap(NumeratedTextView tv){
+    private ConstraintLayout constraintLayoutWrap(NumeratedTextView tv){
         // этот метод помогает сохранить квадратный размер вне зависимости от разрешения
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -360,7 +371,7 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         return constraintLayout;
     }
 
-    ConstraintLayout generateBuyingTV(){
+    private ConstraintLayout generateBuyingTV(){
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 itemSizePx,
                 itemSizePx,
@@ -403,13 +414,13 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         return constraintLayout;
     }
 
-    LinearLayout generateHorLayout(){
+    private LinearLayout generateHorLayout(){
         LinearLayout lo = new LinearLayout(this);
         lo.setOrientation(LinearLayout.HORIZONTAL);
         return lo;
     }
 
-    LinearLayout generateCostLabel(){
+    private LinearLayout generateCostLabel(){
         LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -441,9 +452,15 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
         String dataKey = StoredProgress.levelUpgKey;
         int level_value = StoredProgress.getInstance().getValue(dataKey);
-        int level_cost = Economist.getInstance().price_map.get(dataKey).apply(
-                level_value
-        );
+        int level_cost = 0;
+        try{
+            level_cost = Objects.requireNonNull(Economist.getInstance().price_map.get(dataKey)).apply(
+                    level_value
+            );
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+        }
 
         if (Economist.maxLevel > level_value){
             currencyIcon.setImageResource(R.drawable.coin_anim1);
