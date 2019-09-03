@@ -78,12 +78,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             StoredProgress.getInstance().setGold(StoredProgress.getInstance().getGoldAmount()
                     + rewardItem.getAmount()
             );
-
-            runOnUiThread(()->{
-                ((TextView)findViewById(R.id.tw_gold_amount_shop)).
-                        setText(StoredProgress.getInstance().getGoldAmount());
-                getVideoShopItem().setLoadingIcon();
-            });
         }
 
         @Override
@@ -132,6 +126,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        Logger.getAnonymousLogger().info("ShopActivity onCreate()");
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -146,7 +142,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         gold = (TextView)findViewById(R.id.tw_gold_amount_shop);
         gold.setTypeface(StoredProgress.getInstance().getTrenchFont(getAssets()));
         gold.setTextColor(Color.WHITE);
-        updateGoldLabel();
 
         layout = (LinearLayout)findViewById(R.id.ll_scroll_layout);
 
@@ -190,6 +185,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onStop(){
         super.onStop();
+        Logger.getAnonymousLogger().info("ShopActivity onStop()");
         SoundCore.inst().pauseMenuBackgroundMusic();
     }
 
@@ -201,6 +197,26 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             item.assosiatedLayout = null;
         }
         items.clear();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Logger.getAnonymousLogger().info("ShopActivity onResume()");
+
+        if (mRewardedVideoAd != null)
+        {
+            if (mRewardedVideoAd.isLoaded())
+            {
+                getVideoShopItem().setVideoIcon();
+            }
+            else
+            {
+                getVideoShopItem().setLoadingIcon();
+            }
+        }
+
+        updateGoldLabel();
     }
 
     boolean checkIfNeedToRebuild(){
