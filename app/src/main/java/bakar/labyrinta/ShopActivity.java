@@ -178,15 +178,19 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onStart(){
-        SoundCore.inst().playMenuBackgroundMusic();
         super.onStart();
     }
 
     @Override
-    protected void onStop(){
-        super.onStop();
-        Logger.getAnonymousLogger().info("ShopActivity onStop()");
+    protected void onPause(){
         SoundCore.inst().pauseMenuBackgroundMusic();
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop(){
+        Logger.getAnonymousLogger().info("ShopActivity onStop()");
+        super.onStop();
     }
 
     @Override
@@ -203,6 +207,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     protected void onResume(){
         super.onResume();
         Logger.getAnonymousLogger().info("ShopActivity onResume()");
+
+        SoundCore.inst().playMenuBackgroundMusic();
 
         if (mRewardedVideoAd != null)
         {
