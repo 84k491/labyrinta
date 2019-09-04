@@ -29,7 +29,6 @@ public class LevelBuyActivity extends Activity implements View.OnClickListener {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-        // FIXME: 9/3/19 error inflating xml
         setContentView(R.layout.activity_level_buy);
 
         level_number = getIntent().getIntExtra("level_number", 2);
