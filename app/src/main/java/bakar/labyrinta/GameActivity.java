@@ -32,7 +32,7 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // HIGH PRIORITY
-    // TODO: 9/4/19 remove large heap
+    // TODO: 9/4/19 npe @ shop activity
     // TODO: 8/29/19 skins
     // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
     // TODO: 5/5/19 max level gz tutorial
