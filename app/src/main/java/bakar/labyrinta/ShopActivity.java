@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.util.Xml;
@@ -369,7 +368,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         return space;
     }
 
-    @Nullable
     private RewardedVideoShopItem getVideoShopItem(){
         for (ShopItem item : items){
             if (item instanceof RewardedVideoShopItem){

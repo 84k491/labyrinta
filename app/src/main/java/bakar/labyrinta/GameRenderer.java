@@ -1,8 +1,9 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
-import androidx.arch.core.util.Function;
+
 import android.content.Context;
+import android.arch.core.util.Function;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,7 +21,7 @@ import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import androidx.annotation.Nullable;
+
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -1472,7 +1473,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             add(bmp);
         }
 
-        @Nullable
         BitmapContainer getListByName(String name){
             for (BitmapContainer list : this
                     ) {

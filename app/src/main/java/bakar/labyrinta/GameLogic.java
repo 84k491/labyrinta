@@ -1,13 +1,11 @@
 package bakar.labyrinta;
 
 import android.app.Activity;
-import androidx.arch.core.util.Function;
+import android.arch.core.util.Function;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.ArrayMap;
-
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -889,7 +887,6 @@ class GameLogic {
             }
         }
 
-        @Nullable
         Entity intersectsWith(CPoint.Field point){
             Entity ret = null;
             for (Entity entity : entities
