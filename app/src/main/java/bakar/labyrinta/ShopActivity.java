@@ -51,6 +51,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         @Override
         public void onRewardedVideoAdLoaded() {
             Logger.getAnonymousLogger().info("Video ad loaded!");
+            // fixme java.lang.NullPointerException
             try{
                 Objects.requireNonNull(getVideoShopItem()).setVideoIcon();
             }
@@ -102,6 +103,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             Logger.getAnonymousLogger().info("Video ad completed!");
         }
     };
+    ///////////////
 
     private LinearLayout layout;
     private final ArrayList<ShopItem> items = new ArrayList<>();
@@ -160,7 +162,7 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     }
 
     private void loadRewardedVideoAd() {
-        mRewardedVideoAd.loadAd(getString(R.string.interstitial_video_test_id),
+        mRewardedVideoAd.loadAd(getString(R.string.interstitial_video_id),
                 new AdRequest.Builder().build());
     }
 
@@ -189,6 +191,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onPause(){
         SoundCore.inst().pauseMenuBackgroundMusic();
+        if (mRewardedVideoAd != null){
+            mRewardedVideoAd.pause(this);
+        }
         super.onPause();
     }
 
@@ -201,6 +206,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        if (mRewardedVideoAd != null){
+            mRewardedVideoAd.destroy(this);
+        }
 
         for (ShopItem item : items){
             item.assosiatedLayout = null;
@@ -213,10 +221,12 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         super.onResume();
         Logger.getAnonymousLogger().info("ShopActivity onResume()");
 
+
         SoundCore.inst().playMenuBackgroundMusic();
 
         if (mRewardedVideoAd != null)
         {
+            mRewardedVideoAd.resume(this);
             if (mRewardedVideoAd.isLoaded())
             {
                 try{
