@@ -1,8 +1,14 @@
 package bakar.labyrinta;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.support.constraint.ConstraintLayout;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 class StoredProgress {
     private static final StoredProgress ourInstance = new StoredProgress();
@@ -13,6 +19,9 @@ class StoredProgress {
     //private static final String trenchFont = "fonts/trench100free.ttf";
     private static final String trenchFont = "fonts/Gravity-UltraLight.otf";
     private static final String textFont = "fonts/Gravity-Regular.otf";
+
+    Map<Skin, Integer> skinResMap = new HashMap<>();
+    Map<Skin, Integer> skinShopItemBgMap = new HashMap<>();
 
     Typeface getTitleFont(AssetManager manager){
         return Typeface.createFromAsset(manager, titleFont);
@@ -34,6 +43,9 @@ class StoredProgress {
     static final String pathfinderUpgKey = "pf_upg";
     static final String pointerUpgKey = "pt_upg";
     static final String levelUpgKey = "level_upg";
+
+    static final String purchasedSkinPrefix = "is_skin_purchased: ";
+    static final String activeSkinKey = "active_skin";
 
     private static final String goldKey = "gold";
     private static final String cameraZKey = "cameraZ";
@@ -57,6 +69,68 @@ class StoredProgress {
 
     private StoredProgress() {}
 
+    void setSkinResMap(){
+        skinResMap.put(Skin.Default, R.drawable.bg_gradient);
+        skinResMap.put(Skin.AnalogBlue, R.drawable.bg_gradient2);
+        skinResMap.put(Skin.OrangeYellow, R.drawable.bg_gradient3); // flare
+        skinResMap.put(Skin.Opa, R.drawable.bg_gradient4);
+    }
+
+    void setSkinShopItemBgMapMap(){
+        skinShopItemBgMap.put(Skin.Default, R.xml.shop_item_bg_skin_default);
+        skinShopItemBgMap.put(Skin.AnalogBlue, R.xml.shop_item_bg_skin2);
+        skinShopItemBgMap.put(Skin.OrangeYellow, R.xml.shop_item_bg_skin3); // flare
+        skinShopItemBgMap.put(Skin.Opa, R.xml.shop_item_bg_skin4);
+    }
+
+    int getSkinId(Skin skin){
+        try{
+            return Objects.requireNonNull(skinResMap.get(skin));
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    int getShopItemBgIdId(Skin skin){
+        try{
+            return Objects.requireNonNull(skinShopItemBgMap.get(skin));
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    void setActiveSkin(Skin skin){
+        setValue(activeSkinKey, skin.toString());
+    }
+
+    void applyActiveSkinToLayout(ConstraintLayout layout){
+        layout.setBackgroundResource(getSkinId(getActiveSkin()));
+    }
+
+    Skin getActiveSkin(){
+        String str = getValueString(activeSkinKey);
+        if (str.equals("")){
+            return Skin.Default;
+        }
+        else {
+            return Skin.valueOf(str);
+        }
+    }
+
+    void setSkinPurchased(Skin skin, boolean v){
+        setValue(purchasedSkinPrefix + skin.toString(), v);
+    }
+
+    boolean isSkinPurchased(Skin skin){
+        return getValueBoolean(
+                purchasedSkinPrefix + skin.toString()
+        );
+    }
+
     void setSharedPreferences(SharedPreferences _sharedPreferences){
         if (sharedPreferences == null) {
             sharedPreferences = _sharedPreferences;
@@ -64,6 +138,9 @@ class StoredProgress {
         if (0 == getValue(levelUpgKey)){
             setValue(levelUpgKey, 1);
         }
+
+        setSkinResMap();
+        setSkinShopItemBgMapMap();
 
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putBoolean(isNeedToShowTutorialFirst,
@@ -85,6 +162,10 @@ class StoredProgress {
                 sharedPreferences.getBoolean(isMusicOnKey, true));
         ed.putBoolean(isSoundsOnKey,
                 sharedPreferences.getBoolean(isSoundsOnKey, true));
+
+        if (!isSkinPurchased(Skin.Default)){
+            setSkinPurchased(Skin.Default, true);
+        }
 
         ed.apply();
     }
@@ -126,6 +207,10 @@ class StoredProgress {
     }
     int getValue(String key){
         int result = sharedPreferences.getInt(key, 0);
+        return result;
+    }
+    String getValueString(String key){
+        String result = sharedPreferences.getString(key, "");
         return result;
     }
     void setCameraZ(float z){

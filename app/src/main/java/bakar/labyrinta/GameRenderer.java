@@ -512,7 +512,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
 
         renderThread.is_waiting_4_surface = false;
 
-
         Logger.getAnonymousLogger().info("GameRenderer.surfaceCreated() end");
     }
     @Override

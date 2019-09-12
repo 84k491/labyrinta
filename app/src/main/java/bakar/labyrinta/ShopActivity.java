@@ -7,9 +7,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.Gravity;
 import android.view.View;
@@ -186,6 +190,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onStart(){
         super.onStart();
+        StoredProgress.getInstance().applyActiveSkinToLayout(
+                findViewById(R.id.cl_shop_act)
+        );
     }
 
     @Override
@@ -367,6 +374,10 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             items.add(new BonusBuyItem(StoredProgress.pointerAmountKey));
             //items.add(new UpgrageItem(StoredProgress.getInstance().pointerUpgKey));
         }
+        items.add(new SkinItem(Skin.AnalogBlue));
+        items.add(new SkinItem(Skin.OrangeYellow));
+        items.add(new SkinItem(Skin.Opa));
+        items.add(new SkinItem(Skin.Default));
 //        items.add(new GoldBuyItem(5,300));
         //items.add(new GoldBuyItem(10,1000));
     }
@@ -398,6 +409,10 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         TextView cost_tw = null;
 
         ShopItem(){}
+
+        int getMainIconResource(){
+            return mainIconResource;
+        }
 
         void removeGold(int g){
             StoredProgress.getInstance().setGold(StoredProgress.getInstance().getGoldAmount() - g);
@@ -435,7 +450,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             return result;
         }
-        LinearLayout getMainLayout(){
+
+        LinearLayout getMainLayout(int _backgroundResId){
             if (assosiatedLayout != null) return assosiatedLayout;
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -457,8 +473,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
             try{
                 Drawable bg;
-                bg = Drawable.createFromXml(getResources(), getResources().getXml(R.xml.shop_item_bg));
-                XmlPullParser parser = getResources().getXml(R.xml.shop_item_bg);
+                bg = Drawable.createFromXml(getResources(), getResources().getXml(_backgroundResId));
+                XmlPullParser parser = getResources().getXml(_backgroundResId);
                 bg.inflate(getResources(), parser, Xml.asAttributeSet(parser));
 
                 assosiatedLayout.setBackground(bg);
@@ -469,6 +485,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             assosiatedLayout.setId(getRandomId());
 
             return assosiatedLayout;
+        }
+        LinearLayout getMainLayout(){
+            return getMainLayout(R.xml.shop_item_bg_default);
         }
 
         LinearLayout getCostLayout(){
@@ -489,6 +508,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             );
 
             LinearLayout costLayout = new LinearLayout(ShopActivity.this);
+            if (getCost() <= 0){
+                return costLayout;
+            }
             costLayout.setLayoutParams(layoutParams);
             costLayout.setOrientation(LinearLayout.HORIZONTAL);
             cost_tw = new TextView(ShopActivity.this);
@@ -544,8 +566,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             constraintLayout.setMaxWidth(layoutHeight);
 
             mainIcon = new ImageView(ShopActivity.this);
-            if (mainIconResource != -1)
-                mainIcon.setBackgroundResource(mainIconResource);
+            if (getMainIconResource() != -1)
+                mainIcon.setBackgroundResource(getMainIconResource());
             mainIcon.setId(getRandomId());
             constraintLayout.addView(mainIcon);
 
@@ -565,7 +587,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             return getMainIconLayout();
         }
     }
-
     abstract class NotRealBuyItem extends ShopItem{
         String dataKey;
 
@@ -670,7 +691,6 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             mainIcon.clearAnimation();
         }
     }
-
     class UpgrageItem extends NotRealBuyItem{
         UpgrageItem(String _dataKey){
             dataKey = _dataKey;
@@ -798,6 +818,100 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         @Override
         ConstraintLayout getFinalIconLayout(){
             return addAmountToLayout(getMainIconLayout());
+        }
+    }
+    class SkinItem extends NotRealBuyItem{
+        Skin dataKey;
+
+        SkinItem(Skin _dataKey){
+            dataKey = _dataKey;
+            mainIconResource = -1;
+        }
+
+        boolean isSkinActive(){
+            return StoredProgress.getInstance().getActiveSkin().equals(dataKey);
+        }
+        boolean isSkinPurchased(){
+            return StoredProgress.getInstance().isSkinPurchased(dataKey);
+        }
+        void applySkin(){
+            StoredProgress.getInstance().setActiveSkin(dataKey);
+            int id = StoredProgress.getInstance().getSkinId(
+                    StoredProgress.getInstance().getActiveSkin()
+            );
+            ((ConstraintLayout)findViewById(R.id.cl_shop_act)).setBackgroundResource(id);
+            rebuildLayout();
+        }
+
+        @Override
+        LinearLayout getMainLayout(){
+            return getMainLayout(StoredProgress.getInstance().getShopItemBgIdId(dataKey));
+        }
+
+        @Override
+        void updateCostText(){
+            if (cost_tw != null){
+                cost_tw.setText(" " + getCost());
+            }
+        }
+
+        @Override
+        int getMainIconResource(){
+            if (isSkinPurchased()){
+                if (isSkinActive()){
+                    return R.drawable.tick;
+                }
+                else{
+                    return -1;
+                }
+            }
+            else{
+                return R.drawable.lock;
+            }
+        }
+
+        @Override
+        int getCost(){
+            if (isSkinPurchased()){
+                return 0;
+            }
+            else{
+                return 2000; // FIXME: 9/12/19 Use Economist
+            }
+        }
+
+        @Override
+        void onTrigger(){
+            if (!isSkinActive())
+            {
+                if (isSkinPurchased())
+                {
+                    applySkin();
+                }
+                else
+                {
+                    if (StoredProgress.getInstance().getGoldAmount() >= getCost()){
+                        SoundCore.inst().playSound(Sounds.correct);
+                        removeGold(getCost());
+                        updateCostText();
+                        updateGoldLabel();
+                        StoredProgress.getInstance().setSkinPurchased(dataKey, true);
+                        applySkin();
+                    }
+                    else
+                    {
+                        SoundCore.inst().playSound(Sounds.incorrect);
+                    }
+                }
+            }
+        }
+
+        @Override
+        void updateLabelText(){/*nothing*/}
+
+        @Override
+        ConstraintLayout getFinalIconLayout(){
+            return getMainIconLayout();
         }
     }
 }

@@ -150,8 +150,11 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
 
     @Override
     protected void onStart(){
-        SoundCore.inst().playMenuBackgroundMusic();
         super.onStart();
+        SoundCore.inst().playMenuBackgroundMusic();
+        StoredProgress.getInstance().applyActiveSkinToLayout(
+                findViewById(R.id.lsa_constraint_lo)
+        );
     }
 
     @Override

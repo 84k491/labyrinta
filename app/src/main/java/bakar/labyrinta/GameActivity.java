@@ -135,6 +135,7 @@ public class GameActivity extends Activity{
         Logger.getAnonymousLogger().info("GameActivity.init() changing surface to game_layout");
         setContentView(R.layout.game_layout);
         gameLayout = findViewById(R.id.cl_game);
+        StoredProgress.getInstance().applyActiveSkinToLayout(gameLayout);
         gameLayout.addView(gameRenderer);
 //        setContentView(gameRenderer);
         Logger.getAnonymousLogger().info("GameActivity.init() end");
@@ -178,6 +179,7 @@ public class GameActivity extends Activity{
             Logger.getAnonymousLogger().info("GameActivity.init() changing surface to game_layout");
             setContentView(R.layout.game_layout);
             gameLayout = findViewById(R.id.cl_game);
+            StoredProgress.getInstance().applyActiveSkinToLayout(gameLayout);
             gameLayout.addView(gameRenderer);
 //        setContentView(gameRenderer);
             Logger.getAnonymousLogger().info("GameActivity.init() end");
@@ -204,8 +206,8 @@ public class GameActivity extends Activity{
     }
     @Override
     protected void onStart(){
-        SoundCore.inst().playGameBackgroundMusic();
         super.onStart();
+        SoundCore.inst().playGameBackgroundMusic();
     }
     @Override
     protected void onResume(){

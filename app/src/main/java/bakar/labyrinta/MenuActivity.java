@@ -167,13 +167,17 @@ public class MenuActivity extends Activity implements OnClickListener {
 
         SoundCore.inst().loadSounds(this);
     }
+
     protected void onRestart(){
         super.onRestart();
     }
     @Override
     protected void onStart(){
-        SoundCore.inst().playMenuBackgroundMusic();
         super.onStart();
+        SoundCore.inst().playMenuBackgroundMusic();
+        StoredProgress.getInstance().applyActiveSkinToLayout(
+                findViewById(R.id.menu_layout)
+        );
     }
     @Override
     protected void onResume(){
