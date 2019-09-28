@@ -3,6 +3,7 @@ package bakar.labyrinta;
 enum Skin {
     Default,
     AnalogBlue,
-    OrangeYellow,
-    Opa
+    Flare,
+    CheerUp,
+    CalmDaria
 }

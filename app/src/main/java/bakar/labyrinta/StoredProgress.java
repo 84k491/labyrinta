@@ -70,17 +70,19 @@ class StoredProgress {
     private StoredProgress() {}
 
     void setSkinResMap(){
-        skinResMap.put(Skin.Default, R.drawable.bg_gradient);
-        skinResMap.put(Skin.AnalogBlue, R.drawable.bg_gradient2);
-        skinResMap.put(Skin.OrangeYellow, R.drawable.bg_gradient3); // flare
-        skinResMap.put(Skin.Opa, R.drawable.bg_gradient4);
+        skinResMap.put(Skin.Default, R.drawable.bg_default);
+        skinResMap.put(Skin.AnalogBlue, R.drawable.bg_analog_blue);
+        skinResMap.put(Skin.Flare, R.drawable.bg_flare); // flare
+        skinResMap.put(Skin.CheerUp, R.drawable.bg_cheer_up);
+        skinResMap.put(Skin.CalmDaria, R.drawable.bg_calm_daria);
     }
 
     void setSkinShopItemBgMapMap(){
         skinShopItemBgMap.put(Skin.Default, R.xml.shop_item_bg_skin_default);
-        skinShopItemBgMap.put(Skin.AnalogBlue, R.xml.shop_item_bg_skin2);
-        skinShopItemBgMap.put(Skin.OrangeYellow, R.xml.shop_item_bg_skin3); // flare
-        skinShopItemBgMap.put(Skin.Opa, R.xml.shop_item_bg_skin4);
+        skinShopItemBgMap.put(Skin.AnalogBlue, R.xml.shop_item_bg_analog_blue);
+        skinShopItemBgMap.put(Skin.Flare, R.xml.shop_item_bg_flare);
+        skinShopItemBgMap.put(Skin.CheerUp, R.xml.shop_item_bg_cheer_up);
+        skinShopItemBgMap.put(Skin.CalmDaria, R.xml.shop_item_bg_calm_daria);
     }
 
     int getSkinId(Skin skin){
@@ -117,7 +119,14 @@ class StoredProgress {
             return Skin.Default;
         }
         else {
-            return Skin.valueOf(str);
+            Skin s;
+            try{
+                s = Skin.valueOf(str);
+            }
+            catch (Exception e){
+                s = Skin.Default;
+            }
+            return s;
         }
     }
 

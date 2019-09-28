@@ -375,8 +375,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
             //items.add(new UpgrageItem(StoredProgress.getInstance().pointerUpgKey));
         }
         items.add(new SkinItem(Skin.AnalogBlue));
-        items.add(new SkinItem(Skin.OrangeYellow));
-        items.add(new SkinItem(Skin.Opa));
+        items.add(new SkinItem(Skin.CheerUp));
+        items.add(new SkinItem(Skin.Flare));
+        items.add(new SkinItem(Skin.CalmDaria));
         items.add(new SkinItem(Skin.Default));
 //        items.add(new GoldBuyItem(5,300));
         //items.add(new GoldBuyItem(10,1000));

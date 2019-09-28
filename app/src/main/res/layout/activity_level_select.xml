@@ -5,7 +5,7 @@
     android:id="@+id/lsa_constraint_lo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient"
+    android:background="@drawable/bg_default"
     tools:context=".LevelSelectActivity">
 
     <bakar.labyrinta.Background

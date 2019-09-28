@@ -576,7 +576,6 @@ public class GameActivity extends Activity{
     }
 }
 
-// #b80f0a #57a0d2 dark
 // #d25e78 #6fc5c1 red & cyan | light
 // #008eb3 #f4656d red & cyan | mid
 // #5a6794 #a9794b gray & yellow | neutral
@@ -587,4 +586,4 @@ public class GameActivity extends Activity{
 // #ff7caa #------ very light version
 // #dcd549 #ff4274 red & yellow | mid
 // #ffc501 #da2b90 yellow & pink | bright
-// #1e508c #da2b90 blue & pink | deep
+// #1e508c #da2b90 blue & pink | deep \\\ default
