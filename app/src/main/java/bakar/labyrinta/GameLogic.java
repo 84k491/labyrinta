@@ -953,8 +953,8 @@ abstract class Entity{
     boolean isLarge = false;
 
     int incrAnimFrame(int max){
-        anim_frame = (anim_frame + 1) % max;
-        return anim_frame;
+        anim_frame = ((anim_frame + 1) % (max * 2));
+        return anim_frame / 2;
     }
 
     Entity(CPoint.Field _pos){

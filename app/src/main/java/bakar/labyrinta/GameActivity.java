@@ -32,6 +32,8 @@ import static bakar.labyrinta.TutorialKey.NextLevelBuyTutorial;
 public class GameActivity extends Activity{
 
     // HIGH PRIORITY
+    // TODO: 9/28/19 saving crash reports at device
+    // FIXME: 9/28/19 switching sound at game
     // TODO: 9/4/19 npe @ shop activity
     // TODO: 8/29/19 skins
     // TODO: 8/14/19 в туториале дописать, что можно найти бонусы
@@ -40,6 +42,7 @@ public class GameActivity extends Activity{
     // TODO: 3/18/19 coin icons
     // TODO: 8/24/19 подписи к бонусам в магазине
     // TODO: 6/25/19 кнопки должны нажиматься при нажатии и отпускаться при отпускании
+    // TODO: 10/2/19 инициализировать анимацию с рандомного кадра
 
     // TODO: 8/29/19 Сделать комбо с монетами
     //  (если следующую монету поднять в течении какого-то времени, то она даст больше денех)

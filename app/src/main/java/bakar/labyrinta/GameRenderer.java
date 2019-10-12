@@ -1357,11 +1357,11 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             BitmapList list = new BitmapList("Coin");
 
             list.addBitmap(R.drawable.coin_anim1);
-//            list.addBitmap(R.drawable.coin_anim2);
-//            list.addBitmap(R.drawable.coin_anim3);
-//            list.addBitmap(R.drawable.coin_anim4);
-//            list.addBitmap(R.drawable.coin_anim5);
-//            list.addBitmap(R.drawable.coin_anim6);
+            list.addBitmap(R.drawable.coin_anim2);
+            list.addBitmap(R.drawable.coin_anim3);
+            list.addBitmap(R.drawable.coin_anim4);
+            list.addBitmap(R.drawable.coin_anim5);
+            list.addBitmap(R.drawable.coin_anim6);
 
             add(list);
         }
@@ -1405,24 +1405,6 @@ public class GameRenderer extends SurfaceView implements SurfaceHolder.Callback{
             list.addBitmap(R.drawable.pathfinder);
 
             add(list);
-        }
-        void setFloor(){
-//            if (null != getListByName("Floor"))
-//                return;
-//            BitmapList list = new BitmapList("Floor");
-//
-//            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.floor));
-//
-//            add(list);
-        }
-        void setWall(){
-//            if (null != getListByName("Wall"))
-//                return;
-//            BitmapList list = new BitmapList("Wall");
-//
-//            list.list.add(BitmapFactory.decodeResource(context.getResources(), R.drawable.wall));
-//
-//            add(list);
         }
         void setPlayer(){
             if (null != getListByName("Player"))
