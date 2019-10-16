@@ -139,6 +139,9 @@ public class ShopActivity extends Activity implements View.OnClickListener {
 
         Logger.getAnonymousLogger().info("ShopActivity onCreate()");
 
+        StoredProgress.getInstance().
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -228,6 +231,8 @@ public class ShopActivity extends Activity implements View.OnClickListener {
         super.onResume();
         Logger.getAnonymousLogger().info("ShopActivity onResume()");
 
+        StoredProgress.getInstance().
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
 
         SoundCore.inst().playMenuBackgroundMusic();
 

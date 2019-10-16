@@ -68,7 +68,6 @@ public class GameActivity extends Activity{
     private GameRenderer gameRenderer;
     private GameLogic gameLogic;
     private CustomTouchListener touchListener;
-    private SharedPreferences sPref;
     private TiltController tiltController;
     private ConstraintLayout gameLayout;
     private InterstitialAd mInterstitialAd;
@@ -86,9 +85,13 @@ public class GameActivity extends Activity{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         Logger.getAnonymousLogger().info("GameActivity.onCreate()");
+
+        StoredProgress.getInstance().
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().setFormat(PixelFormat.RGBA_8888);
+
         Logger.getAnonymousLogger().info("GameActivity.onCreate() setContentView(R.layout.loading_screen)");
         setContentView(R.layout.loading_screen);
 
@@ -101,19 +104,17 @@ public class GameActivity extends Activity{
         Logger.getAnonymousLogger().info("GameActivity.init() begin");
 
         Intent intent = getIntent();
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
 
         int difficulty = intent.getIntExtra("level_size", 1);
         gameLogic = new GameLogic(null, intent.getLongExtra("seed", 123456789), difficulty);
-        gameLogic.usesJoystick = sPref.getBoolean("uses_joystick", false);
+        gameLogic.usesJoystick = StoredProgress.getInstance().getValueBoolean("uses_joystick");
         if (!gameLogic.usesJoystick){
-            //tiltController = new TiltController();
             gameLogic.tiltControler = tiltController;
         }
 
         gameRenderer = new GameRenderer(this);
         gameRenderer.setGameLogic(gameLogic);
-        gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
+        gameRenderer.fogEnabled = false;
 
         touchListener = new CustomTouchListener();
 
@@ -157,7 +158,7 @@ public class GameActivity extends Activity{
         runOnUiThread(()->{
             gameRenderer = new GameRenderer(this);
             gameRenderer.setGameLogic(gameLogic);
-            gameRenderer.fogEnabled = sPref.getBoolean("fog_enabled", false);
+            gameRenderer.fogEnabled = false;
 
             touchListener = new CustomTouchListener();
 
@@ -217,6 +218,9 @@ public class GameActivity extends Activity{
         super.onResume();
         Logger.getAnonymousLogger().info("GameActivity.onResume()");
 
+        StoredProgress.getInstance().
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
+
         if (gameRenderer == null){
             new Handler().postDelayed(()->{
                 Logger.getAnonymousLogger().info("GameActivity new Loader()");
@@ -230,8 +234,6 @@ public class GameActivity extends Activity{
             tiltController.registerSensors();
         }
 
-        //StoredProgress.getInstance().setValue(StoredProgress.goldKey, 260000);
-        //StoredProgress.getInstance().setValue(StoredProgress.levelUpgKey, 29);
         //startTutorialActivity(BeginTutorial_1); // 4 test
     }
     @Override
@@ -361,27 +363,18 @@ public class GameActivity extends Activity{
     }
 
     private void saveData() {
-        // TODO: 6/13/19 use singleton
         if (null == gameLogic) return;
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        //ed.putFloat("global_scale", gameRenderer.globalScale);
-        ed.putInt("pointerAmount", gameLogic.pointerAmount);
-        ed.putInt("teleportAmount", gameLogic.teleportAmount);
-        ed.putInt("pathfinderAmount", gameLogic.pathfinderAmount);
-        ed.commit(); //ed.apply();
+        StoredProgress.getInstance().setValue(StoredProgress.pointerAmountKey, gameLogic.pointerAmount);
+        StoredProgress.getInstance().setValue(StoredProgress.teleportAmountKey, gameLogic.teleportAmount);
+        StoredProgress.getInstance().setValue(StoredProgress.pathfinderAmountKey, gameLogic.pathfinderAmount);
     }
     private void loadData() {
-        // TODO: 6/13/19 use singleton
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
-        //gameRenderer.globalScale = sPref.getFloat("global_scale", 3);
-        gameLogic.pointerAmount = sPref.getInt("pointerAmount", 0);
-        gameLogic.pathfinderAmount = sPref.getInt("pathfinderAmount", 0);
-        gameLogic.teleportAmount = sPref.getInt("teleportAmount", 0);
+        gameLogic.pointerAmount = StoredProgress.getInstance().getPointerAmount();
+        gameLogic.pathfinderAmount = StoredProgress.getInstance().getPathfinderAmount();
+        gameLogic.teleportAmount = StoredProgress.getInstance().getTeleportAmount();
     }
 
     private void updateSettings(){
-        sPref = getSharedPreferences("global", MODE_PRIVATE);
         gameLogic.usesJoystick = StoredProgress.getInstance().getUsesJoystick();
         if (!gameLogic.usesJoystick){
             if (null == tiltController){
@@ -578,15 +571,3 @@ public class GameActivity extends Activity{
         }
     }
 }
-
-// #d25e78 #6fc5c1 red & cyan | light
-// #008eb3 #f4656d red & cyan | mid
-// #5a6794 #a9794b gray & yellow | neutral
-// #1e508c #148f67 analog blue
-// #00a8ff #fec601 blue & yellow | bright
-// #7b297d #2b0549 deep purple
-// #d40e37 #e6ee9f red & yellow/green | light
-// #ff7caa #------ very light version
-// #dcd549 #ff4274 red & yellow | mid
-// #ffc501 #da2b90 yellow & pink | bright
-// #1e508c #da2b90 blue & pink | deep \\\ default

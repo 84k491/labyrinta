@@ -144,7 +144,8 @@ public class MenuActivity extends Activity implements OnClickListener {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         StoredProgress.getInstance().
-                setSharedPreferences(getSharedPreferences("global", MODE_PRIVATE));
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
+        StoredProgress.getInstance().initSharedPreferences();
 
         MobileAds.initialize(this, getString(R.string.app_id_ad));
 
@@ -182,6 +183,8 @@ public class MenuActivity extends Activity implements OnClickListener {
     @Override
     protected void onResume(){
         super.onResume();
+        StoredProgress.getInstance().
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
         loadData();
         if (justLoadedState){
             justLoadedState = false;

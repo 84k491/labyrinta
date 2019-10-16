@@ -674,6 +674,7 @@ class GameLogic {
 
             LinkedList<CPoint.Game> result = new LinkedList<>();
 
+            // если начало и конец рядом, то можно сразу вернуть обе точки
             if ((star.x - cross.x < 2 && star.y == cross.y) ||
                 (star.y - cross.y < 2 && star.x == cross.x)){
                 result.push(field2game(star));
@@ -681,30 +682,39 @@ class GameLogic {
                 return result;
             }
 
+            // сам алгоритм по функции
+            // В каждом узле запоминается узел, откуда туда пришли
             open.push(new AStarNode(starNode, null));
-
-            AStarNode curr = open.getFirst();
-            while (curr.heuristic() != 0){
-                curr = minFG(open);
-                open.remove(curr);
-                closed.push(curr);
-                open.addAll(curr.neighbours());
+            AStarNode current = open.getFirst();
+            while (current.heuristic() != 0){
+                current = minFG(open);
+                open.remove(current);
+                closed.push(current);
+                open.addAll(current.neighbours());
             }
 
+            // восстанавливаем сам путь по запомненным узлам
             LinkedList<AStarNode> path = new LinkedList<>();
-            path.push(curr);
+            path.push(current);
             while (path.getFirst().cameFrom != null){
                 path.push(path.getFirst().cameFrom);
             }
 
+            // переворачиваем в другой список, добавляем последнюю точку
             for (AStarNode aStarNode : path
                  ) {
                 result.add(result.size(), field2game(aStarNode.pos));
             }
             result.add(result.size(), field2game(cross));
 
-            if (contains(new Node(cross).getLinkedNodes(), new Node(game2field(result.get(result.size() - 3)))))
-                result.remove(result.size() - 2);
+            try{
+                // чтобы не путь не выходил за границы линии между начальной и конечной точкой
+                if (contains(new Node(cross).getLinkedNodes(), new Node(game2field(result.get(result.size() - 3))))) //IndexOutOfBoundsException
+                    result.remove(result.size() - 2);
+            }
+            catch (IndexOutOfBoundsException e){
+                e.printStackTrace();
+            }
 
             return result;
         }

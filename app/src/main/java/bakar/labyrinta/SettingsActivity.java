@@ -87,6 +87,9 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        StoredProgress.getInstance().
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 

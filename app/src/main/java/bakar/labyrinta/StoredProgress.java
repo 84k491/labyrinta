@@ -141,9 +141,10 @@ class StoredProgress {
     }
 
     void setSharedPreferences(SharedPreferences _sharedPreferences){
-        if (sharedPreferences == null) {
-            sharedPreferences = _sharedPreferences;
-        }
+        sharedPreferences = _sharedPreferences;
+    }
+
+    void initSharedPreferences(){
         if (0 == getValue(levelUpgKey)){
             setValue(levelUpgKey, 1);
         }

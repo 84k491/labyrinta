@@ -162,6 +162,9 @@ public class LevelSelectActivity extends Activity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        StoredProgress.getInstance().
+                setSharedPreferences(this.getSharedPreferences("global", MODE_PRIVATE));
+
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
